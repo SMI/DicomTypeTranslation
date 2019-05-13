@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ProjectGuid>{877FAE0D-9EA7-4CA9-ADBB-B47913428ADE}</ProjectGuid>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AssemblyTitle>DicomTypeTranslation.Tests</AssemblyTitle>
+    <Product>DicomTypeTranslation.Tests</Product>
+    <Copyright>Copyright ©  2018</Copyright>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="TextDetectionTets\**" />
+    <EmbeddedResource Remove="TextDetectionTets\**" />
+    <None Remove="TextDetectionTets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="ElevationTests\TestStructuredReports.Designer.cs">
+      <DependentUpon>TestStructuredReports.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ElevationTests\image11.dcm" />
+    <None Include="ElevationTests\report01.dcm" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="fo-dicom.Json" Version="4.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DicomTypeTranslation\DicomTypeTranslation.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="ElevationTests\TestStructuredReports.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>TestStructuredReports.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

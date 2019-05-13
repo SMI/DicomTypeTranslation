@@ -2,3 +2,5 @@ DicomTypeTranslation/bin/
 DicomTypeTranslation/obj/
 .vs/
 *.user
+DicomTypeTranslation.Tests/bin/
+DicomTypeTranslation.Tests/obj/
