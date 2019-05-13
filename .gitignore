@@ -1,0 +1,4 @@
+DicomTypeTranslation/bin/
+DicomTypeTranslation/obj/
+.vs/
+*.user

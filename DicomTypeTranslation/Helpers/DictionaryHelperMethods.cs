@@ -1,0 +1,158 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace DicomTypeTranslation.Helpers
+{
+    public static class DictionaryHelperMethods
+    {
+        public static bool IsDictionary(object o)
+        {
+            return o is IDictionary;
+        }
+
+        public static bool IsDictionary(Type t)
+        {
+            return typeof(IDictionary).IsAssignableFrom(t);
+        }
+
+        /// <summary>
+        /// Determines whether the two dictionaries contain the same keys and values.  Handles any generic dictionary and uses Equals for comparison.  Note that this will handle
+        /// Values that are sub dictionaries (recursively calling DictionaryEquals) but will not handle when keys are dictionaries.
+        /// </summary>
+        /// <param name="dict1"></param>
+        /// <param name="dict2"></param>
+        /// <returns>true if the keys/values are Equal and neither contains novel keys</returns>
+        public static bool DictionaryEquals(IDictionary dict1, IDictionary dict2)
+        {
+            //if either is null
+            if (dict1 == null || dict2 == null)
+                return dict1 == dict2; //they are only equal if they are both null
+
+            var keys1 = new HashSet<object>();
+
+            foreach (object k in dict1.Keys)
+                keys1.Add(k);
+
+            var keys2 = new HashSet<object>();
+
+            foreach (object k in dict2.Keys)
+                keys2.Add(k);
+
+            //they do not contain the same keys
+            if (!keys1.SetEquals(keys2))
+                return false;
+
+            //do all the key value pairs in dictionary 1 match dictionary 2
+            foreach (object key in keys1)
+                if (!FlexibleEquality.FlexibleEquals(dict1[key], dict2[key]))
+                    return false;
+
+            //they keys are the same set and the values are Equal too
+            return true;
+        }
+
+        public static int GetHashCode<TKey, TValue>(Dictionary<TKey, TValue> dict)
+        {
+            if (dict == null)
+                return 0;
+
+            if (!dict.Any())
+                return 0;
+
+            unchecked
+            {
+                int hashCode = dict.Keys.First().GetHashCode();
+                foreach (KeyValuePair<TKey, TValue> kvp in dict)
+                {
+                    hashCode = (hashCode * 397) ^ kvp.Key.GetHashCode();
+                    hashCode = (hashCode * 397) ^ (kvp.Value != null ? kvp.Value.GetHashCode() : 0);
+                }
+
+                return hashCode;
+            }
+        }
+
+        public static string AsciiArt(IDictionary dict, IDictionary dict2, string prefix = "")
+        {
+            var sb = new StringBuilder();
+
+            List<object> keys1 = dict.Keys.Cast<object>().OrderBy(i => i).ToList();
+            List<object> keys2 = dict2.Keys.Cast<object>().OrderBy(i => i).ToList();
+
+            for (var i = 0; i < Math.Max(keys1.Count, keys2.Count); i++)
+            {
+                sb.Append(prefix + "[" + i + "] - ");
+
+                //if run out of values in dictionary 1
+                if (i > keys1.Count)
+                    sb.AppendLine(string.Format(" {0} - \t <NULL> \t {1}", keys2[i], dict2[keys2[i]]));
+                //if run out of values in dictionary 2
+                else if (i > keys2.Count)
+                    sb.AppendLine(string.Format(" {0} - \t {1} \t <NULL>", keys1[i], dict[keys1[i]]));
+                else
+                {
+                    object val1 = dict[keys1[i]];
+                    object val2 = dict2[keys2[i]];
+
+                    if (val1 is Array && val2 is Array)
+                        sb.Append(string.Format(" {0} : \r\n {1}",
+                            keys1[i],
+                            ArrayHelperMethods.AsciiArt((Array)val1,
+                                (Array)val2, prefix + "\t")));
+                    else
+                        //if both are dictionaries
+                        if (IsDictionary(val1) && IsDictionary(val2))
+                        sb.Append(string.Format(" {0} : \r\n {1}",
+                            keys1[i],
+                            AsciiArt((IDictionary)val1,
+                                (IDictionary)val2, prefix + "\t")));
+                    else
+                        //if we haven't outrun of either array
+                        sb.AppendLine(string.Format(" {0} - \t {1} \t {2} {3}",
+                            keys1[i],
+                            dict[keys1[i]],
+                            dict2[keys2[i]],
+                            FlexibleEquality.FlexibleEquals(dict[keys1[i]], dict2[keys2[i]]) ? "" : "<DIFF>"));
+                }
+            }
+
+            return sb.ToString();
+        }
+        public static string AsciiArt(IDictionary dict, string prefix = "")
+        {
+            var sb = new StringBuilder();
+
+            List<object> keys1 = dict.Keys.Cast<object>().OrderBy(i => i).ToList();
+
+            for (var i = 0; i < keys1.Count; i++)
+            {
+                sb.Append(prefix);
+
+                //if run out of values in dictionary 1
+                object val = dict[keys1[i]];
+
+                if (val is Array)
+                    sb.Append(string.Format(" {0} : \r\n {1}",
+                        keys1[i],
+                        ArrayHelperMethods.AsciiArt((Array)val, prefix + "\t")));
+                else
+                    //if both are dictionaries
+                    if (IsDictionary(val))
+                    sb.Append(string.Format(" {0} : \r\n {1}",
+                        keys1[i],
+                        AsciiArt((IDictionary)val, prefix + "\t")));
+                else
+                    //if we haven't outrun of either array
+                    sb.AppendLine(string.Format(" {0} - \t {1}",
+                        keys1[i],
+                        val));
+
+            }
+
+            return sb.ToString();
+        }
+    }
+}

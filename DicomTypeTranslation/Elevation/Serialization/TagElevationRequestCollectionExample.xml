@@ -1,0 +1,21 @@
+﻿<!DOCTYPE TagElevationRequestCollection
+[
+  <!ELEMENT TagElevationRequestCollection (TagElevationRequest*)>
+  <!ELEMENT TagElevationRequest (ColumnName,ElevationPathway,Conditional?)>
+  <!ELEMENT ColumnName (#PCDATA)>
+  <!ELEMENT ElevationPathway (#PCDATA)>
+  <!ELEMENT Conditional (ConditionalPathway,ConditionalRegex)>
+  <!ELEMENT ConditionalPathway (#PCDATA)>
+  <!ELEMENT ConditionalRegex (#PCDATA)>
+]>
+
+<TagElevationRequestCollection>
+  <TagElevationRequest>
+    <ColumnName>ContentSequenceDescriptions</ColumnName>
+    <ElevationPathway>ContentSequence->TextValue</ElevationPathway>
+    <Conditional>
+      <ConditionalPathway>.->ConceptNameCodeSequence->CodeMeaning</ConditionalPathway>
+      <ConditionalRegex>Treatment</ConditionalRegex>
+    </Conditional>
+  </TagElevationRequest>
+</TagElevationRequestCollection>
