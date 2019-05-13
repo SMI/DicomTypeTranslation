@@ -5,11 +5,15 @@
     <AssemblyTitle>DicomTypeTranslation.Tests</AssemblyTitle>
     <Product>DicomTypeTranslation.Tests</Product>
     <Copyright>Copyright ©  2018</Copyright>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="TextDetectionTets\**" />
     <EmbeddedResource Remove="TextDetectionTets\**" />
     <None Remove="TextDetectionTets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="ElevationTests\TestStructuredReports.Designer.cs">
