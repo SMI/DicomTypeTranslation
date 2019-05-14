@@ -5,6 +5,7 @@
     <Product>DicomTypeTranslation</Product>
     <Copyright>Copyright ©  2018</Copyright>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />

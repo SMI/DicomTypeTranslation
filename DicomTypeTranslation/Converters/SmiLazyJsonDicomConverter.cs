@@ -261,9 +261,8 @@ namespace DicomTypeTranslation.Converters
         }
         private static void WriteJsonOther(JsonWriter writer, DicomElement elem)
         {
-            var buffer = elem.Buffer as IBulkDataUriByteBuffer;
 
-            if (buffer != null)
+            if (elem.Buffer is IBulkDataUriByteBuffer buffer)
             {
                 writer.WritePropertyName(BlkUriPropertyName);
                 writer.WriteValue(buffer.BulkDataUri);

@@ -7,6 +7,10 @@ using System.Linq;
 
 namespace DicomTypeTranslation
 {
+    /// <summary>
+    /// Helper method for rapidly reading <see cref="DicomTag"/> values from <see cref="DicomDataset"/> in basic C# Types (string, int, double etc).  Also supports
+    /// Bson types (for MongoDb).
+    /// </summary>
     public static class DicomTypeTranslaterReader
     {
         static DicomTypeTranslaterReader()
@@ -45,12 +49,23 @@ namespace DicomTypeTranslation
                 tag.DictionaryEntry.Keyword;
         }
 
+        /// <summary>
+        /// Returns a basic type (string, double, int, array, dictionary etc) for the given top level <paramref name="tag"/> in the <paramref name="dataset"/>.
+        /// </summary>
+        /// <param name="dataset"></param>
+        /// <param name="tag"></param>
+        /// <returns></returns>
         public static object GetCSharpValue(DicomDataset dataset, DicomTag tag)
         {
             return GetCSharpValue(dataset, dataset.GetDicomItem<DicomItem>(tag));
         }
 
-        //TODO Need to handle encoded strings? (vr.IsStringEncoded)
+        /// <summary>
+        /// Returns a basic type (string, double, int array, dictionary etc) for the given <paramref name="item"/> in the <paramref name="dataset"/>.
+        /// </summary>
+        /// <param name="dataset"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public static object GetCSharpValue(DicomDataset dataset, DicomItem item)
         {
             if (dataset == null || !dataset.Any())
@@ -286,15 +301,18 @@ namespace DicomTypeTranslation
             throw new ApplicationException("Couldn't get Bson value for item: " + val + "of type: " + val.GetType());
         }
 
+        /// <summary>
+        /// Returns a Bson object that represents basic typed object <paramref name="val"/>
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
         public static BsonValue CreateBsonValue(object val)
         {
             if (val == null)
                 return BsonNull.Value;
 
             // Sequences
-            var asDict = val as Dictionary<DicomTag, object>;
-
-            if (asDict != null)
+            if (val is Dictionary<DicomTag, object> asDict)
             {
                 var subDoc = new BsonDocument();
 
@@ -305,9 +323,7 @@ namespace DicomTypeTranslation
             }
 
             // Multiplicity
-            var asArray = val as Array;
-
-            if (asArray == null)
+            if (!(val is Array asArray))
                 return GetBsonValue(val);
 
             bool isDictArray = asArray.GetType().GetElementType() == typeof(Dictionary<DicomTag, object>);
@@ -390,7 +406,7 @@ namespace DicomTypeTranslation
         }
 
         /// <summary>
-        /// Remove all arrays from the document which have length greater than <see cref="maxLength"/>
+        /// Remove all arrays from the document which have length greater than <paramref name="maxLength"/>
         /// </summary>
         /// <param name="document"></param>
         /// <param name="maxLength"></param>

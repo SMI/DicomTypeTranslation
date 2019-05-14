@@ -12,11 +12,13 @@ using DicomTypeTranslation.Helpers;
 
 namespace DicomTypeTranslation
 {
+    /// <summary>
+    /// Helper methods for interacting with <see cref="DicomDataset"/> that don't involve reading/writting.
+    /// </summary>
     public static class DicomTypeTranslater
     {
         private static JsonConverter _defaultJsonDicomConverter = new SmiStrictJsonDicomConverter();
-
-
+        
         /// <summary>
         /// Serialize a <see cref="DicomDataset"/> to a json <see cref="string"/>.
         /// </summary>
@@ -84,7 +86,13 @@ namespace DicomTypeTranslation
         }
 
         #region VR Types to C# / Database types
-
+        /// <summary>
+        /// Returns a <see cref="DatabaseTypeRequest"/> for describing the datatype and length that should be used to represent the given dicom representation.
+        /// If <paramref name="valueMultiplicity"/> allows multiple elements then string max is returned.
+        /// </summary>
+        /// <param name="valueRepresentations"></param>
+        /// <param name="valueMultiplicity"></param>
+        /// <returns></returns>
         public static DatabaseTypeRequest GetNaturalTypeForVr(DicomVR[] valueRepresentations, DicomVM valueMultiplicity)
         {
             //maximum lengths are defined by http://dicom.nema.org/dicom/2013/output/chtml/part05/sect_6.2.html  in bytes... lets err on the side of caution and say it is not unicode so 1 byte = 1 character
@@ -133,7 +141,7 @@ namespace DicomTypeTranslation
 
             return Math.Max(a.Value, b.Value);
         }
-
+        /// <inheritdoc cref="GetNaturalTypeForVr(DicomVR[], DicomVM)"/>
         public static DatabaseTypeRequest GetNaturalTypeForVr(DicomVR dicomVr, DicomVM valueMultiplicity)
         {
             var decimalSize = new DecimalSize(19, 19);

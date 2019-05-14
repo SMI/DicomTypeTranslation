@@ -11,9 +11,17 @@ using DicomTypeTranslation.Elevation.Serialization;
 
 namespace DicomTypeTranslation.Elevation
 {
+    /// <summary>
+    /// Services <see cref="TagElevationRequest"/>s by walking through <see cref="DicomDataset"/> sequences (<see cref="DicomSequence"/>) to identify matching
+    /// tags and return leaf values.
+    /// </summary>
     public class TagElevator
     {
+        /// <summary>
+        /// The symbol used to separate tags in an <see cref="TagElevationRequest.ElevationPathway"/>
+        /// </summary>
         public const string Splitter = "->";
+
         private readonly TagNavigation[] _navigations;
         private readonly TagRelativeConditional _conditional;
 
@@ -38,16 +46,22 @@ namespace DicomTypeTranslation.Elevation
         public string ConcatenateMultiplicitySplitter { get; set; }
 
 
-        private bool _conditionalMatchesArrayElementsOfMultiplicity;
-        private string _conditionalMatchesArrayElementsOfMultiplicityPattern;
+        private readonly bool _conditionalMatchesArrayElementsOfMultiplicity;
+        private readonly string _conditionalMatchesArrayElementsOfMultiplicityPattern;
 
-
+        /// <summary>
+        /// Creates a new instance of the resolver ready to start evaluating matches to the given <paramref name="request"/>
+        /// </summary>
+        /// <param name="request"></param>
         public TagElevator(TagElevationRequest request):this(request.ElevationPathway,request.ConditionalPathway,request.ConditionalRegex)
         {
             
         }
 
-
+        /// <summary>
+        /// Creates a new instance of the resolver ready to start evaluating leaf matches to the given <paramref name="elevationPathway"/> in <see cref="DicomDataset"/>s with
+        /// the provided (optional) <paramref name="conditional"/>
+        /// </summary>
         public TagElevator(string elevationPathway, string conditional, string conditionalShouldMatch): this(elevationPathway)
         {
             
@@ -71,7 +85,10 @@ namespace DicomTypeTranslation.Elevation
         }
 
         
-
+        /// <summary>
+        /// Creates a new instance of the resolver ready to start evaluating leaf matches to the given <paramref name="elevationPathway"/> in <see cref="DicomDataset"/>s
+        /// </summary>
+        /// <param name="elevationPathway"></param>
         public TagElevator(string elevationPathway)
         {
             bool stop = false;
@@ -100,6 +117,12 @@ namespace DicomTypeTranslation.Elevation
             return toReturn;
         }
 
+        /// <summary>
+        /// Returns leaf elements in the <paramref name="dataset"/> which match the <see cref="TagElevationRequest.ConditionalPathway"/> this class was
+        /// constructed with (including any conditionals).
+        /// </summary>
+        /// <param name="dataset"></param>
+        /// <returns></returns>
         public object GetValue(DicomDataset dataset)
         {
             List<object> finalObjects = new List<object>();
@@ -134,9 +157,8 @@ namespace DicomTypeTranslation.Elevation
             if (_navigations[i].IsLast)
             {
                 var o = _navigations[i].GetTags(element, _conditional);
-                
-                var a = o as Array;
-                if (a != null)
+
+                if (o is Array a)
                 {
                     //if we have a conditional which should be applied to the array elements
                     if (_conditionalMatchesArrayElementsOfMultiplicity)
@@ -156,7 +178,7 @@ namespace DicomTypeTranslation.Elevation
                 }
                 else
                     if (IsMatch(o))
-                        toReturn.Add(o);
+                    toReturn.Add(o);
             }
             else
                 foreach (SequenceElement subSequence in _navigations[i].GetSubset(element))

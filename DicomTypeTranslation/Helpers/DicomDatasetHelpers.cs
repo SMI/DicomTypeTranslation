@@ -7,8 +7,17 @@ using Dicom.IO.Buffer;
 
 namespace DicomTypeTranslation.Helpers
 {
+    /// <summary>
+    /// Helper methods for evaluating Equality between <see cref="DicomDataset"/> instances
+    /// </summary>
     public static class DicomDatasetHelpers
     {
+        /// <summary>
+        /// Returns true if the elements in <paramref name="a"/> are the same set of tags and values as <paramref name="b"/>
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool ValueEquals(DicomDataset a, DicomDataset b)
         {
             if (a == null || b == null)
@@ -20,6 +29,12 @@ namespace DicomTypeTranslation.Helpers
             return a.Zip(b, ValueEquals).All(x => x);
         }
 
+        /// <summary>
+        /// Returns true if the <paramref name="a"/> contains an equal value to <paramref name="b"/> (includes support for <see cref="DicomSequence"/>)
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool ValueEquals(DicomItem a, DicomItem b)
         {
             if (a == null || b == null)
@@ -58,6 +73,13 @@ namespace DicomTypeTranslation.Helpers
             return a.Equals(b);
         }
 
+        /// <summary>
+        /// Returns true if <paramref name="a"/> and <paramref name="b"/> are equal.  Supports <see cref="IBulkDataUriByteBuffer"/>, <see cref="EmptyBuffer"/>, 
+        /// <see cref="StreamByteBuffer"/> and <see cref="CompositeByteBuffer"/>.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool ValueEquals(IByteBuffer a, IByteBuffer b)
         {
             if (a == null || b == null)
@@ -69,14 +91,12 @@ namespace DicomTypeTranslation.Helpers
             if (a.IsMemory)
                 return b.IsMemory && a.Data.SequenceEqual(b.Data);
 
-            if (a is IBulkDataUriByteBuffer)
+            if (a is IBulkDataUriByteBuffer abuff)
             {
-                var buffer = b as IBulkDataUriByteBuffer;
-
-                if (buffer == null)
+                if (!(b is IBulkDataUriByteBuffer bbuff))
                     return false;
 
-                return ((IBulkDataUriByteBuffer)a).BulkDataUri == buffer.BulkDataUri;
+                return abuff.BulkDataUri == bbuff.BulkDataUri;
             }
 
             if (a is EmptyBuffer && b is EmptyBuffer)

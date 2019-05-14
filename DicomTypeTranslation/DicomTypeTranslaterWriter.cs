@@ -8,7 +8,10 @@ using System.Text.RegularExpressions;
 
 namespace DicomTypeTranslation
 {
-
+    /// <summary>
+    /// Helper method for rapidly writting <see cref="DicomTag"/> values into a <see cref="DicomDataset"/> in basic C# Types (string, int, double etc).  Also supports
+    /// Bson types (for MongoDb).
+    /// </summary>
     public static class DicomTypeTranslaterWriter
     {
         /// <summary>
@@ -93,11 +96,20 @@ namespace DicomTypeTranslation
             return new DateTime(1, 1, 1, ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds);
         }
 
+        /// <inheritdoc cref="SetDicomTag(DicomDataset, DicomTag, object)"/>
         public static void SetDicomTag(DicomDataset dataset, DicomDictionaryEntry tag, object value)
         {
             SetDicomTag(dataset, tag.Tag, value);
         }
 
+        /// <summary>
+        /// Sets the given <paramref name="tag"/> in the <paramref name="dataset"/> to <paramref name="value"/>.  If <paramref name="value"/> is an <see cref="Array"/> 
+        /// then the tag will be given multiplicity.  If the <paramref name="value"/> is an <see cref="IDictionary{TKey, TValue}"/> a <see cref="DicomSequence"/> will
+        /// be created.
+        /// </summary>
+        /// <param name="dataset"></param>
+        /// <param name="tag"></param>
+        /// <param name="value"></param>
         public static void SetDicomTag(DicomDataset dataset, DicomTag tag, object value)
         {
             if (value == null)
@@ -107,10 +119,8 @@ namespace DicomTypeTranslation
                 return;
             }
 
-            var sequenceArray = value as Dictionary<DicomTag, object>[];
-
             //input is a dictionary of DicomTag=>Objects then it is a Sequence
-            if (sequenceArray != null)
+            if (value is Dictionary<DicomTag, object>[] sequenceArray)
             {
                 SetSequenceFromObject(dataset, tag, sequenceArray);
                 return;
@@ -280,6 +290,14 @@ namespace DicomTypeTranslation
             dataset.Add(new DicomCodeString(new DicomTag(tempTag.Group, tempTag.Element), element.Value.AsString));
         }
 
+        //todo: we need a description of the expected syntax for this.  All the tests seem to go dataset=>bson=>dataset an example of straight up bson=>dataset is probably needed
+
+        /// <summary>
+        /// Converts the <paramref name="document"/> into a <see cref="DicomDataset"/>
+        /// </summary>
+        /// <param name="document"></param>
+        /// <param name="ignorePrivateTags"></param>
+        /// <returns></returns>
         public static DicomDataset BuildDatasetFromBsonDocument(BsonDocument document, bool ignorePrivateTags = false)
         {
             var dataset = new DicomDataset();

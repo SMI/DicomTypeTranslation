@@ -16,7 +16,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
     public class TagElevatorTests
     {
-        private string srDcmPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "sr.dcm");
+        private readonly string srDcmPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "sr.dcm");
 
         /// <summary>
         /// Tests that it is illegal to elevate a top level tag

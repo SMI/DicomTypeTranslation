@@ -5,8 +5,17 @@ using System.Text;
 
 namespace DicomTypeTranslation.Helpers
 {
+    /// <summary>
+    /// Helper methods for <see cref="Array"/> including equality and representation as strings
+    /// </summary>
     public static class ArrayHelperMethods
     {
+        /// <summary>
+        /// Returns true if the two arrays contain the same elements (using <see cref="FlexibleEquality"/>)
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool ArrayEquals(Array a, Array b)
         {
             if (a.Length != b.Length)
@@ -19,6 +28,12 @@ namespace DicomTypeTranslation.Helpers
             return true;
         }
 
+        /// <summary>
+        /// Returns a string representation of the array suitable for human visualisation
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
         public static string AsciiArt(Array a, string prefix = "")
         {
             var sb = new StringBuilder();
@@ -42,6 +57,13 @@ namespace DicomTypeTranslation.Helpers
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Returns a string representation of both arrays highlighting differences in array elements
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
         public static string AsciiArt(Array a, Array b, string prefix = "")
         {
             var sb = new StringBuilder();
@@ -82,6 +104,11 @@ namespace DicomTypeTranslation.Helpers
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Returns true if <paramref name="a"/> contains any elements which are <see cref="Array"/> or <see cref="IDictionary"/>
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns></returns>
         private static bool ContainsSubArraysOrSubtrees(Array a)
         {
             return a.OfType<Array>().Any() || a.OfType<IDictionary>().Any();

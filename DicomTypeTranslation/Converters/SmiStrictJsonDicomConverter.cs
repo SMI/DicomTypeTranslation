@@ -27,8 +27,8 @@ namespace DicomTypeTranslation.Converters
         private static bool _continueOnParseErrors;
 
         //TODO Implement
-        public const string _valuePropertyName = "";
-        public const string _vrPropertyName = "";
+        //public const string _valuePropertyName = "";
+        //public const string _vrPropertyName = "";
 
 
         /// <summary>
@@ -372,9 +372,8 @@ namespace DicomTypeTranslation.Converters
                         continue;
                     }
 
-                    int parsed;
 
-                    if (int.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out parsed))
+                    if (int.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out int parsed))
                         writer.WriteValue(parsed);
                     else
                         throw new FormatException(string.Format("Cannot write dicom IntegerString \"{0}\" to json", val));
@@ -440,11 +439,6 @@ namespace DicomTypeTranslation.Converters
                 }
                 else
                 {
-                    ulong xulong;
-                    long xlong;
-                    decimal xdecimal;
-                    double xdouble;
-
                     string fix = FixDecimalString(val);
 
                     if (fix == null)
@@ -460,13 +454,13 @@ namespace DicomTypeTranslation.Converters
                         continue;
                     }
 
-                    if (ulong.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out xulong))
+                    if (ulong.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out ulong xulong))
                         writer.WriteValue(xulong);
-                    else if (long.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out xlong))
+                    else if (long.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out long xlong))
                         writer.WriteValue(xlong);
-                    else if (decimal.TryParse(fix, NumberStyles.Float, CultureInfo.InvariantCulture, out xdecimal))
+                    else if (decimal.TryParse(fix, NumberStyles.Float, CultureInfo.InvariantCulture, out decimal xdecimal))
                         writer.WriteValue(xdecimal);
-                    else if (double.TryParse(fix, NumberStyles.Float, CultureInfo.InvariantCulture, out xdouble))
+                    else if (double.TryParse(fix, NumberStyles.Float, CultureInfo.InvariantCulture, out double xdouble))
                         writer.WriteValue(xdouble);
                     else
                     {
@@ -589,9 +583,7 @@ namespace DicomTypeTranslation.Converters
 
         private static void WriteJsonOther(JsonWriter writer, DicomElement elem)
         {
-            var buffer = elem.Buffer as IBulkDataUriByteBuffer;
-
-            if (buffer != null)
+            if (elem.Buffer is IBulkDataUriByteBuffer buffer)
             {
                 writer.WritePropertyName("BulkDataURI");
                 writer.WriteValue(buffer.BulkDataUri);

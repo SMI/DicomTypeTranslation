@@ -6,21 +6,35 @@ using System.Text;
 
 namespace DicomTypeTranslation.Helpers
 {
+    /// <summary>
+    /// Helper methdos for interacting with <see cref="IDictionary"/> objects including equality and representation as string
+    /// </summary>
     public static class DictionaryHelperMethods
     {
+        /// <summary>
+        /// Returns true if <paramref name="o"/> is an <see cref="IDictionary"/>
+        /// </summary>
+        /// <param name="o"></param>
+        /// <returns></returns>
         public static bool IsDictionary(object o)
         {
             return o is IDictionary;
         }
 
+        /// <summary>
+        /// Returns true if <paramref name="t"/> is a assignable to <see cref="IDictionary"/>
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
         public static bool IsDictionary(Type t)
         {
             return typeof(IDictionary).IsAssignableFrom(t);
         }
 
         /// <summary>
-        /// Determines whether the two dictionaries contain the same keys and values.  Handles any generic dictionary and uses Equals for comparison.  Note that this will handle
-        /// Values that are sub dictionaries (recursively calling DictionaryEquals) but will not handle when keys are dictionaries.
+        /// Determines whether the two dictionaries contain the same keys and values (using <see cref="FlexibleEquality"/>).  Handles any generic dictionary and uses
+        /// Equals for comparison.  Note that this will handle Values that are sub dictionaries (recursively calling <see cref="DictionaryEquals"/>) but will not handle
+        /// when keys are dictionaries.
         /// </summary>
         /// <param name="dict1"></param>
         /// <param name="dict2"></param>
@@ -54,6 +68,14 @@ namespace DicomTypeTranslation.Helpers
             return true;
         }
 
+        /// <summary>
+        /// Returns a hashcode for the given <paramref name="dict"/> which is based on the elments.  This should be used when 
+        /// using <see cref="DictionaryEquals(IDictionary, IDictionary)"/> for equality to ensure 'equal' instances have the same hashcode.
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="dict"></param>
+        /// <returns></returns>
         public static int GetHashCode<TKey, TValue>(Dictionary<TKey, TValue> dict)
         {
             if (dict == null)
@@ -75,6 +97,53 @@ namespace DicomTypeTranslation.Helpers
             }
         }
 
+        /// <summary>
+        /// Returns a string representation of the <paramref name="dict"/> suitable for human visualisation
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        public static string AsciiArt(IDictionary dict, string prefix = "")
+        {
+            var sb = new StringBuilder();
+
+            List<object> keys1 = dict.Keys.Cast<object>().OrderBy(i => i).ToList();
+
+            for (var i = 0; i < keys1.Count; i++)
+            {
+                sb.Append(prefix);
+
+                //if run out of values in dictionary 1
+                object val = dict[keys1[i]];
+
+                if (val is Array)
+                    sb.Append(string.Format(" {0} : \r\n {1}",
+                        keys1[i],
+                        ArrayHelperMethods.AsciiArt((Array)val, prefix + "\t")));
+                else
+                    //if both are dictionaries
+                    if (IsDictionary(val))
+                    sb.Append(string.Format(" {0} : \r\n {1}",
+                        keys1[i],
+                        AsciiArt((IDictionary)val, prefix + "\t")));
+                else
+                    //if we haven't outrun of either array
+                    sb.AppendLine(string.Format(" {0} - \t {1}",
+                        keys1[i],
+                        val));
+
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Returns a string representation of both <see cref="IDictionary"/>s highlighting differences in array elements
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <param name="dict2"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
         public static string AsciiArt(IDictionary dict, IDictionary dict2, string prefix = "")
         {
             var sb = new StringBuilder();
@@ -117,39 +186,6 @@ namespace DicomTypeTranslation.Helpers
                             dict2[keys2[i]],
                             FlexibleEquality.FlexibleEquals(dict[keys1[i]], dict2[keys2[i]]) ? "" : "<DIFF>"));
                 }
-            }
-
-            return sb.ToString();
-        }
-        public static string AsciiArt(IDictionary dict, string prefix = "")
-        {
-            var sb = new StringBuilder();
-
-            List<object> keys1 = dict.Keys.Cast<object>().OrderBy(i => i).ToList();
-
-            for (var i = 0; i < keys1.Count; i++)
-            {
-                sb.Append(prefix);
-
-                //if run out of values in dictionary 1
-                object val = dict[keys1[i]];
-
-                if (val is Array)
-                    sb.Append(string.Format(" {0} : \r\n {1}",
-                        keys1[i],
-                        ArrayHelperMethods.AsciiArt((Array)val, prefix + "\t")));
-                else
-                    //if both are dictionaries
-                    if (IsDictionary(val))
-                    sb.Append(string.Format(" {0} : \r\n {1}",
-                        keys1[i],
-                        AsciiArt((IDictionary)val, prefix + "\t")));
-                else
-                    //if we haven't outrun of either array
-                    sb.AppendLine(string.Format(" {0} - \t {1}",
-                        keys1[i],
-                        val));
-
             }
 
             return sb.ToString();
