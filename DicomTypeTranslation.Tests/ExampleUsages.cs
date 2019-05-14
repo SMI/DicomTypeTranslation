@@ -71,13 +71,13 @@ namespace DicomTypeTranslation.Tests
             Assert.AreEqual("Rabbit",seq[0][DicomTag.PatientName]);
             Assert.AreEqual("Roger",seq[1][DicomTag.PatientName]);
 
-            var flattened = DicomTypeTranslater.Flatten(seq);
+            var flattened = (string)DicomTypeTranslater.Flatten(seq);
             Assert.AreEqual(
 @"[0] - 
  	 (0010,0010) - 	 Rabbit
 
  [1] - 
- 	 (0010,0010) - 	 Roger",flattened);
+ 	 (0010,0010) - 	 Roger".Replace("\r",""),flattened.Replace("\r",""));
         }
 
         [Test]
