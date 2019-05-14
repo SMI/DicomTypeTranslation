@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Data;
+using System.Data.SqlClient;
 using Dicom;
-using DicomTypeTranslation.Helpers;
+using DicomTypeTranslation.TableCreation;
+using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
+using FAnsi.Implementation;
 using FAnsi.Implementations.MicrosoftSQL;
 using FAnsi.Implementations.Oracle;
 using NUnit.Framework;
+using DicomTypeTranslation;
+using FAnsi.Implementations.MySql;
+using MySql.Data.MySqlClient;
 
 namespace DicomTypeTranslation.Tests
 {
@@ -97,5 +103,76 @@ namespace DicomTypeTranslation.Tests
             Assert.AreEqual("varchar2(64)",tt.GetSQLDBTypeForCSharpType(type));
 
         }
+        
+        [Test]
+        public void ExampleTableCreation()
+        {
+            var toCreate = new ImageTableTemplate(){
+                Columns = new []{ 
+                    
+                    //pick some tags for the schema
+                    new ImageColumnTemplate(DicomTag.SOPInstanceUID){IsPrimaryKey = true, AllowNulls = false },
+                    new ImageColumnTemplate(DicomTag.PatientAge){AllowNulls=true},
+                    new ImageColumnTemplate(DicomTag.PatientBirthDate){AllowNulls=true}
+                    } };
+            
+            //load the Sql Server implementation of FAnsi
+            ImplementationManager.Load<MicrosoftSQLImplementation>();
+
+            //decide where you want to create the table (these methods will actually attempt to connect to the database)
+            var server = new DiscoveredServer(new SqlConnectionStringBuilder("Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;"));
+            var db = server.ExpectDatabase("MyDb");
+
+            var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
+            var sql = creator.GetCreateTableSql(db,"MyCoolTable",toCreate,null);
+            
+            //the following Sql gets created
+            Assert.AreEqual(
+@"CREATE TABLE [MyDb]..[MyCoolTable](
+[SOPInstanceUID] varchar(64)    NOT NULL ,
+[PatientAge] varchar(4)    NULL ,
+[PatientBirthDate] datetime2    NULL ,
+ CONSTRAINT PK_MyCoolTable PRIMARY KEY ([SOPInstanceUID]))
+"
+
+.Replace("\r",""),sql.Replace("\r",""));
+
+            //actually do it
+            //creator.CreateTable(db.ExpectTable("MyCoolTable"));
+        }
+
+        [Test]
+        public void TestGetDataTable()
+        {
+             //create an Fo-Dicom dataset
+            var ds = new DicomDataset(new List<DicomItem>()
+            {
+                new DicomShortString(DicomTag.PatientName,"Frank"),
+                new DicomAgeString(DicomTag.PatientAge,"032Y"),
+                new DicomDate(DicomTag.PatientBirthDate,new DateTime(2001,1,1))
+            });
+
+            var dt = new DataTable();
+            var row = ds.ToRow(dt);
+
+            Assert.AreEqual("Frank",row["PatientName"]);
+            Assert.AreEqual("032Y",row["PatientAge"]);
+            Assert.AreEqual(new DateTime(2001,1,1),row["PatientBirthDate"]);
+                        
+            //load the MySql implementation of FAnsi
+            ImplementationManager.Load<MySqlImplementation>();
+
+            //pick the location of the destination table (must exist, see ExampleTableCreation for how to create)
+            var server = new DiscoveredServer(new MySqlConnectionStringBuilder("Server=myServerAddress;Database=myDataBase;Uid=myUsername;Pwd=myPassword;"));
+            var table = server.ExpectDatabase("MyDb").ExpectTable("MyCoolTable");
+
+/*          using(IBulkCopy bulkInsert = table.BeginBulkInsert())
+            {
+                bulkInsert.Upload(dt);
+            }*/
+
+                
+        }
     }
+
 }
