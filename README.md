@@ -1,5 +1,5 @@
 # DicomTypeTranslation
-[Fo Dicom](https://github.com/fo-dicom/fo-dicom)/[FAnsiSql](https://github.com/HicServices/FAnsiSql) powered library for converting [dicom](https://www.dicomlibrary.com/dicom/) types into database/C# types at speed.  The library lets you cherry pick specific tags from dicom images (e.g. PatientId) and populate a relational (or mongo) database with flat record results (e.g. 1 record per image).  With DicomTypeTranslation you can create whatever schema works for you in whatever DBMS you want and then link it with existing EHR data you already have (E.g. by PatientId).
+[Fo Dicom](https://github.com/fo-dicom/fo-dicom)/[FAnsiSql](https://github.com/HicServices/FAnsiSql) powered library for converting [dicom](https://www.dicomlibrary.com/dicom/) types into database/C# types at speed.  The library lets you cherry pick specific tags from dicom images (e.g. PatientID) and populate a relational (or mongo) database with flat record results (e.g. 1 record per image).  With DicomTypeTranslation you can create whatever schema works for you in whatever DBMS you want and then link it with existing EHR data you already have (E.g. by PatientID).
 
 ![Copying dicom tags into a database](LibraryPurpose.png "What we do, take dicom tags and put them in a database")
 
@@ -18,7 +18,7 @@ var toCreate = new ImageTableTemplate(){
 ImplementationManager.Load<MicrosoftSQLImplementation>();
 
 //decide where you want to create the table
-var server = new DiscoveredServer(@"Server=localhost\sqlexpress;Database=mydb;Integrated Security=true;",FAnsi.DatabaseType.MicrosoftSQLServer);
+var server = new DiscoveredServer(@"Server=localhost\sqlexpress;Database=test;Integrated Security=true;",FAnsi.DatabaseType.MicrosoftSQLServer);
 var db = server.ExpectDatabase("test");
             
 //create the table
