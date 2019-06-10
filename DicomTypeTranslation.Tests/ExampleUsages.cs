@@ -13,6 +13,7 @@ using NUnit.Framework;
 using DicomTypeTranslation;
 using FAnsi.Implementations.MySql;
 using MySql.Data.MySqlClient;
+using System.IO;
 
 namespace DicomTypeTranslation.Tests
 {
@@ -104,6 +105,57 @@ namespace DicomTypeTranslation.Tests
 
         }
         
+        [Ignore("Only works if you have connection string matches an existing server and you have a database called 'test'")]
+        [Test]
+        public void WorkedExampleTest()
+        {
+            //pick some tags that we are interested in (determines the table schema created)
+            var toCreate = new ImageTableTemplate(){
+                Columns = new []{
+                    new ImageColumnTemplate(DicomTag.SOPInstanceUID),
+                    new ImageColumnTemplate(DicomTag.Modality){AllowNulls = true },
+                    new ImageColumnTemplate(DicomTag.PatientID){AllowNulls = true }
+                    } };
+            
+            //load the Sql Server implementation of FAnsi
+            ImplementationManager.Load<MicrosoftSQLImplementation>();
+
+            //decide where you want to create the table
+            var server = new DiscoveredServer(@"Server=localhost\sqlexpress;Database=mydb;Integrated Security=true;",FAnsi.DatabaseType.MicrosoftSQLServer);
+            var db = server.ExpectDatabase("test");
+            
+            //create the table
+            var tbl = db.CreateTable("MyCoolTable",toCreate.GetColumns(FAnsi.DatabaseType.MicrosoftSQLServer));
+
+            //add a column for where the image is on disk
+            tbl.AddColumn("FileLocation",new DatabaseTypeRequest(typeof(string),500),true,500);
+
+            //Create a DataTable in memory for the data we read from disk
+            DataTable dt = new DataTable();
+            dt.Columns.Add("SOPInstanceUID");
+            dt.Columns.Add("Modality");
+            dt.Columns.Add("PatientID");
+            dt.Columns.Add("FileLocation");
+
+            //Load some dicom files and copy tag data into DataTable (where tag exists)
+            foreach(string file in Directory.EnumerateFiles(@"C:\temp\TestDicomFiles","*.dcm", SearchOption.AllDirectories))
+            {
+                var dcm = DicomFile.Open(file);
+                var ds = dcm.Dataset;
+                
+                dt.Rows.Add(
+                    
+                    DicomTypeTranslaterReader.GetCSharpValue(dcm.Dataset,DicomTag.SOPInstanceUID),
+                    ds.Contains(DicomTag.Modality)? DicomTypeTranslaterReader.GetCSharpValue(dcm.Dataset,DicomTag.Modality):DBNull.Value,
+                    ds.Contains(DicomTag.PatientID)? DicomTypeTranslaterReader.GetCSharpValue(dcm.Dataset,DicomTag.PatientID):DBNull.Value,
+                    file);
+            }
+
+            //put the DataTable into the database
+            using(var insert = tbl.BeginBulkInsert())
+                insert.Upload(dt);
+        }
+
         [Test]
         public void ExampleTableCreation()
         {
@@ -120,7 +172,7 @@ namespace DicomTypeTranslation.Tests
             ImplementationManager.Load<MicrosoftSQLImplementation>();
 
             //decide where you want to create the table (these methods will actually attempt to connect to the database)
-            var server = new DiscoveredServer(new SqlConnectionStringBuilder("Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;"));
+            var server = new DiscoveredServer("Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;",FAnsi.DatabaseType.MicrosoftSQLServer);
             var db = server.ExpectDatabase("MyDb");
 
             var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());

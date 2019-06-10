@@ -1,7 +1,80 @@
 # DicomTypeTranslation
-[Fo Dicom](https://github.com/fo-dicom/fo-dicom)/[FAnsiSql](https://github.com/HicServices/FAnsiSql) powered library for converting dicom types into database/C# types at speed.
+[Fo Dicom](https://github.com/fo-dicom/fo-dicom)/[FAnsiSql](https://github.com/HicServices/FAnsiSql) powered library for converting [dicom](https://www.dicomlibrary.com/dicom/) types into database/C# types at speed.  The library lets you cherry pick specific tags from dicom images (e.g. PatientId) and populate a relational (or mongo) database with flat record results (e.g. 1 record per image).  With DicomTypeTranslation you can create whatever schema works for you in whatever DBMS you want and then link it with existing EHR data you already have (E.g. by PatientId).
 
-# Reading
+![Copying dicom tags into a database](LibraryPurpose.png "What we do, take dicom tags and put them in a database")
+
+Heres a simple worked example:
+
+```csharp
+//pick some tags that we are interested in (determines the table schema created)
+var toCreate = new ImageTableTemplate(){
+    Columns = new []{
+        new ImageColumnTemplate(DicomTag.SOPInstanceUID),
+        new ImageColumnTemplate(DicomTag.Modality){AllowNulls = true },
+        new ImageColumnTemplate(DicomTag.PatientID){AllowNulls = true }
+        } };
+            
+//load the Sql Server implementation of FAnsi
+ImplementationManager.Load<MicrosoftSQLImplementation>();
+
+//decide where you want to create the table
+var server = new DiscoveredServer(@"Server=localhost\sqlexpress;Database=mydb;Integrated Security=true;",FAnsi.DatabaseType.MicrosoftSQLServer);
+var db = server.ExpectDatabase("test");
+            
+//create the table
+var tbl = db.CreateTable("MyCoolTable",toCreate.GetColumns(FAnsi.DatabaseType.MicrosoftSQLServer));
+
+//add a column for where the image is on disk
+tbl.AddColumn("FileLocation",new DatabaseTypeRequest(typeof(string),500),true,500);
+
+//Create a DataTable in memory for the data we read from disk
+DataTable dt = new DataTable();
+dt.Columns.Add("SOPInstanceUID");
+dt.Columns.Add("Modality");
+dt.Columns.Add("PatientID");
+dt.Columns.Add("FileLocation");
+
+//Load some dicom files and copy tag data into DataTable (where tag exists)
+foreach(string file in Directory.EnumerateFiles(@"C:\temp\TestDicomFiles","*.dcm", SearchOption.AllDirectories))
+{
+    //open using FoDicom
+    var dcm = DicomFile.Open(file);
+    var ds = dcm.Dataset;
+             
+    //add one row per file
+    dt.Rows.Add(
+        DicomTypeTranslaterReader.GetCSharpValue(dcm.Dataset,DicomTag.SOPInstanceUID),
+        ds.Contains(DicomTag.Modality)? DicomTypeTranslaterReader.GetCSharpValue(dcm.Dataset,DicomTag.Modality):DBNull.Value,
+        ds.Contains(DicomTag.PatientID)? DicomTypeTranslaterReader.GetCSharpValue(dcm.Dataset,DicomTag.PatientID):DBNull.Value,
+        file);
+}
+
+//upload records to database
+using(var insert = tbl.BeginBulkInsert())
+    insert.Upload(dt);
+```
+
+This results in the following table (with sensible datatypes):
+
+![Results of running above code](ExampleTable.png "Results of running the above code, a table with all tags populated")
+
+## Installing Nuget Package
+
+You can install the library via NuGet Package Manager:
+```
+PM> Install-Package HIC.DicomTypeTranslation
+```
+
+Or use the .Net CLI:
+
+```
+> dotnet add package HIC.DicomTypeTranslation
+```
+
+## The Dicom Specification
+Dicom is a complex specification that includes many data types and data structures (e.g. trees, arrays).  The following section describes how these issues are addressed by DicomTypeTranslation.
+
+### Reading Types
 
 One goal of this library is high speed reading of strongly typed values from dicom tags.  This is handled by the static class `DicomTypeTranslaterReader`.
 
@@ -32,7 +105,7 @@ Assert.AreEqual(typeof(DateTime),dob.GetType());
 Assert.AreEqual(new DateTime(2001,01,01), dob);
 ```
 
-## Multiplicity
+### Multiplicity
 
 The Dicom specification allows multiple elements to be specified for some tags, this is called 'multiplicity':
 
@@ -114,7 +187,7 @@ The Flattened (string) representation of the above example is:
  	 (0010,0010) - 	 Roger
 ```
 
-## Database Types
+### Database Types
 
 The Dicom specification has rules about how big datatypes can be (called ValueRepresentations) for example the entry for [Patient Address](http://northstar-www.dartmouth.edu/doc/idl/html_6.2/DICOM_Attributes.html) is LO ("Long String") which has a maximum length of 64 charactesr.
 
@@ -143,77 +216,3 @@ Assert.AreEqual("varchar2(64)",tt.GetSQLDBTypeForCSharpType(type));
 
 This lets you build adhoc database schemas in any DBMS (supported by FAnsi) based on arbitrary dicom tags picked by your users.
 
-## Table Creation
-
-We can create a schema compatible with any relational database supported by [FAnsiSql](https://github.com/HicServices/FAnsiSql) by specifying only the tags we want to store in the table:
-
-```csharp
-
-var toCreate = new ImageTableTemplate(){
-                Columns = new []{ 
-                    
-                    //pick some tags for the schema
-                    new ImageColumnTemplate(DicomTag.SOPInstanceUID){IsPrimaryKey = true, AllowNulls = false },
-                    new ImageColumnTemplate(DicomTag.PatientAge){AllowNulls=true},
-                    new ImageColumnTemplate(DicomTag.PatientBirthDate){AllowNulls=true}
-                    } };
-            
-//load the Sql Server implementation of FAnsi
-ImplementationManager.Load<MicrosoftSQLImplementation>();
-
-//decide where you want to create the table (these methods will actually attempt to connect to the database)
-var server = new DiscoveredServer(new SqlConnectionStringBuilder("Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;"));
-var db = server.ExpectDatabase("MyDb");
-
-var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
-var sql = creator.GetCreateTableSql(db,"MyCoolTable",toCreate,null);
-```
-
-In this case the following schema would be created:
-
-```sql
-CREATE TABLE [MyDb]..[MyCoolTable]
-(
-    [SOPInstanceUID] varchar(64)    NOT NULL ,
-    [PatientAge] varchar(4)    NULL ,
-    [PatientBirthDate] datetime2    NULL ,
-     CONSTRAINT PK_MyCoolTable PRIMARY KEY ([SOPInstanceUID])
-)
-```
-
-## Uploading Records
-
-You can create a `System.DataTable` from a `DicomDataset` with the extension methods `ToRow`
-
-```csharp
-//create an Fo-Dicom dataset
-var ds = new DicomDataset(new List<DicomItem>()
-{
-    new DicomShortString(DicomTag.PatientName,"Frank"),
-    new DicomAgeString(DicomTag.PatientAge,"032Y"),
-    new DicomDate(DicomTag.PatientBirthDate,new DateTime(2001,1,1))
-});
-
-var dt = new DataTable();
-var row = ds.ToRow(dt);
-
-Assert.AreEqual("Frank",row["PatientName"]);
-Assert.AreEqual("032Y",row["PatientAge"]);
-Assert.AreEqual(new DateTime(2001,1,1),row["PatientBirthDate"]);
-```
-
-This can then be bulk inserted into the destination table using a proprietary bulk insert or FAnsiSql bulk insert:
-
-```csharp
-//load the MySql implementation of FAnsi
-ImplementationManager.Load<MySqlImplementation>();
-
-//pick the location of the destination table (must exist, see ExampleTableCreation for how to create)
-var server = new DiscoveredServer(new MySqlConnectionStringBuilder("Server=myServerAddress;Database=myDataBase;Uid=myUsername;Pwd=myPassword;"));
-var table = server.ExpectDatabase("MyDb").ExpectTable("MyCoolTable");
-
-using(IBulkCopy bulkInsert = table.BeginBulkInsert())
-{
-    bulkInsert.Upload(dt);
-}
-```
