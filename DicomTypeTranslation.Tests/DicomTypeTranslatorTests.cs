@@ -1,15 +1,13 @@
-﻿using Dicom;
+﻿
+using Dicom;
 using DicomTypeTranslation.Tests.Helpers;
 using MongoDB.Bson;
-using Newtonsoft.Json;
 using NLog;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using DicomTypeTranslation.Helpers;
 
 namespace DicomTypeTranslation.Tests
 {
@@ -18,128 +16,25 @@ namespace DicomTypeTranslation.Tests
     {
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
+        #region Fixture Methods 
 
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
+        {
+            TestLogger.Setup();
         }
+
+        #endregion
 
         #region Tests
 
         [Test]
-        [Ignore("Ignore unless you want to test some specific files")]
-        public void TestMultipleFiles()
-        {
-            // Add some local files to test
-            DicomFile[] files =
-            {
-                DicomFile.Open(@"")
-            };
-
-            if (files.Length == 0)
-                Assert.Fail("No files specified");
-
-            foreach (var file in files)
-                TestDatasetSerializationFromFile(file);
-        }
-
-        /// <summary>
-        /// We can use the JsonDicomConverter fairly safely with the following caveats:
-        /// We can't serialize PixelData/OB VRs for now
-        /// We have to replace any null terminators with spaces (\0 doesn't conform to the standard but can be in the tags anyway!)
-        /// We can't compare some sequences (only seen for private tags so far so might not be an issue) 
-        /// </summary>
-        /// <param name="dFile"></param>
-        private static void TestDatasetSerializationFromFile(DicomFile dFile)
-        {
-            // Arrange
-
-            // "Fix" for DS and IS values in original dataset so we can compare them properly after
-            for (var i = 0; i < dFile.Dataset.Count(); i++)
-            {
-                var item = dFile.Dataset.ElementAt(i);
-
-                if (item.ValueRepresentation == DicomVR.DS ||
-                    item.ValueRepresentation == DicomVR.IS)
-                {
-                    // Serializer changes any null terminators to spaces
-                    var value = dFile.Dataset.GetValue<string>(item.Tag, 0).Replace("\0", " ");
-
-                    // Serializer changes "-0" to "0"
-                    if (value.Equals("-0"))
-                        value = "0";
-
-                    dFile.Dataset.AddOrUpdate(item.Tag, value);
-                }
-            }
-
-            // Can't serialize PixelData for now (index out of range stuff)
-            dFile.Dataset.Remove(DicomTag.PixelData);
-
-            // Act
-
-            var json = DicomTypeTranslater.SerializeDatasetToJson(dFile.Dataset);
-            var outDataset = DicomTypeTranslater.DeserializeJsonToDataset(json);
-            var json2 = DicomTypeTranslater.SerializeDatasetToJson(outDataset);
-
-            // Assert
-
-            Assert.True(json.Equals(json2));
-
-            if (outDataset.Count() != dFile.Dataset.Count())
-                Assert.Fail("Datasets not the same size");
-
-            for (var i = 0; i < outDataset.Count(); i++)
-            {
-                var origItem = dFile.Dataset.ElementAt(i);
-                var outItem = outDataset.ElementAt(i);
-
-                // This only compares DicomTag values
-                if (outItem.CompareTo(origItem) != 0)
-                    Assert.Fail("DicomTag values do not match");
-
-                if (DicomDatasetHelpers.ValueEquals(origItem, outItem))
-                    continue;
-
-                if (origItem.Tag.IsPrivate)
-                {
-                    Console.WriteLine("Skipping equality check fro private tag: " + origItem);
-                    continue;
-                }
-
-                if (origItem is DicomFragmentSequence)
-                {
-                    Console.WriteLine("Could not test equality of: " + origItem);
-                    continue;
-                }
-
-                if (Enumerable.SequenceEqual(((DicomElement)origItem).Buffer.Data,
-                    ((DicomElement)outItem).Buffer.Data))
-                    continue;
-
-                Console.WriteLine("Not equal: " +
-                                  Encoding.UTF8.GetString(((DicomElement)origItem).Buffer.Data) + " || " +
-                                  Encoding.UTF8.GetString(((DicomElement)outItem).Buffer.Data));
-
-                Assert.Fail("Data buffers not equal");
-            }
-        }
-
-        /// <summary>
-        /// Basic test to see if the method crashes on any VRs
-        /// </summary>
-        [Test]
         public void TestBasicCSharpTranslation()
         {
-            var ds = TranslationTestHelpers.BuildVrDataset();
+            DicomDataset ds = TranslationTestHelpers.BuildVrDataset();
 
-            foreach (var item in ds)
-            {
-                var val = DicomTypeTranslaterReader.GetCSharpValue(ds, item);
-
-                //TODO Looks like we have some issues with encoding?
-                Console.WriteLine(val);
-            }
+            foreach (DicomItem item in ds)
+                Assert.NotNull(DicomTypeTranslaterReader.GetCSharpValue(ds, item));
         }
 
         [Test]
@@ -159,97 +54,28 @@ namespace DicomTypeTranslation.Tests
             object obj = DicomTypeTranslaterReader.GetCSharpValue(ds, ds.GetDicomItem<DicomItem>(DicomTag.ReferencedImageSequence));
 
             var asArray = obj as Dictionary<DicomTag, object>[];
-            Assert.True(asArray != null);
+            Assert.NotNull(asArray);
 
-            Assert.True(asArray.Length == 1);
-            Assert.True(asArray[0].Count == 2);
+            Assert.AreEqual(1, asArray.Length);
+            Assert.AreEqual(2, asArray[0].Count);
 
-            Assert.True(asArray[0][DicomTag.SpecimenShortDescription].Equals("short desc"));
-            Assert.True(asArray[0][DicomTag.PatientAge].Equals("99Y"));
+            Assert.AreEqual("short desc", asArray[0][DicomTag.SpecimenShortDescription]);
+            Assert.AreEqual("99Y", asArray[0][DicomTag.PatientAge]);
         }
 
         [Test]
         public void TestWriteMultiplicity()
         {
             DicomTag stringMultiTag = DicomTag.SpecimenShortDescription;
-            string[] vals = { "this", "is", "a", "multi", "element", "" };
+            string[] values = { "this", "is", "a", "multi", "element", "" };
 
             var ds = new DicomDataset();
 
-            DicomTypeTranslaterWriter.SetDicomTag(ds, stringMultiTag, vals);
+            DicomTypeTranslaterWriter.SetDicomTag(ds, stringMultiTag, values);
 
-            Assert.True(ds.Count() == 1);
-            Assert.True(ds.GetDicomItem<DicomElement>(stringMultiTag).Count == 6);
-            Assert.True(ds.GetString(stringMultiTag).Equals("this\\is\\a\\multi\\element\\"));
-        }
-
-        [Test]
-        public void TestDecimalStringSerialization()
-        {
-            string[] testValues = { ".123", ".0", "5\0", " 0000012.", "00", "00.0", "-.123" };
-            string[] expectedValues = { "0.123", "0.0", "5", "12.0", "0", "0.0", "-0.123" };
-
-            var dataset = new DicomDataset
-            {
-                new DicomDecimalString(DicomTag.PatientWeight, "")
-            };
-
-            var json = DicomTypeTranslater.SerializeDatasetToJson(dataset);
-            Console.WriteLine(json);
-            Assert.NotNull(json);
-            Assert.True(json.Equals("{\"00101030\":{\"vr\":\"DS\"}}"));
-
-            for (var i = 0; i < testValues.Length; i++)
-            {
-                dataset.AddOrUpdate(DicomTag.PatientWeight, testValues[i]);
-                json = DicomTypeTranslater.SerializeDatasetToJson(dataset);
-
-                Console.WriteLine(json);
-                Assert.NotNull(json);
-                Assert.True(json.Equals("{\"00101030\":{\"vr\":\"DS\",\"Value\":[" + expectedValues[i] + "]}}"));
-            }
-
-            dataset.AddOrUpdate(DicomTag.PatientWeight, "      ");
-            json = DicomTypeTranslater.SerializeDatasetToJson(dataset);
-            Console.WriteLine(json);
-            Assert.NotNull(json);
-            Assert.True(json.Equals("{\"00101030\":{\"vr\":\"DS\"}}"));
-
-            DicomDataset recoDataset = DicomTypeTranslater.DeserializeJsonToDataset(json);
-            Assert.NotNull(recoDataset);
-
-        }
-
-        [Test]
-        public void TestLongIntegerStringSerialization()
-        {
-            var dataset = new DicomDataset();
-
-            string[] testValues =
-            {
-                "123",              // Normal value
-                "-123",             // Normal value
-                "00000000",         // Technically allowed
-                "+123",             // Strange, but allowed
-                "00001234123412"    // A value we can fix and parse
-            };
-
-            string[] expectedValues = { "123", "-123", "0", "123", "1234123412" };
-
-            for (var i = 0; i < testValues.Length; i++)
-            {
-                dataset.AddOrUpdate(new DicomIntegerString(DicomTag.SelectorAttributePrivateCreator, testValues[i]));
-
-                var json = DicomTypeTranslater.SerializeDatasetToJson(dataset);
-
-                Assert.IsFalse(string.IsNullOrWhiteSpace(json));
-                Assert.True(json.Equals("{\"00720056\":{\"vr\":\"IS\",\"Value\":[" + expectedValues[i] + "]}}"));
-            }
-
-            // Value we can't fix and parse
-            dataset.AddOrUpdate(new DicomIntegerString(DicomTag.SelectorAttributePrivateCreator, "10001234123412"));
-
-            Assert.Throws<FormatException>(() => DicomTypeTranslater.SerializeDatasetToJson(dataset));
+            Assert.AreEqual(1, ds.Count());
+            Assert.AreEqual(6, ds.GetDicomItem<DicomElement>(stringMultiTag).Count);
+            Assert.AreEqual("this\\is\\a\\multi\\element\\", ds.GetString(stringMultiTag));
         }
 
         [Test]
@@ -265,25 +91,17 @@ namespace DicomTypeTranslation.Tests
                 });
             }
 
-            var originaldataset = new DicomDataset
+            var originalDataset = new DicomDataset
             {
                 {DicomTag.ReferencedImageSequence, subDatasets.ToArray()}
             };
 
-
             var translatedDataset = new Dictionary<DicomTag, object>();
 
-            foreach (var item in originaldataset)
+            foreach (DicomItem item in originalDataset)
             {
-                try
-                {
-                    object value = DicomTypeTranslaterReader.GetCSharpValue(originaldataset, item);
-                    translatedDataset.Add(item.Tag, value);
-                }
-                catch (Exception e)
-                {
-                    Assert.Fail(e.Message);
-                }
+                object value = DicomTypeTranslaterReader.GetCSharpValue(originalDataset, item);
+                translatedDataset.Add(item.Tag, value);
             }
 
             var reconstructedDataset = new DicomDataset();
@@ -291,13 +109,12 @@ namespace DicomTypeTranslation.Tests
             foreach (KeyValuePair<DicomTag, object> item in translatedDataset)
                 DicomTypeTranslaterWriter.SetDicomTag(reconstructedDataset, item.Key, item.Value);
 
-            Assert.True(DicomDatasetHelpers.ValueEquals(originaldataset, reconstructedDataset));
+            Assert.True(TranslationTestHelpers.ValueEquals(originalDataset, reconstructedDataset));
         }
 
         [Test]
         public void TestDicomBsonMappingRoundTrip_Simple()
         {
-
             var dataset = new DicomDataset
             {
                 { DicomTag.SOPInstanceUID, "SOPInstanceUID-Test" }
@@ -310,7 +127,7 @@ namespace DicomTypeTranslation.Tests
             DicomDataset reconstructedDataset = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(document);
 
             Assert.NotNull(reconstructedDataset);
-            Assert.True(DicomDatasetHelpers.ValueEquals(dataset, reconstructedDataset));
+            Assert.True(TranslationTestHelpers.ValueEquals(dataset, reconstructedDataset));
         }
 
         [Test]
@@ -349,7 +166,7 @@ namespace DicomTypeTranslation.Tests
                 Assert.NotNull(reconstructedDataset);
 
                 Assert.True(reconstructedDataset.Count() == 1);
-                Assert.True(DicomDatasetHelpers.ValueEquals(dataset, reconstructedDataset));
+                Assert.True(TranslationTestHelpers.ValueEquals(dataset, reconstructedDataset));
             }
         }
 
@@ -388,7 +205,7 @@ namespace DicomTypeTranslation.Tests
             DicomDataset recoUsDataset = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(usDocument);
             DicomDataset recoOwDataset = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(owDocument);
 
-            Assert.True(DicomDatasetHelpers.ValueEquals(usDataset, recoUsDataset));
+            Assert.True(TranslationTestHelpers.ValueEquals(usDataset, recoUsDataset));
 
             //TODO This will fail. Although the tag and values are identical, the original is a DicomOtherWord element and the reconstructed one is a DicomUnsignedShort
             //Assert.True(ValueEquals(owDataset, recoOwDataset));
@@ -412,7 +229,7 @@ namespace DicomTypeTranslation.Tests
             DicomDataset recoDsFromPrefix = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bsonWithPrefix);
             DicomDataset recoDsFromNoPrefix = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bsonWithoutPrefix);
 
-            Assert.True(DicomDatasetHelpers.ValueEquals(recoDsFromPrefix, recoDsFromNoPrefix));
+            Assert.True(TranslationTestHelpers.ValueEquals(recoDsFromPrefix, recoDsFromNoPrefix));
         }
 
         [Test]
@@ -436,72 +253,16 @@ namespace DicomTypeTranslation.Tests
             Assert.True(flElement.Buffer.Size == 0);
         }
 
-        [TestCase(typeof(Dicom.Serialization.JsonDicomConverter), PrivateTagTestCase.SingleStringTag)]
-        [TestCase(typeof(Dicom.Serialization.JsonDicomConverter), PrivateTagTestCase.SingleCodeStringTag)]
-        [TestCase(typeof(Dicom.Serialization.JsonDicomConverter), PrivateTagTestCase.TwoStrings)]
-        public void TestPrivateTagsDeserialization_String(Type converterType, PrivateTagTestCase testCase)
-        {
-            DicomPrivateCreator privateCreator = DicomDictionary.Default.GetPrivateCreator("TestPrivateCreator");
-
-            var privTag1 = new DicomTag(4013, 0x007, privateCreator);
-            var privTag2 = new DicomTag(4013, 0x009, privateCreator);
-
-            DicomDataset ds;
-
-            switch (testCase)
-            {
-                case PrivateTagTestCase.SingleStringTag:
-                    ds = new DicomDataset
-                        {
-                            {privTag1, "test1"}
-                        };
-                    break;
-                case PrivateTagTestCase.SingleCodeStringTag:
-                    ds = new DicomDataset
-                        {
-                            new DicomCodeString(privTag1, "test1"),
-                        };
-                    break;
-                case PrivateTagTestCase.TwoStrings:
-                    ds = new DicomDataset
-                        {
-                            {privTag2, "test2"},
-                            {privTag1, "test1"}
-                        };
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("testCase");
-            }
-
-
-            BindingFlags flags = BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance | BindingFlags.OptionalParamBinding;
-            object converter = Activator.CreateInstance(converterType, flags, null, new[] { Type.Missing }, null);
-
-            string json = DicomTypeTranslater.SerializeDatasetToJson(ds, (JsonConverter)converter);
-            DicomDataset ds2 = DicomTypeTranslater.DeserializeJsonToDataset(json, (JsonConverter)converter);
-
-            Console.WriteLine("Dataset 1:");
-            foreach (DicomItem item in ds)
-                Console.WriteLine("{0}:{1}", item.Tag, ds.GetValue<string>(item.Tag, 0));
-
-            Console.WriteLine("Dataset 2:");
-            foreach (DicomItem item in ds2)
-                Console.WriteLine("{0}:{1}", item.Tag, ds2.GetValue<string>(item.Tag, 0));
-
-            Assert.AreEqual(ds.GetValue<string>(privTag1, 0), ds2.GetValue<string>(privTag1, 0));
-        }
-
-
         [Test]
         public void Test_Sequence()
         {
             var subDatasets = new List<DicomDataset>();
-            
+
             subDatasets.Add(new DicomDataset
             {
                 new DicomShortString(DicomTag.CodeValue,"CPELVD")
             });
-            
+
 
             var originaldataset = new DicomDataset
             {
@@ -514,7 +275,7 @@ namespace DicomTypeTranslation.Tests
             var flat = DicomTypeTranslater.Flatten(result);
             Console.WriteLine(flat);
 
-            StringAssert.Contains("CPELVD",(string)flat);
+            StringAssert.Contains("CPELVD", (string)flat);
             StringAssert.Contains("(0008,0100)", (string)flat);
         }
 
@@ -538,7 +299,7 @@ namespace DicomTypeTranslation.Tests
             DicomDataset recoDataset = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bson);
 
             Assert.NotNull(recoDataset);
-            Assert.True(DicomDatasetHelpers.ValueEquals(dataset, recoDataset));
+            Assert.True(TranslationTestHelpers.ValueEquals(dataset, recoDataset));
         }
 
         [Test]
@@ -582,26 +343,6 @@ namespace DicomTypeTranslation.Tests
                                   " representations (" + string.Join(", ", entry.ValueRepresentations.Select(x => x.Name)) + ")");
 
                 Assert.Fail("Element has more value representations than we would expect");
-            }
-        }
-
-        [Test]
-        //TODO Move to jsonconverter test classes
-        public void TestVrCoverage()
-        {
-            PropertyInfo[] vrProps = typeof(DicomVR).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            var sb = new StringBuilder();
-
-            foreach (DicomVR vr in TranslationTestHelpers.AllVrCodes)
-            {
-                sb.Clear();
-
-                foreach (PropertyInfo prop in vrProps)
-                    sb.Append(prop.Name + ": " + prop.GetValue(vr) + ", ");
-
-                sb.Length -= 2;
-                _logger.Info(sb);
             }
         }
 

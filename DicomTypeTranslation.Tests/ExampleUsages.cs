@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using Dicom;
+﻿using Dicom;
 using DicomTypeTranslation.TableCreation;
 using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
 using FAnsi.Implementation;
 using FAnsi.Implementations.MicrosoftSQL;
-using FAnsi.Implementations.Oracle;
-using NUnit.Framework;
-using DicomTypeTranslation;
 using FAnsi.Implementations.MySql;
+using FAnsi.Implementations.Oracle;
 using MySql.Data.MySqlClient;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.IO;
 
 namespace DicomTypeTranslation.Tests
@@ -31,16 +29,16 @@ namespace DicomTypeTranslation.Tests
             });
 
             object name = DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.PatientName);
-            Assert.AreEqual(typeof(string),name.GetType());
-            Assert.AreEqual("Frank",name);
+            Assert.AreEqual(typeof(string), name.GetType());
+            Assert.AreEqual("Frank", name);
 
             object age = DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.PatientAge);
-            Assert.AreEqual(typeof(string),age.GetType());
-            Assert.AreEqual("032Y",age);
+            Assert.AreEqual(typeof(string), age.GetType());
+            Assert.AreEqual("032Y", age);
 
             object dob = DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.PatientBirthDate);
-            Assert.AreEqual(typeof(DateTime),dob.GetType());
-            Assert.AreEqual(new DateTime(2001,01,01), dob);
+            Assert.AreEqual(typeof(DateTime), dob.GetType());
+            Assert.AreEqual(new DateTime(2001, 01, 01), dob);
 
             //create an Fo-Dicom dataset with string multiplicity
             ds = new DicomDataset(new List<DicomItem>()
@@ -50,23 +48,23 @@ namespace DicomTypeTranslation.Tests
 
             //Get the C# type
             object name2 = DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.PatientName);
-            Assert.AreEqual(typeof(string[]),name2.GetType());
-            Assert.AreEqual(new string[]{"Frank","Anderson"},name2);
+            Assert.AreEqual(typeof(string[]), name2.GetType());
+            Assert.AreEqual(new string[] { "Frank", "Anderson" }, name2);
 
             name2 = DicomTypeTranslater.Flatten(name2);
-            Assert.AreEqual(typeof(string),name2.GetType());
-            Assert.AreEqual("Frank\\Anderson",name2);
+            Assert.AreEqual(typeof(string), name2.GetType());
+            Assert.AreEqual("Frank\\Anderson", name2);
 
             //create an Fo-Dicom dataset with a sequence
             ds = new DicomDataset(new List<DicomItem>()
             {
-                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID,"1.2.3"), 
+                new DicomUniqueIdentifier(DicomTag.SOPInstanceUID,"1.2.3"),
                 new DicomSequence(DicomTag.ActualHumanPerformersSequence,new []
                 {
                     new DicomDataset(new List<DicomItem>()
                     {
                         new DicomShortString(DicomTag.PatientName,"Rabbit")
-                    }), 
+                    }),
                     new DicomDataset(new List<DicomItem>()
                     {
                         new DicomShortString(DicomTag.PatientName,"Roger")
@@ -74,9 +72,9 @@ namespace DicomTypeTranslation.Tests
                 })
             });
 
-            var seq = (Dictionary<DicomTag,object>[])DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.ActualHumanPerformersSequence);
-            Assert.AreEqual("Rabbit",seq[0][DicomTag.PatientName]);
-            Assert.AreEqual("Roger",seq[1][DicomTag.PatientName]);
+            var seq = (Dictionary<DicomTag, object>[])DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.ActualHumanPerformersSequence);
+            Assert.AreEqual("Rabbit", seq[0][DicomTag.PatientName]);
+            Assert.AreEqual("Roger", seq[1][DicomTag.PatientName]);
 
             var flattened = (string)DicomTypeTranslater.Flatten(seq);
             Assert.AreEqual(
@@ -84,51 +82,53 @@ namespace DicomTypeTranslation.Tests
  	 (0010,0010) - 	 Rabbit
 
  [1] - 
- 	 (0010,0010) - 	 Roger".Replace("\r",""),flattened.Replace("\r",""));
+ 	 (0010,0010) - 	 Roger".Replace("\r", ""), flattened.Replace("\r", ""));
         }
 
         [Test]
         public void ExampleUsage_Types()
         {
-            var tag = DicomDictionary.Default["PatientAddress"];            
+            var tag = DicomDictionary.Default["PatientAddress"];
 
-            DatabaseTypeRequest type = DicomTypeTranslater.GetNaturalTypeForVr(tag.DictionaryEntry.ValueRepresentations,tag.DictionaryEntry.ValueMultiplicity);
+            DatabaseTypeRequest type = DicomTypeTranslater.GetNaturalTypeForVr(tag.DictionaryEntry.ValueRepresentations, tag.DictionaryEntry.ValueMultiplicity);
 
-            Assert.AreEqual(typeof(string),type.CSharpType);
-            Assert.AreEqual(64,type.MaxWidthForStrings);
+            Assert.AreEqual(typeof(string), type.CSharpType);
+            Assert.AreEqual(64, type.MaxWidthForStrings);
 
             TypeTranslater tt = new MicrosoftSQLTypeTranslater();
-            Assert.AreEqual("varchar(64)",tt.GetSQLDBTypeForCSharpType(type));
+            Assert.AreEqual("varchar(64)", tt.GetSQLDBTypeForCSharpType(type));
 
             tt = new OracleTypeTranslater();
-            Assert.AreEqual("varchar2(64)",tt.GetSQLDBTypeForCSharpType(type));
+            Assert.AreEqual("varchar2(64)", tt.GetSQLDBTypeForCSharpType(type));
 
         }
-        
+
         [Ignore("Only works if you have connection string matches an existing server and you have a database called 'test'")]
         [Test]
         public void WorkedExampleTest()
         {
             //pick some tags that we are interested in (determines the table schema created)
-            var toCreate = new ImageTableTemplate(){
-                Columns = new []{
+            var toCreate = new ImageTableTemplate()
+            {
+                Columns = new[]{
                     new ImageColumnTemplate(DicomTag.SOPInstanceUID),
                     new ImageColumnTemplate(DicomTag.Modality){AllowNulls = true },
                     new ImageColumnTemplate(DicomTag.PatientID){AllowNulls = true }
-                    } };
-            
+                    }
+            };
+
             //load the Sql Server implementation of FAnsi
             ImplementationManager.Load<MicrosoftSQLImplementation>();
 
             //decide where you want to create the table
-            var server = new DiscoveredServer(@"Server=localhost\sqlexpress;Database=mydb;Integrated Security=true;",FAnsi.DatabaseType.MicrosoftSQLServer);
+            var server = new DiscoveredServer(@"Server=localhost\sqlexpress;Database=mydb;Integrated Security=true;", FAnsi.DatabaseType.MicrosoftSQLServer);
             var db = server.ExpectDatabase("test");
-            
+
             //create the table
-            var tbl = db.CreateTable("MyCoolTable",toCreate.GetColumns(FAnsi.DatabaseType.MicrosoftSQLServer));
+            var tbl = db.CreateTable("MyCoolTable", toCreate.GetColumns(FAnsi.DatabaseType.MicrosoftSQLServer));
 
             //add a column for where the image is on disk
-            tbl.AddColumn("FileLocation",new DatabaseTypeRequest(typeof(string),500),true,500);
+            tbl.AddColumn("FileLocation", new DatabaseTypeRequest(typeof(string), 500), true, 500);
 
             //Create a DataTable in memory for the data we read from disk
             DataTable dt = new DataTable();
@@ -138,46 +138,48 @@ namespace DicomTypeTranslation.Tests
             dt.Columns.Add("FileLocation");
 
             //Load some dicom files and copy tag data into DataTable (where tag exists)
-            foreach(string file in Directory.EnumerateFiles(@"C:\temp\TestDicomFiles","*.dcm", SearchOption.AllDirectories))
+            foreach (string file in Directory.EnumerateFiles(@"C:\temp\TestDicomFiles", "*.dcm", SearchOption.AllDirectories))
             {
                 var dcm = DicomFile.Open(file);
                 var ds = dcm.Dataset;
-                
+
                 dt.Rows.Add(
-                    
-                    DicomTypeTranslaterReader.GetCSharpValue(dcm.Dataset,DicomTag.SOPInstanceUID),
-                    ds.Contains(DicomTag.Modality)? DicomTypeTranslaterReader.GetCSharpValue(dcm.Dataset,DicomTag.Modality):DBNull.Value,
-                    ds.Contains(DicomTag.PatientID)? DicomTypeTranslaterReader.GetCSharpValue(dcm.Dataset,DicomTag.PatientID):DBNull.Value,
+
+                    DicomTypeTranslaterReader.GetCSharpValue(dcm.Dataset, DicomTag.SOPInstanceUID),
+                    ds.Contains(DicomTag.Modality) ? DicomTypeTranslaterReader.GetCSharpValue(dcm.Dataset, DicomTag.Modality) : DBNull.Value,
+                    ds.Contains(DicomTag.PatientID) ? DicomTypeTranslaterReader.GetCSharpValue(dcm.Dataset, DicomTag.PatientID) : DBNull.Value,
                     file);
             }
 
             //put the DataTable into the database
-            using(var insert = tbl.BeginBulkInsert())
+            using (var insert = tbl.BeginBulkInsert())
                 insert.Upload(dt);
         }
 
         [Test]
         public void ExampleTableCreation()
         {
-            var toCreate = new ImageTableTemplate(){
-                Columns = new []{ 
+            var toCreate = new ImageTableTemplate()
+            {
+                Columns = new[]{ 
                     
                     //pick some tags for the schema
                     new ImageColumnTemplate(DicomTag.SOPInstanceUID){IsPrimaryKey = true, AllowNulls = false },
                     new ImageColumnTemplate(DicomTag.PatientAge){AllowNulls=true},
                     new ImageColumnTemplate(DicomTag.PatientBirthDate){AllowNulls=true}
-                    } };
-            
+                    }
+            };
+
             //load the Sql Server implementation of FAnsi
             ImplementationManager.Load<MicrosoftSQLImplementation>();
 
             //decide where you want to create the table (these methods will actually attempt to connect to the database)
-            var server = new DiscoveredServer("Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;",FAnsi.DatabaseType.MicrosoftSQLServer);
+            var server = new DiscoveredServer("Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;", FAnsi.DatabaseType.MicrosoftSQLServer);
             var db = server.ExpectDatabase("MyDb");
 
             var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
-            var sql = creator.GetCreateTableSql(db,"MyCoolTable",toCreate,null);
-            
+            var sql = creator.GetCreateTableSql(db, "MyCoolTable", toCreate);
+
             //the following Sql gets created
             Assert.AreEqual(
 @"CREATE TABLE [MyDb]..[MyCoolTable](
@@ -187,7 +189,7 @@ namespace DicomTypeTranslation.Tests
  CONSTRAINT PK_MyCoolTable PRIMARY KEY ([SOPInstanceUID]))
 "
 
-.Replace("\r",""),sql.Replace("\r",""));
+.Replace("\r", ""), sql.Replace("\r", ""));
 
             //actually do it
             //creator.CreateTable(db.ExpectTable("MyCoolTable"));
@@ -196,7 +198,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestGetDataTable()
         {
-             //create an Fo-Dicom dataset
+            //create an Fo-Dicom dataset
             var ds = new DicomDataset(new List<DicomItem>()
             {
                 new DicomShortString(DicomTag.PatientName,"Frank"),
@@ -207,10 +209,10 @@ namespace DicomTypeTranslation.Tests
             var dt = new DataTable();
             var row = ds.ToRow(dt);
 
-            Assert.AreEqual("Frank",row["PatientName"]);
-            Assert.AreEqual("032Y",row["PatientAge"]);
-            Assert.AreEqual(new DateTime(2001,1,1),row["PatientBirthDate"]);
-                        
+            Assert.AreEqual("Frank", row["PatientName"]);
+            Assert.AreEqual("032Y", row["PatientAge"]);
+            Assert.AreEqual(new DateTime(2001, 1, 1), row["PatientBirthDate"]);
+
             //load the MySql implementation of FAnsi
             ImplementationManager.Load<MySqlImplementation>();
 
@@ -218,12 +220,12 @@ namespace DicomTypeTranslation.Tests
             var server = new DiscoveredServer(new MySqlConnectionStringBuilder("Server=myServerAddress;Database=myDataBase;Uid=myUsername;Pwd=myPassword;"));
             var table = server.ExpectDatabase("MyDb").ExpectTable("MyCoolTable");
 
-/*          using(IBulkCopy bulkInsert = table.BeginBulkInsert())
-            {
-                bulkInsert.Upload(dt);
-            }*/
+            /*          using(IBulkCopy bulkInsert = table.BeginBulkInsert())
+                        {
+                            bulkInsert.Upload(dt);
+                        }*/
 
-                
+
         }
     }
 

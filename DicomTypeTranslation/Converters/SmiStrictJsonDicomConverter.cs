@@ -62,7 +62,10 @@ namespace DicomTypeTranslation.Converters
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+            {
+                writer.WriteNull();
+                return;
+            }
 
             var dataset = (DicomDataset)value;
 
