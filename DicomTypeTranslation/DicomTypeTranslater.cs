@@ -1,6 +1,7 @@
 ﻿
 using Dicom;
 using DicomTypeTranslation.Converters;
+using DicomTypeTranslation.Helpers;
 using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
 using Newtonsoft.Json;
@@ -8,7 +9,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DicomTypeTranslation.Helpers;
 
 namespace DicomTypeTranslation
 {
@@ -17,8 +17,8 @@ namespace DicomTypeTranslation
     /// </summary>
     public static class DicomTypeTranslater
     {
-        private static JsonConverter _defaultJsonDicomConverter = new SmiStrictJsonDicomConverter();
-        
+        private static JsonConverter _defaultJsonDicomConverter = new SmiLazyJsonDicomConverter();
+
         /// <summary>
         /// Serialize a <see cref="DicomDataset"/> to a json <see cref="string"/>.
         /// </summary>
@@ -28,7 +28,7 @@ namespace DicomTypeTranslation
         public static string SerializeDatasetToJson(DicomDataset dataset, JsonConverter converter = null)
         {
             if (dataset == null)
-                throw new ArgumentNullException("dataset");
+                throw new ArgumentNullException(nameof(dataset));
 
             if (converter == null)
                 converter = _defaultJsonDicomConverter;
