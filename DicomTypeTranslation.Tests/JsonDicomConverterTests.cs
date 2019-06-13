@@ -1,4 +1,4 @@
-﻿
+
 using Dicom;
 using Dicom.Serialization;
 using DicomTypeTranslation.Converters;
@@ -86,7 +86,7 @@ namespace DicomTypeTranslation.Tests
             // Remove them here to allow comparison between datasets.
             originalDataset.RemoveGroupLengths();
 
-            Assert.True(TranslationTestHelpers.ValueEquals(originalDataset, recoDataset));
+            Assert.True(DicomDatasetHelpers.ValueEquals(originalDataset, recoDataset));
         }
 
         private static void ValidatePrivateCreatorsExist(DicomDataset dataset)
@@ -178,14 +178,14 @@ namespace DicomTypeTranslation.Tests
             _logger.Debug(json);
 
             DicomDataset recoDataset = DicomTypeTranslater.DeserializeJsonToDataset(json, _jsonDicomConverter);
-            Assert.True(TranslationTestHelpers.ValueEquals(dataset, recoDataset));
+            Assert.True(DicomDatasetHelpers.ValueEquals(dataset, recoDataset));
 
             // Move Bson stuff
             BsonDocument doc = DicomTypeTranslaterReader.BuildDatasetDocument(recoDataset);
             _logger.Debug(doc.ToJson());
 
             recoDataset = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(doc);
-            Assert.True(TranslationTestHelpers.ValueEquals(dataset, recoDataset));
+            Assert.True(DicomDatasetHelpers.ValueEquals(dataset, recoDataset));
         }
 
         [Test]

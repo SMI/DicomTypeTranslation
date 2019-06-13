@@ -4,6 +4,7 @@ using DicomTypeTranslation.Converters;
 using DicomTypeTranslation.Helpers;
 using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -13,7 +14,7 @@ using System.Linq;
 namespace DicomTypeTranslation
 {
     /// <summary>
-    /// Helper methods for interacting with <see cref="DicomDataset"/> that don't involve reading/writting.
+    /// Helper methods for interacting with <see cref="DicomDataset"/> that don't involve reading/writing
     /// </summary>
     public static class DicomTypeTranslater
     {
@@ -45,7 +46,7 @@ namespace DicomTypeTranslation
         public static DicomDataset DeserializeJsonToDataset(string json, JsonConverter converter = null)
         {
             if (string.IsNullOrWhiteSpace(json))
-                throw new ArgumentNullException("json");
+                throw new ArgumentNullException(nameof(json));
 
             if (converter == null)
                 converter = _defaultJsonDicomConverter;
@@ -57,6 +58,7 @@ namespace DicomTypeTranslation
         /// Set the default json conversion method 
         /// </summary>
         /// <param name="lazy"></param>
+        [UsedImplicitly]
         public static void SetLazyConversion(bool lazy)
         {
             if (lazy)

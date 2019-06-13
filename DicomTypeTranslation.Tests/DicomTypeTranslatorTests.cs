@@ -1,5 +1,6 @@
 ﻿
 using Dicom;
+using DicomTypeTranslation.Helpers;
 using DicomTypeTranslation.Tests.Helpers;
 using MongoDB.Bson;
 using NLog;
@@ -109,7 +110,7 @@ namespace DicomTypeTranslation.Tests
             foreach (KeyValuePair<DicomTag, object> item in translatedDataset)
                 DicomTypeTranslaterWriter.SetDicomTag(reconstructedDataset, item.Key, item.Value);
 
-            Assert.True(TranslationTestHelpers.ValueEquals(originalDataset, reconstructedDataset));
+            Assert.True(DicomDatasetHelpers.ValueEquals(originalDataset, reconstructedDataset));
         }
 
         [Test]
@@ -127,7 +128,7 @@ namespace DicomTypeTranslation.Tests
             DicomDataset reconstructedDataset = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(document);
 
             Assert.NotNull(reconstructedDataset);
-            Assert.True(TranslationTestHelpers.ValueEquals(dataset, reconstructedDataset));
+            Assert.True(DicomDatasetHelpers.ValueEquals(dataset, reconstructedDataset));
         }
 
         [Test]
@@ -166,7 +167,7 @@ namespace DicomTypeTranslation.Tests
                 Assert.NotNull(reconstructedDataset);
 
                 Assert.True(reconstructedDataset.Count() == 1);
-                Assert.True(TranslationTestHelpers.ValueEquals(dataset, reconstructedDataset));
+                Assert.True(DicomDatasetHelpers.ValueEquals(dataset, reconstructedDataset));
             }
         }
 
@@ -205,7 +206,7 @@ namespace DicomTypeTranslation.Tests
             DicomDataset recoUsDataset = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(usDocument);
             DicomDataset recoOwDataset = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(owDocument);
 
-            Assert.True(TranslationTestHelpers.ValueEquals(usDataset, recoUsDataset));
+            Assert.True(DicomDatasetHelpers.ValueEquals(usDataset, recoUsDataset));
 
             //TODO This will fail. Although the tag and values are identical, the original is a DicomOtherWord element and the reconstructed one is a DicomUnsignedShort
             //Assert.True(ValueEquals(owDataset, recoOwDataset));
@@ -229,7 +230,7 @@ namespace DicomTypeTranslation.Tests
             DicomDataset recoDsFromPrefix = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bsonWithPrefix);
             DicomDataset recoDsFromNoPrefix = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bsonWithoutPrefix);
 
-            Assert.True(TranslationTestHelpers.ValueEquals(recoDsFromPrefix, recoDsFromNoPrefix));
+            Assert.True(DicomDatasetHelpers.ValueEquals(recoDsFromPrefix, recoDsFromNoPrefix));
         }
 
         [Test]
@@ -299,7 +300,7 @@ namespace DicomTypeTranslation.Tests
             DicomDataset recoDataset = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bson);
 
             Assert.NotNull(recoDataset);
-            Assert.True(TranslationTestHelpers.ValueEquals(dataset, recoDataset));
+            Assert.True(DicomDatasetHelpers.ValueEquals(dataset, recoDataset));
         }
 
         [Test]
