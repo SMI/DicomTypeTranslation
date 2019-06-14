@@ -143,20 +143,11 @@ namespace DicomTypeTranslation.Converters
 
         #region Utilities
 
-        //TODO Don't think we need to handle the case of reading a dictionary tag name, because we don't write it out that way anymore
-        private static DicomTag ParseTag(string tagstr)
+        private static DicomTag ParseTag(string tagStr)
         {
-            //if (Regex.IsMatch(tagstr, @"\A\b[0-9a-fA-F]+\b\Z"))
-            //{
-            ushort group = Convert.ToUInt16(tagstr.Substring(0, 4), 16);
-            ushort element = Convert.ToUInt16(tagstr.Substring(4), 16);
-            var tag = new DicomTag(group, element);
-            return tag;
-            //}
-
-            //DicomDictionaryEntry dictEntry = DicomDictionary.Default.FirstOrDefault(entry => entry.Keyword == tagstr || entry.Name == tagstr);
-
-            //return dictEntry == null ? null : dictEntry.Tag;
+            ushort group = Convert.ToUInt16(tagStr.Substring(0, 4), 16);
+            ushort element = Convert.ToUInt16(tagStr.Substring(4), 16);
+            return new DicomTag(group, element);
         }
 
         private static DicomItem CreateDicomItem(DicomTag tag, string vr, object data)

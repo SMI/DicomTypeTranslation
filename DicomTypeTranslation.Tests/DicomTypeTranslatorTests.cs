@@ -184,7 +184,6 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestTagWithMultipleVrs()
         {
-
             var usItem = new DicomUnsignedShort(DicomTag.GrayLookupTableDataRETIRED, 0, 1, ushort.MaxValue);
             var owItem = new DicomOtherWord(DicomTag.GrayLookupTableDataRETIRED, 0, 1, ushort.MaxValue);
 
@@ -209,7 +208,8 @@ namespace DicomTypeTranslation.Tests
             Assert.True(DicomDatasetHelpers.ValueEquals(usDataset, recoUsDataset));
 
             //TODO This will fail. Although the tag and values are identical, the original is a DicomOtherWord element and the reconstructed one is a DicomUnsignedShort
-            //Assert.True(ValueEquals(owDataset, recoOwDataset));
+            //Note: Should be fixed by updates to the MongoDB (BSON) stuff
+            Assert.True(DicomDatasetHelpers.ValueEquals(owDataset, recoOwDataset));
         }
 
         [Test]
@@ -383,12 +383,5 @@ namespace DicomTypeTranslation.Tests
         }
 
         #endregion
-    }
-
-    public enum PrivateTagTestCase
-    {
-        SingleStringTag,
-        SingleCodeStringTag,
-        TwoStrings
     }
 }
