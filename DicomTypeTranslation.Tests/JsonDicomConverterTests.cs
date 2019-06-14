@@ -1,4 +1,4 @@
-
+﻿
 using Dicom;
 using Dicom.Serialization;
 using DicomTypeTranslation.Converters;
@@ -12,6 +12,7 @@ using NUnit.Framework;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace DicomTypeTranslation.Tests
 {
@@ -74,19 +75,25 @@ namespace DicomTypeTranslation.Tests
         /// Serializes originalDataset to JSON, deserializes, and re-serializes.
         /// Verifies that both datasets are equal, and both json serializations are equal!
         /// </summary>
-        private void VerifyJsonTripleTrip(DicomDataset originalDataset)
+        private void VerifyJsonTripleTrip(DicomDataset originalDataset, bool expectFail = false)
         {
             string json = DicomTypeTranslater.SerializeDatasetToJson(originalDataset, _jsonDicomConverter);
             DicomDataset recoDataset = DicomTypeTranslater.DeserializeJsonToDataset(json, _jsonDicomConverter);
             string json2 = DicomTypeTranslater.SerializeDatasetToJson(recoDataset, _jsonDicomConverter);
 
-            Assert.AreEqual(json, json2);
+            if (expectFail)
+                Assert.AreNotEqual(json, json2);
+            else
+                Assert.AreEqual(json, json2);
 
             // NOTE: Group length elements have been retired from the standard, and have never been included in any JSON conversion.
             // Remove them here to allow comparison between datasets.
             originalDataset.RemoveGroupLengths();
 
-            Assert.True(DicomDatasetHelpers.ValueEquals(originalDataset, recoDataset));
+            if (expectFail)
+                Assert.False(DicomDatasetHelpers.ValueEquals(originalDataset, recoDataset));
+            else
+                Assert.True(DicomDatasetHelpers.ValueEquals(originalDataset, recoDataset));
         }
 
         private static void ValidatePrivateCreatorsExist(DicomDataset dataset)
@@ -140,6 +147,15 @@ namespace DicomTypeTranslation.Tests
         {
             File.WriteAllBytes(_testDcmPath, TestStructuredReports.report01);
             DicomDataset ds = DicomFile.Open(_testDcmPath).Dataset;
+            VerifyJsonTripleTrip(ds);
+        }
+
+        [Ignore("Ignore unless you want to test specific files")]
+        //[TestCase("test.dcm")]
+        public void TestFile_Other(string filePath)
+        {
+            Assert.True(File.Exists(filePath));
+            DicomDataset ds = DicomFile.Open(filePath).Dataset;
             VerifyJsonTripleTrip(ds);
         }
 
@@ -297,7 +313,6 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestLongIntegerStringSerialization()
         {
-
             var ds = new DicomDataset();
 
             string[] testValues =
@@ -362,6 +377,22 @@ namespace DicomTypeTranslation.Tests
                     Assert.Fail($"No test case for {convType}");
                     break;
             }
+        }
+
+        [Test]
+        public void TestDicomJsonEncoding()
+        {
+            // As per http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_F.2.html, the default encoding for DICOM JSON should be UTF-8
+
+            var ds = new DicomDataset
+            {
+                new DicomUnlimitedText(DicomTag.TextValue, Encoding.UTF8, "¥£€$¢₡₢₣₤₥₦₧₨₩₪₫₭₮₯₹")
+            };
+
+            bool expectFail = _jsonDicomConverter.GetType().Name != "SmiLazyJsonDicomConverter";
+
+            // Only the Lazy converter properly handles UTF-8 encoding
+            VerifyJsonTripleTrip(ds, expectFail: expectFail);
         }
 
         #endregion

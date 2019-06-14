@@ -251,7 +251,6 @@ namespace DicomTypeTranslation.Converters
             foreach (DicomTag val in elem.Get<DicomTag[]>())
                 sb.Append(((uint)val).ToString("X8"));
 
-            //TODO Might fail for weird masked tags etc.
             if (sb.Length % 8 != 0)
                 throw new JsonException("AttributeTag string of length " + sb.Length + " is not divisible by 8");
 
@@ -404,7 +403,6 @@ namespace DicomTypeTranslation.Converters
             return CreateDicomItem(tag, vr, data);
         }
 
-        //TODO Check all cases in switch for parsing array as single string
         private static DicomItem CreateDicomItem(DicomTag tag, string vr, object data)
         {
             switch (vr)
@@ -430,9 +428,9 @@ namespace DicomTypeTranslation.Converters
                 case "IS":
                     return new DicomIntegerString(tag, (string)data);
                 case "LO":
-                    return new DicomLongString(tag, (string)data);
+                    return new DicomLongString(tag, Encoding.UTF8, (string)data);
                 case "LT":
-                    return new DicomLongText(tag, (string)data);
+                    return new DicomLongText(tag, Encoding.UTF8, (string)data);
                 case "OB":
                     return new DicomOtherByte(tag, (IByteBuffer)data);
                 case "OD":
@@ -444,21 +442,21 @@ namespace DicomTypeTranslation.Converters
                 case "OW":
                     return new DicomOtherWord(tag, (IByteBuffer)data);
                 case "PN":
-                    return new DicomPersonName(tag, (string)data);
+                    return new DicomPersonName(tag, Encoding.UTF8, (string)data);
                 case "SH":
-                    return new DicomShortString(tag, (string)data);
+                    return new DicomShortString(tag, Encoding.UTF8, (string)data);
                 case "SL":
                     return new DicomSignedLong(tag, (int[])data);
                 case "SS":
                     return new DicomSignedShort(tag, (short[])data);
                 case "ST":
-                    return new DicomShortText(tag, (string)data);
+                    return new DicomShortText(tag, Encoding.UTF8, (string)data);
                 case "SQ":
                     return new DicomSequence(tag, (DicomDataset[])data);
                 case "TM":
                     return new DicomTime(tag, (string)data);
                 case "UC":
-                    return new DicomUnlimitedCharacters(tag, (string)data);
+                    return new DicomUnlimitedCharacters(tag, Encoding.UTF8, (string)data);
                 case "UI":
                     return new DicomUniqueIdentifier(tag, (string)data);
                 case "UL":
@@ -466,11 +464,11 @@ namespace DicomTypeTranslation.Converters
                 case "UN":
                     return new DicomUnknown(tag, (IByteBuffer)data);
                 case "UR":
-                    return new DicomUniversalResource(tag, (string)data);
+                    return new DicomUniversalResource(tag, Encoding.UTF8, (string)data);
                 case "US":
                     return new DicomUnsignedShort(tag, (ushort[])data);
                 case "UT":
-                    return new DicomUnlimitedText(tag, (string)data);
+                    return new DicomUnlimitedText(tag, Encoding.UTF8, (string)data);
 
                 default:
                     throw new ArgumentException("No method implemented to create a DicomItem of VR " + vr + " from JSON");
