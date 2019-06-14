@@ -78,8 +78,12 @@ namespace DicomTypeTranslation.Tests
         private void VerifyJsonTripleTrip(DicomDataset originalDataset, bool expectFail = false)
         {
             string json = DicomTypeTranslater.SerializeDatasetToJson(originalDataset, _jsonDicomConverter);
+            _logger.Debug($"Initial json:\n{json}");
+
             DicomDataset recoDataset = DicomTypeTranslater.DeserializeJsonToDataset(json, _jsonDicomConverter);
+
             string json2 = DicomTypeTranslater.SerializeDatasetToJson(recoDataset, _jsonDicomConverter);
+            _logger.Debug($"Final json:\n{json}");
 
             if (expectFail)
                 Assert.AreNotEqual(json, json2);

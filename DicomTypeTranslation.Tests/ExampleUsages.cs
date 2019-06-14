@@ -220,12 +220,10 @@ namespace DicomTypeTranslation.Tests
             var server = new DiscoveredServer(new MySqlConnectionStringBuilder("Server=myServerAddress;Database=myDataBase;Uid=myUsername;Pwd=myPassword;"));
             var table = server.ExpectDatabase("MyDb").ExpectTable("MyCoolTable");
 
-            /*          using(IBulkCopy bulkInsert = table.BeginBulkInsert())
-                        {
-                            bulkInsert.Upload(dt);
-                        }*/
-
-
+            //using (IBulkCopy bulkInsert = table.BeginBulkInsert())
+            //{
+            //    bulkInsert.Upload(dt);
+            //}
         }
     }
 
