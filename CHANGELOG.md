@@ -10,10 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Simple worked usage example
+- Add handling for string encoding in JSON conversion
 
 ### Changed
 
 - Improved README
+- Update and refactor of DICOM-JSON converter
+- Set default converter to SmiLazyJsonDicomConverter
 
 
 ## [1.0.0.3] - 2019-05-24
