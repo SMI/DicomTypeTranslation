@@ -4,3 +4,7 @@ DicomTypeTranslation/obj/
 *.user
 DicomTypeTranslation.Tests/bin/
 DicomTypeTranslation.Tests/obj/
+
+*.nupkg
+*.pubxml
+[tT]est*[rR]esult.xml

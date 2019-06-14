@@ -23,13 +23,6 @@ namespace DicomTypeTranslation.Converters
     {
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
-        //TODO Remove
-        private static bool _continueOnParseErrors;
-
-        //TODO Implement
-        //public const string _valuePropertyName = "";
-        //public const string _vrPropertyName = "";
-
 
         /// <summary>
         /// Constructor with 1 bool argument required for compatibility testing with
@@ -38,18 +31,6 @@ namespace DicomTypeTranslation.Converters
         /// <param name="unused"></param>
         // ReSharper disable once UnusedParameter.Local
         public SmiStrictJsonDicomConverter(bool unused = false) { }
-
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <param name="permit"></param>
-        [Obsolete]
-        public static void SetPermissiveErrorHandling(bool permit)
-        {
-            _logger.Debug("Setting _continueOnParseErrors to " + permit);
-            _continueOnParseErrors = permit;
-        }
 
         #region JsonConverter overrides
 
@@ -62,7 +43,10 @@ namespace DicomTypeTranslation.Converters
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+            {
+                writer.WriteNull();
+                return;
+            }
 
             var dataset = (DicomDataset)value;
 
@@ -159,20 +143,11 @@ namespace DicomTypeTranslation.Converters
 
         #region Utilities
 
-        //TODO Don't think we need to handle the case of reading a dictionary tag name, because we don't write it out that way anymore
-        private static DicomTag ParseTag(string tagstr)
+        private static DicomTag ParseTag(string tagStr)
         {
-            //if (Regex.IsMatch(tagstr, @"\A\b[0-9a-fA-F]+\b\Z"))
-            //{
-            ushort group = Convert.ToUInt16(tagstr.Substring(0, 4), 16);
-            ushort element = Convert.ToUInt16(tagstr.Substring(4), 16);
-            var tag = new DicomTag(group, element);
-            return tag;
-            //}
-
-            //DicomDictionaryEntry dictEntry = DicomDictionary.Default.FirstOrDefault(entry => entry.Keyword == tagstr || entry.Name == tagstr);
-
-            //return dictEntry == null ? null : dictEntry.Tag;
+            ushort group = Convert.ToUInt16(tagStr.Substring(0, 4), 16);
+            ushort element = Convert.ToUInt16(tagStr.Substring(4), 16);
+            return new DicomTag(group, element);
         }
 
         private static DicomItem CreateDicomItem(DicomTag tag, string vr, object data)
@@ -442,17 +417,7 @@ namespace DicomTypeTranslation.Converters
                     string fix = FixDecimalString(val);
 
                     if (fix == null)
-                    {
-                        string msg = "Could not parse DS value \"" + val + "\" to a valid json number";
-
-                        if (!_continueOnParseErrors)
-                            throw new FormatException(msg);
-
-                        _logger.Warn(msg + ", writing null and continuing");
-
-                        //writer.WriteNull();
-                        continue;
-                    }
+                        throw new FormatException($"Could not parse DS value {val} to a valid json number");
 
                     if (ulong.TryParse(fix, NumberStyles.Integer, CultureInfo.InvariantCulture, out ulong xulong))
                         writer.WriteValue(xulong);
@@ -463,14 +428,7 @@ namespace DicomTypeTranslation.Converters
                     else if (double.TryParse(fix, NumberStyles.Float, CultureInfo.InvariantCulture, out double xdouble))
                         writer.WriteValue(xdouble);
                     else
-                    {
-                        string msg = "Could not parse DS value \"" + fix + "\" to a valid C# type";
-
-                        if (!_continueOnParseErrors)
-                            throw new FormatException(msg);
-
-                        //writer.WriteNull();
-                    }
+                        throw new FormatException($"Could not parse DS value {fix} to a valid C# type");
                 }
             }
 

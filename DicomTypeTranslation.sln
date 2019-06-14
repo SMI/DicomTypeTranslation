@@ -1,11 +1,21 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28902.138
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DicomTypeTranslation", "DicomTypeTranslation\DicomTypeTranslation.csproj", "{292CA5EB-3A0C-4AF5-890A-D796389BA856}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DicomTypeTranslation.Tests", "DicomTypeTranslation.Tests\DicomTypeTranslation.Tests.csproj", "{877FAE0D-9EA7-4CA9-ADBB-B47913428ADE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DicomTypeTranslation.Tests", "DicomTypeTranslation.Tests\DicomTypeTranslation.Tests.csproj", "{877FAE0D-9EA7-4CA9-ADBB-B47913428ADE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{13720A24-3E3A-44C3-A038-13EEC9F0D09D}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		CHANGELOG.md = CHANGELOG.md
+		rakeconfig.rb = rakeconfig.rb
+		rakefile.rb = rakefile.rb
+		README.md = README.md
+		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

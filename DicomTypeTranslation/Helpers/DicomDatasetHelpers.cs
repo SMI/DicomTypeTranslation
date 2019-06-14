@@ -1,9 +1,11 @@
-﻿using System;
+﻿
+using Dicom;
+using Dicom.IO.Buffer;
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Dicom;
-using Dicom.IO.Buffer;
 
 namespace DicomTypeTranslation.Helpers
 {
@@ -12,6 +14,43 @@ namespace DicomTypeTranslation.Helpers
     /// </summary>
     public static class DicomDatasetHelpers
     {
+        /// <summary>
+        /// Checks  the correct fo-dicom library is present for the platform at runtime
+        /// </summary>
+        /// <returns></returns>
+        [UsedImplicitly]
+        public static bool CorrectFoDicomVersion()
+        {
+            try
+            {
+                Encoding _ = Dicom.IO.IOManager.BaseEncoding;
+                return true;
+            }
+            catch (NullReferenceException)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Removes group length elements from the DICOM dataset. These have been retired in the DICOM standard.
+        /// </summary>
+        /// <remarks><see href="http://dicom.nema.org/medical/dicom/current/output/html/part05.html#sect_7.2"/></remarks>
+        /// <param name="dataset">DICOM dataset</param>
+        public static void RemoveGroupLengths(this DicomDataset dataset)
+        {
+            if (dataset == null)
+                return;
+
+            dataset.Remove(x => x.Tag.Element == 0x0000);
+
+            // Handle sequences
+            foreach (DicomSequence sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>())
+                foreach (DicomDataset item in sq.Items)
+                    item.RemoveGroupLengths();
+        }
+
+
         /// <summary>
         /// Returns true if the elements in <paramref name="a"/> are the same set of tags and values as <paramref name="b"/>
         /// </summary>
@@ -29,12 +68,14 @@ namespace DicomTypeTranslation.Helpers
             return a.Zip(b, ValueEquals).All(x => x);
         }
 
+
         /// <summary>
         /// Returns true if the <paramref name="a"/> contains an equal value to <paramref name="b"/> (includes support for <see cref="DicomSequence"/>)
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
+        [UsedImplicitly]
         public static bool ValueEquals(DicomItem a, DicomItem b)
         {
             if (a == null || b == null)
@@ -80,7 +121,7 @@ namespace DicomTypeTranslation.Helpers
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static bool ValueEquals(IByteBuffer a, IByteBuffer b)
+        private static bool ValueEquals(IByteBuffer a, IByteBuffer b)
         {
             if (a == null || b == null)
                 return a == b;
@@ -126,6 +167,8 @@ namespace DicomTypeTranslation.Helpers
         /// <param name="b"></param>
         /// <param name="ignoreTrailingNull">If set, any differences due to a single trailing NUL character will be ignored</param>
         /// <returns>List of differences between the datasets</returns>
+        [UsedImplicitly]
+        [Obsolete("Throws exceptions in a lot of cases")]
         public static IEnumerable<string> Compare(DicomDataset a, DicomDataset b, bool ignoreTrailingNull = false)
         {
             if (a == null || b == null)
@@ -155,7 +198,7 @@ namespace DicomTypeTranslation.Helpers
             {
                 if (!b.Contains(item.Tag))
                 {
-                    differences.Add("B did not contain tag " + item.Tag + " from A");
+                    differences.Add($"B did not contain tag {item.Tag} {item.Tag.DictionaryEntry.Keyword} from A");
                     continue;
                 }
 
@@ -215,23 +258,6 @@ namespace DicomTypeTranslation.Helpers
             }
 
             return differences;
-        }
-
-        /// <summary>
-        /// Checks  the correct fo-dicom library is present for the platform at runtime
-        /// </summary>
-        /// <returns></returns>
-        public static bool CorrectFoDicomVersion()
-        {
-            try
-            {
-                Encoding _ = Dicom.IO.IOManager.BaseEncoding;
-                return true;
-            }
-            catch (NullReferenceException)
-            {
-                return false;
-            }
         }
     }
 }

@@ -10,12 +10,16 @@ using System.Text;
 
 namespace DicomTypeTranslation.Converters
 {
+    /// <summary>
+    /// SMI JSON to DICOM converter. Lazily converts between certain DICOM value types to allow greater coverage over real data.
+    /// This means it does not comply with the formal DICOM JSON specification.
+    /// </summary>
     public class SmiLazyJsonDicomConverter : JsonConverter
     {
-        private const string ValuePropertyName = "val";
-        private const string InlBinPropertyName = "bin";
-        private const string BlkUriPropertyName = "uri";
-        private const string VrPropertyName = "vr";
+        private const string VALUE_PROPERTY_NAME = "val";
+        private const string INL_BIN_PROPERTY_NAME = "bin";
+        private const string BLK_URI_PROPERTY_NAME = "uri";
+        private const string VR_PROPERTY_NAME = "vr";
 
 
         /// <summary>
@@ -29,10 +33,14 @@ namespace DicomTypeTranslation.Converters
 
         #region JsonConverter overrides
 
+        /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+            {
+                writer.WriteNull();
+                return;
+            }
 
             var dataset = (DicomDataset)value;
 
@@ -51,6 +59,7 @@ namespace DicomTypeTranslation.Converters
             writer.WriteEndObject();
         }
 
+        /// <inheritdoc />
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var dataset = new DicomDataset();
@@ -84,7 +93,7 @@ namespace DicomTypeTranslation.Converters
                     var privateCreatorTag = new DicomTag(item.Tag.Group, (ushort)(item.Tag.Element >> 8));
 
                     if (dataset.Contains(privateCreatorTag))
-                        item.Tag.PrivateCreator = new DicomPrivateCreator(dataset.GetValue<string>(privateCreatorTag, 0));
+                        item.Tag.PrivateCreator = new DicomPrivateCreator(dataset.GetSingleValue<string>(privateCreatorTag));
                 }
             }
 
@@ -113,7 +122,7 @@ namespace DicomTypeTranslation.Converters
         private void WriteJsonDicomItem(JsonWriter writer, DicomItem item, JsonSerializer serializer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName(VrPropertyName);
+            writer.WritePropertyName(VR_PROPERTY_NAME);
             writer.WriteValue(item.ValueRepresentation.Code);
 
             // Could also do if(item is DicomStringElement) {...} here, but better to be explicit
@@ -210,8 +219,10 @@ namespace DicomTypeTranslation.Converters
             if (elem.Count == 0)
                 return;
 
-            writer.WritePropertyName(ValuePropertyName);
-            writer.WriteValue(elem.Get<string>());
+            writer.WritePropertyName(VALUE_PROPERTY_NAME);
+
+            string val = elem.Get<string>().TrimEnd('\0');
+            writer.WriteValue(val);
         }
 
         private static void WriteDicomValueElement<T>(JsonWriter writer, DicomElement elem) where T : struct
@@ -219,7 +230,7 @@ namespace DicomTypeTranslation.Converters
             if (elem.Count == 0)
                 return;
 
-            writer.WritePropertyName(ValuePropertyName);
+            writer.WritePropertyName(VALUE_PROPERTY_NAME);
             writer.WriteStartArray();
 
             foreach (T val in elem.Get<T[]>())
@@ -233,14 +244,13 @@ namespace DicomTypeTranslation.Converters
             if (elem.Count == 0)
                 return;
 
-            writer.WritePropertyName(ValuePropertyName);
+            writer.WritePropertyName(VALUE_PROPERTY_NAME);
 
             var sb = new StringBuilder();
 
             foreach (DicomTag val in elem.Get<DicomTag[]>())
                 sb.Append(((uint)val).ToString("X8"));
 
-            //TODO Might fail for weird masked tags etc.
             if (sb.Length % 8 != 0)
                 throw new JsonException("AttributeTag string of length " + sb.Length + " is not divisible by 8");
 
@@ -251,7 +261,7 @@ namespace DicomTypeTranslation.Converters
             if (seq.Items.Count == 0)
                 return;
 
-            writer.WritePropertyName(ValuePropertyName);
+            writer.WritePropertyName(VALUE_PROPERTY_NAME);
             writer.WriteStartArray();
 
             foreach (DicomDataset child in seq.Items)
@@ -264,12 +274,12 @@ namespace DicomTypeTranslation.Converters
 
             if (elem.Buffer is IBulkDataUriByteBuffer buffer)
             {
-                writer.WritePropertyName(BlkUriPropertyName);
+                writer.WritePropertyName(BLK_URI_PROPERTY_NAME);
                 writer.WriteValue(buffer.BulkDataUri);
             }
             else if (elem.Count != 0)
             {
-                writer.WritePropertyName(InlBinPropertyName);
+                writer.WritePropertyName(INL_BIN_PROPERTY_NAME);
                 writer.WriteValue(Convert.ToBase64String(elem.Buffer.Data));
             }
         }
@@ -278,20 +288,12 @@ namespace DicomTypeTranslation.Converters
 
         #region ReadJson helpers
 
-        //TODO Don't think we need to handle the case of reading a dictionary tag name, because we don't write it out that way anymore
-        private static DicomTag ParseTag(string tagstr)
+        private static DicomTag ParseTag(string tagStr)
         {
-            //if (Regex.IsMatch(tagstr, @"\A\b[0-9a-fA-F]+\b\Z"))
-            //{
-            ushort group = Convert.ToUInt16(tagstr.Substring(0, 4), 16);
-            ushort element = Convert.ToUInt16(tagstr.Substring(4), 16);
+            ushort group = Convert.ToUInt16(tagStr.Substring(0, 4), 16);
+            ushort element = Convert.ToUInt16(tagStr.Substring(4), 16);
             var tag = new DicomTag(group, element);
             return tag;
-            //}
-
-            //DicomDictionaryEntry dictEntry = DicomDictionary.Default.FirstOrDefault(entry => entry.Keyword == tagstr || entry.Name == tagstr);
-
-            //return dictEntry == null ? null : dictEntry.Tag;
         }
 
         private DicomItem ReadJsonDicomItem(DicomTag tag, JsonReader reader, JsonSerializer serializer)
@@ -304,7 +306,7 @@ namespace DicomTypeTranslation.Converters
             if (reader.TokenType != JsonToken.PropertyName)
                 throw new JsonReaderException("Malformed DICOM json");
 
-            if ((string)reader.Value != VrPropertyName)
+            if ((string)reader.Value != VR_PROPERTY_NAME)
                 throw new JsonReaderException("Malformed DICOM json");
 
             reader.Read();
@@ -401,7 +403,6 @@ namespace DicomTypeTranslation.Converters
             return CreateDicomItem(tag, vr, data);
         }
 
-        //TODO Check all cases in switch for parsing array as single string
         private static DicomItem CreateDicomItem(DicomTag tag, string vr, object data)
         {
             switch (vr)
@@ -427,9 +428,9 @@ namespace DicomTypeTranslation.Converters
                 case "IS":
                     return new DicomIntegerString(tag, (string)data);
                 case "LO":
-                    return new DicomLongString(tag, (string)data);
+                    return new DicomLongString(tag, Encoding.UTF8, (string)data);
                 case "LT":
-                    return new DicomLongText(tag, (string)data);
+                    return new DicomLongText(tag, Encoding.UTF8, (string)data);
                 case "OB":
                     return new DicomOtherByte(tag, (IByteBuffer)data);
                 case "OD":
@@ -441,21 +442,21 @@ namespace DicomTypeTranslation.Converters
                 case "OW":
                     return new DicomOtherWord(tag, (IByteBuffer)data);
                 case "PN":
-                    return new DicomPersonName(tag, (string)data);
+                    return new DicomPersonName(tag, Encoding.UTF8, (string)data);
                 case "SH":
-                    return new DicomShortString(tag, (string)data);
+                    return new DicomShortString(tag, Encoding.UTF8, (string)data);
                 case "SL":
                     return new DicomSignedLong(tag, (int[])data);
                 case "SS":
                     return new DicomSignedShort(tag, (short[])data);
                 case "ST":
-                    return new DicomShortText(tag, (string)data);
+                    return new DicomShortText(tag, Encoding.UTF8, (string)data);
                 case "SQ":
                     return new DicomSequence(tag, (DicomDataset[])data);
                 case "TM":
                     return new DicomTime(tag, (string)data);
                 case "UC":
-                    return new DicomUnlimitedCharacters(tag, (string)data);
+                    return new DicomUnlimitedCharacters(tag, Encoding.UTF8, (string)data);
                 case "UI":
                     return new DicomUniqueIdentifier(tag, (string)data);
                 case "UL":
@@ -463,11 +464,11 @@ namespace DicomTypeTranslation.Converters
                 case "UN":
                     return new DicomUnknown(tag, (IByteBuffer)data);
                 case "UR":
-                    return new DicomUniversalResource(tag, (string)data);
+                    return new DicomUniversalResource(tag, Encoding.UTF8, (string)data);
                 case "US":
                     return new DicomUnsignedShort(tag, (ushort[])data);
                 case "UT":
-                    return new DicomUnlimitedText(tag, (string)data);
+                    return new DicomUnlimitedText(tag, Encoding.UTF8, (string)data);
 
                 default:
                     throw new ArgumentException("No method implemented to create a DicomItem of VR " + vr + " from JSON");
@@ -481,7 +482,7 @@ namespace DicomTypeTranslation.Converters
             if (reader.TokenType == JsonToken.EndObject)
                 return "";
 
-            if (reader.TokenType != JsonToken.PropertyName || (string)reader.Value != ValuePropertyName)
+            if (reader.TokenType != JsonToken.PropertyName || (string)reader.Value != VALUE_PROPERTY_NAME)
                 throw new JsonReaderException("Malformed DICOM json");
 
             reader.ReadAsString();
@@ -516,7 +517,7 @@ namespace DicomTypeTranslation.Converters
             if (reader.TokenType == JsonToken.EndObject)
                 return new T[0];
 
-            if (reader.TokenType != JsonToken.PropertyName && (string)reader.Value != ValuePropertyName)
+            if (reader.TokenType != JsonToken.PropertyName && (string)reader.Value != VALUE_PROPERTY_NAME)
                 throw new JsonReaderException("Malformed DICOM json");
 
             reader.Read();
@@ -546,12 +547,12 @@ namespace DicomTypeTranslation.Converters
         {
             reader.Read();
 
-            if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == InlBinPropertyName)
+            if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == INL_BIN_PROPERTY_NAME)
             {
                 return ReadJsonInlineBinary(reader);
             }
 
-            if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == BlkUriPropertyName)
+            if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == BLK_URI_PROPERTY_NAME)
             {
                 return ReadJsonBulkDataUri(reader);
             }
@@ -589,7 +590,7 @@ namespace DicomTypeTranslation.Converters
         {
             reader.Read();
 
-            if (reader.TokenType != JsonToken.PropertyName || (string)reader.Value != ValuePropertyName)
+            if (reader.TokenType != JsonToken.PropertyName || (string)reader.Value != VALUE_PROPERTY_NAME)
                 return new DicomDataset[0];
 
             reader.Read();

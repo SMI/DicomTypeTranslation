@@ -1,24 +1,25 @@
 ﻿
 using Dicom;
 using DicomTypeTranslation.Converters;
+using DicomTypeTranslation.Helpers;
 using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DicomTypeTranslation.Helpers;
 
 namespace DicomTypeTranslation
 {
     /// <summary>
-    /// Helper methods for interacting with <see cref="DicomDataset"/> that don't involve reading/writting.
+    /// Helper methods for interacting with <see cref="DicomDataset"/> that don't involve reading/writing
     /// </summary>
     public static class DicomTypeTranslater
     {
-        private static JsonConverter _defaultJsonDicomConverter = new SmiStrictJsonDicomConverter();
-        
+        private static JsonConverter _defaultJsonDicomConverter = new SmiLazyJsonDicomConverter();
+
         /// <summary>
         /// Serialize a <see cref="DicomDataset"/> to a json <see cref="string"/>.
         /// </summary>
@@ -28,7 +29,7 @@ namespace DicomTypeTranslation
         public static string SerializeDatasetToJson(DicomDataset dataset, JsonConverter converter = null)
         {
             if (dataset == null)
-                throw new ArgumentNullException("dataset");
+                throw new ArgumentNullException(nameof(dataset));
 
             if (converter == null)
                 converter = _defaultJsonDicomConverter;
@@ -45,7 +46,7 @@ namespace DicomTypeTranslation
         public static DicomDataset DeserializeJsonToDataset(string json, JsonConverter converter = null)
         {
             if (string.IsNullOrWhiteSpace(json))
-                throw new ArgumentNullException("json");
+                throw new ArgumentNullException(nameof(json));
 
             if (converter == null)
                 converter = _defaultJsonDicomConverter;
@@ -57,6 +58,7 @@ namespace DicomTypeTranslation
         /// Set the default json conversion method 
         /// </summary>
         /// <param name="lazy"></param>
+        [UsedImplicitly]
         public static void SetLazyConversion(bool lazy)
         {
             if (lazy)
