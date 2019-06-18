@@ -8,7 +8,7 @@ using System.Linq;
 namespace DicomTypeTranslation
 {
     /// <summary>
-    /// Helper method for rapidly reading <see cref="DicomTag"/> values from <see cref="DicomDataset"/> in basic C# Types (string, int, double etc).  Also supports
+    /// Helper class for rapidly reading <see cref="DicomTag"/> values from <see cref="DicomDataset"/> in basic C# Types (string, int, double etc).  Also supports
     /// Bson types (for MongoDb).
     /// </summary>
     public static class DicomTypeTranslaterReader
@@ -403,33 +403,6 @@ namespace DicomTypeTranslation
             }
 
             return datasetDoc;
-        }
-
-        /// <summary>
-        /// Remove all arrays from the document which have length greater than <paramref name="maxLength"/>
-        /// </summary>
-        /// <param name="document"></param>
-        /// <param name="maxLength"></param>
-        public static void StripLargeArrays(BsonDocument document, int maxLength)
-        {
-            for (var i = 0; i < document.Count(); ++i)
-            {
-                var asSubDocument = document.ElementAt(i).Value as BsonDocument;
-
-                if (asSubDocument != null)
-                    StripLargeArrays(asSubDocument, maxLength);
-
-                var asBsonArray = document.ElementAt(i).Value as BsonArray;
-
-                if (asBsonArray == null)
-                    continue;
-
-                foreach (BsonValue arrayDocument in asBsonArray.Where(x => x.IsBsonDocument))
-                    StripLargeArrays((BsonDocument)arrayDocument, maxLength);
-
-                if (asBsonArray.Count > maxLength)
-                    document.SetElement(i, new BsonElement(document.ElementAt(i).Name, "SMI: Ignored array containing " + asBsonArray.Count + " elements"));
-            }
         }
 
         #endregion

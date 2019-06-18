@@ -9,18 +9,11 @@ using System.Text.RegularExpressions;
 namespace DicomTypeTranslation
 {
     /// <summary>
-    /// Helper method for rapidly writting <see cref="DicomTag"/> values into a <see cref="DicomDataset"/> in basic C# Types (string, int, double etc).  Also supports
+    /// Helper class for rapidly writing <see cref="DicomTag"/> values into a <see cref="DicomDataset"/> in basic C# Types (string, int, double etc).  Also supports
     /// Bson types (for MongoDb).
     /// </summary>
     public static class DicomTypeTranslaterWriter
     {
-        /// <summary>
-        /// The maximum number of possible VRs to expect any tag to have. Exception will be thrown if a tag exceeds this.
-        /// Used as a warning against parsing a Private Tag that has an "unknown" representation, causing it
-        /// to report having every possible VR type.
-        /// </summary>
-        public const int MaxVrsToExpect = 3;
-
         /// <summary>
         /// Methods to call to add the given Type to the dataset (requires casting due to generic T) and sometimes you have to call Add(a,b) sometimes only Add(b) works
         /// </summary>
@@ -319,9 +312,6 @@ namespace DicomTypeTranslation
 
                 if (ignorePrivateTags && tag.IsPrivate)
                     continue;
-
-                if (tag.DictionaryEntry.ValueRepresentations.Length > MaxVrsToExpect)
-                    throw new ApplicationException("Parsed tag " + element.Name + " had too many possible Value Representations. Check the PrivateCreator exists in the default dictionary");
 
                 SetDicomTag(dataset, tag, GetObjectFromBsonValue(dataset, element.Value, tag.DictionaryEntry.ValueRepresentations));
             }
