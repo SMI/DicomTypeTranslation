@@ -13,6 +13,16 @@ namespace DicomTypeTranslation
     /// </summary>
     public static class DicomTypeTranslaterReader
     {
+        /// <summary>
+        /// Value Representations which are set to null when writing Bson documents
+        /// </summary>
+        private static readonly DicomVR[] _dicomVrBlackList =
+        {
+            DicomVR.OW,
+            DicomVR.OB,
+            DicomVR.UN
+        };
+
         static DicomTypeTranslaterReader()
         {
             _csharpToBsonMappingDictionary = new Dictionary<Type, Func<object, BsonValue>>
@@ -356,15 +366,13 @@ namespace DicomTypeTranslation
         /// <returns></returns>
         private static BsonValue CreateBsonValue(DicomDataset dataset, DicomItem item, bool writeVr)
         {
-            // Handle some special cases first of all
-
             if (item is DicomSequence)
                 return CreateBsonValueFromSequence(dataset, item.Tag);
 
             var element = dataset.GetDicomItem<DicomElement>(item.Tag);
             BsonValue retVal;
 
-            if (element.Count == 0)
+            if (element is null || element.Count == 0 || _dicomVrBlackList.Contains(item.ValueRepresentation))
                 retVal = BsonNull.Value;
 
             else if (element is DicomStringElement)

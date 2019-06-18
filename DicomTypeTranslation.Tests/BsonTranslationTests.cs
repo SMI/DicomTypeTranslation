@@ -1,4 +1,4 @@
-﻿
+
 using Dicom;
 using DicomTypeTranslation.Helpers;
 using DicomTypeTranslation.Tests.Helpers;
@@ -6,6 +6,7 @@ using MongoDB.Bson;
 using NLog;
 using NUnit.Framework;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace DicomTypeTranslation.Tests
@@ -34,6 +35,38 @@ namespace DicomTypeTranslation.Tests
             Assert.Fail();
         }
 
+        [Ignore("Ignore unless you want to test specific files")]
+        //[TestCase("")]
+        public void TestFile(string filePath)
+        {
+            Assert.True(File.Exists(filePath));
+            DicomDataset ds = DicomFile.Open(filePath).Dataset;
+
+            BsonDocument bsonDoc = DicomTypeTranslaterReader.BuildDatasetDocument(ds);
+
+            Console.WriteLine(bsonDoc);
+        }
+
+        /// <summary>
+        /// Asserts that binary tags are set to null but their tags are retained
+        /// </summary>
+        [Test]
+        public void TestSerializeBinaryData()
+        {
+            var ds = new DicomDataset
+            {
+                { DicomTag.SelectorOBValue, byte.MaxValue },
+                { DicomTag.SelectorOWValue, ushort.MaxValue },
+                { DicomTag.SelectorUNValue, byte.MaxValue }
+            };
+
+            BsonDocument bsonDoc = DicomTypeTranslaterReader.BuildDatasetDocument(ds);
+
+            Assert.AreEqual(ds.Count(), bsonDoc.Count());
+
+            foreach (BsonElement bsonElement in bsonDoc)
+                Assert.AreEqual(BsonNull.Value, bsonElement.Value);
+        }
 
         [Test]
         public void TestDicomBsonMappingRoundTrip_Simple()
