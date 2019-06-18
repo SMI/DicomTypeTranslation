@@ -110,6 +110,9 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestBothBsonTagFormats()
         {
+            //TODO Test this with a mixed normal/private dataset
+            Assert.Fail();
+
             // We will store tags in MongoDB in either of the following formats, and have to handle both cases:
             // (0123,4567)-TagDictionaryName
             // TagDictionaryName
@@ -119,13 +122,13 @@ namespace DicomTypeTranslation.Tests
                 new DicomShortString(DicomTag.SelectorSHValue, "ShortStringValue")
             };
 
-            BsonDocument bsonWithPrefix = DicomTypeTranslaterReader.BuildDatasetDocument(ds, true);
-            BsonDocument bsonWithoutPrefix = DicomTypeTranslaterReader.BuildDatasetDocument(ds, false);
+            //BsonDocument bsonWithPrefix = DicomTypeTranslaterReader.BuildDatasetDocument(ds, true);
+            //BsonDocument bsonWithoutPrefix = DicomTypeTranslaterReader.BuildDatasetDocument(ds, false);
 
-            DicomDataset recoDsFromPrefix = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bsonWithPrefix);
-            DicomDataset recoDsFromNoPrefix = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bsonWithoutPrefix);
+            //DicomDataset recoDsFromPrefix = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bsonWithPrefix);
+            //DicomDataset recoDsFromNoPrefix = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bsonWithoutPrefix);
 
-            Assert.True(DicomDatasetHelpers.ValueEquals(recoDsFromPrefix, recoDsFromNoPrefix));
+            //Assert.True(DicomDatasetHelpers.ValueEquals(recoDsFromPrefix, recoDsFromNoPrefix));
         }
 
 

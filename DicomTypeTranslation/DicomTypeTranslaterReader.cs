@@ -280,14 +280,13 @@ namespace DicomTypeTranslation
         /// Returns a key for a DicomTag either the Dicom standard keyword on it's own or the (group,element) tag number followed by the keyword. Strips out any "." for MongoDb. 
         /// </summary>
         /// <param name="tag"></param>
-        /// <param name="includeTagCodeAsPrefix">True to include the dicom tag code number e.g. '(0008,0058)-' before the keyword 'FailedSOPInstanceUIDList'</param>
         /// <returns></returns>
-        public static string GetBsonKeyForTag(DicomTag tag, bool includeTagCodeAsPrefix = false)
+        private static string GetBsonKeyForTag(DicomTag tag)
         {
             string tagName =
                 (tag.IsPrivate || tag.DictionaryEntry.MaskTag != null) ?
                 GetColumnNameForTag(tag, true) :
-                GetColumnNameForTag(tag, includeTagCodeAsPrefix);
+                GetColumnNameForTag(tag, false);
 
             // Can't have "." in MongoDb keys
             return tagName.Replace(".", "_");
@@ -306,7 +305,7 @@ namespace DicomTypeTranslation
         /// </summary>
         /// <param name="val"></param>
         /// <returns></returns>
-        public static BsonValue CreateBsonValue(object val)
+        private static BsonValue CreateBsonValue(object val)
         {
             if (val == null)
                 return BsonNull.Value;
@@ -317,7 +316,7 @@ namespace DicomTypeTranslation
                 var subDoc = new BsonDocument();
 
                 foreach (KeyValuePair<DicomTag, object> subItem in asDict)
-                    subDoc.Add(GetBsonKeyForTag(subItem.Key, true), CreateBsonValue(subItem.Value));
+                    subDoc.Add(GetBsonKeyForTag(subItem.Key), CreateBsonValue(subItem.Value));
 
                 return subDoc;
             }
@@ -388,15 +387,14 @@ namespace DicomTypeTranslation
         /// Build an entire BsonDocument from a dataset
         /// </summary>
         /// <param name="dataset"></param>
-        /// <param name="tagCodePrefix"></param>
         /// <returns></returns>
-        public static BsonDocument BuildDatasetDocument(DicomDataset dataset, bool tagCodePrefix = false)
+        public static BsonDocument BuildDatasetDocument(DicomDataset dataset)
         {
             var datasetDoc = new BsonDocument();
 
             foreach (DicomItem item in dataset)
             {
-                string bsonKey = GetBsonKeyForTag(item.Tag, tagCodePrefix);
+                string bsonKey = GetBsonKeyForTag(item.Tag);
                 BsonValue bsonVal = CreateBsonValue(dataset, item);
 
                 datasetDoc.Add(bsonKey, bsonVal);

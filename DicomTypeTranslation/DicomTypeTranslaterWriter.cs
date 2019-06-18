@@ -289,9 +289,8 @@ namespace DicomTypeTranslation
         /// Converts the <paramref name="document"/> into a <see cref="DicomDataset"/>
         /// </summary>
         /// <param name="document"></param>
-        /// <param name="ignorePrivateTags"></param>
         /// <returns></returns>
-        public static DicomDataset BuildDatasetFromBsonDocument(BsonDocument document, bool ignorePrivateTags = false)
+        public static DicomDataset BuildDatasetFromBsonDocument(BsonDocument document)
         {
             var dataset = new DicomDataset();
 
@@ -302,17 +301,11 @@ namespace DicomTypeTranslation
             {
                 if (element.Name.Contains("PrivateCreator"))
                 {
-                    if (!ignorePrivateTags)
-                        AddPrivateCreator(dataset, element);
-
+                    AddPrivateCreator(dataset, element);
                     continue;
                 }
 
                 DicomTag tag = TryParseTag(dataset, element);
-
-                if (ignorePrivateTags && tag.IsPrivate)
-                    continue;
-
                 SetDicomTag(dataset, tag, GetObjectFromBsonValue(dataset, element.Value, tag.DictionaryEntry.ValueRepresentations));
             }
 
