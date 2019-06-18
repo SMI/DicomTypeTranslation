@@ -356,7 +356,7 @@ namespace DicomTypeTranslation
         /// <param name="dataset"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        public static BsonValue CreateBsonValue(DicomDataset dataset, DicomItem item)
+        private static BsonValue CreateBsonValue(DicomDataset dataset, DicomItem item)
         {
             // Handle some special cases first of all
 

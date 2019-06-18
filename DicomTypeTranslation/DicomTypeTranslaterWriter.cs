@@ -283,8 +283,6 @@ namespace DicomTypeTranslation
             dataset.Add(new DicomCodeString(new DicomTag(tempTag.Group, tempTag.Element), element.Value.AsString));
         }
 
-        //todo: we need a description of the expected syntax for this.  All the tests seem to go dataset=>bson=>dataset an example of straight up bson=>dataset is probably needed
-
         /// <summary>
         /// Converts the <paramref name="document"/> into a <see cref="DicomDataset"/>
         /// </summary>

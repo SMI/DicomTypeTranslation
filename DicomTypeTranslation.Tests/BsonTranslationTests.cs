@@ -10,6 +10,13 @@ namespace DicomTypeTranslation.Tests
 {
     public class BsonTranslationTests
     {
+        [Test]
+        public void TestStub()
+        {
+            //TODO: Add tests to demonstrate expectations from straight Bson->DicomDataset and DicomDataset->Bson conversions
+            Assert.Fail();
+        }
+
 
         [Test]
         public void TestDicomBsonMappingRoundTrip_Simple()
@@ -174,7 +181,5 @@ namespace DicomTypeTranslation.Tests
 
             Assert.Throws<ApplicationException>(() => DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bson));
         }
-
-
     }
 }
