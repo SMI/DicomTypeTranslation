@@ -1,15 +1,32 @@
-﻿using Dicom;
+﻿
+using Dicom;
 using DicomTypeTranslation.Helpers;
 using DicomTypeTranslation.Tests.Helpers;
 using MongoDB.Bson;
+using NLog;
 using NUnit.Framework;
 using System;
 using System.Linq;
 
 namespace DicomTypeTranslation.Tests
 {
+    [TestFixture]
     public class BsonTranslationTests
     {
+        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+
+        #region Fixture Methods 
+
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
+        {
+            TestLogger.Setup();
+        }
+
+        #endregion
+
+        #region Tests
+
         [Test]
         public void TestStub()
         {
@@ -114,30 +131,38 @@ namespace DicomTypeTranslation.Tests
             Assert.True(DicomDatasetHelpers.ValueEquals(owDataset, recoOwDataset));
         }
 
+        /// <summary>
+        /// We will store tags in MongoDB in either of the following formats, and have to handle both cases:
+        /// TagDictionaryName
+        /// (0123,4567)-TagDictionaryName
+        /// </summary>
         [Test]
-        public void TestBothBsonTagFormats()
+        public void TestBsonKeyConversion()
         {
-            //TODO Test this with a mixed normal/private dataset
-            Assert.Fail();
+            DicomPrivateCreator privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
+            DicomDictionary pDict = DicomDictionary.Default[privateCreator];
 
-            // We will store tags in MongoDB in either of the following formats, and have to handle both cases:
-            // (0123,4567)-TagDictionaryName
-            // TagDictionaryName
+            pDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx02"), "Private Tag 02", "PrivateTag02", DicomVM.VM_1, false, DicomVR.AE));
 
             var ds = new DicomDataset
             {
-                new DicomShortString(DicomTag.SelectorSHValue, "ShortStringValue")
+                { DicomTag.SOPInstanceUID, "1.2.3.4" }
             };
 
-            //BsonDocument bsonWithPrefix = DicomTypeTranslaterReader.BuildDatasetDocument(ds, true);
-            //BsonDocument bsonWithoutPrefix = DicomTypeTranslaterReader.BuildDatasetDocument(ds, false);
+            ds.Add(new DicomApplicationEntity(ds.GetPrivateTag(new DicomTag(3, 0x0002, privateCreator)), "AETITLE"));
 
-            //DicomDataset recoDsFromPrefix = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bsonWithPrefix);
-            //DicomDataset recoDsFromNoPrefix = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bsonWithoutPrefix);
+            BsonDocument bsonDoc = DicomTypeTranslaterReader.BuildDatasetDocument(ds);
 
-            //Assert.True(DicomDatasetHelpers.ValueEquals(recoDsFromPrefix, recoDsFromNoPrefix));
+            //NOTE: Ordering of items inside a MongoDB document is significant
+            var expected = new BsonDocument
+            {
+                { "(0003,0010)-PrivateCreator","TEST" },
+                { "(0003,1002:TEST)-PrivateTag02", "AETITLE" },
+                { "SOPInstanceUID", "1.2.3.4" }
+            };
+
+            Assert.AreEqual(expected, bsonDoc);
         }
-
 
         [Test]
         public void TestBsonDatasetRebuild_WithPrivateTags_CreatorExists()
@@ -181,5 +206,7 @@ namespace DicomTypeTranslation.Tests
 
             Assert.Throws<ApplicationException>(() => DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bson));
         }
+
+        #endregion
     }
 }
