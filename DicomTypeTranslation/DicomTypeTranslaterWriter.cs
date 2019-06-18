@@ -1,5 +1,6 @@
 ﻿
 using Dicom;
+using JetBrains.Annotations;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -90,6 +91,7 @@ namespace DicomTypeTranslation
         }
 
         /// <inheritdoc cref="SetDicomTag(DicomDataset, DicomTag, object)"/>
+        [UsedImplicitly]
         public static void SetDicomTag(DicomDataset dataset, DicomDictionaryEntry tag, object value)
         {
             SetDicomTag(dataset, tag.Tag, value);
@@ -279,8 +281,8 @@ namespace DicomTypeTranslation
 
         private static void AddPrivateCreator(DicomDataset dataset, BsonElement element)
         {
-            DicomTag tempTag = DicomTag.Parse(element.Name);
-            dataset.Add(new DicomCodeString(new DicomTag(tempTag.Group, tempTag.Element), element.Value.AsString));
+            DicomTag creatorTag = DicomTag.Parse(element.Name);
+            dataset.Add(new DicomCodeString(new DicomTag(creatorTag.Group, creatorTag.Element), element.Value.AsString));
         }
 
         /// <summary>

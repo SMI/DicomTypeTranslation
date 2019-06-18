@@ -136,23 +136,23 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void Test_Sequence()
         {
-            var subDatasets = new List<DicomDataset>();
-
-            subDatasets.Add(new DicomDataset
+            var subDatasets = new List<DicomDataset>
             {
-                new DicomShortString(DicomTag.CodeValue,"CPELVD")
-            });
+                new DicomDataset
+                {
+                    new DicomShortString(DicomTag.CodeValue, "CPELVD")
+                }
+            };
 
-
-            var originaldataset = new DicomDataset
+            var dicomDataset = new DicomDataset
             {
                 {DicomTag.ProcedureCodeSequence, subDatasets.ToArray()}
             };
 
-            var result = DicomTypeTranslaterReader.GetCSharpValue(originaldataset, DicomTag.ProcedureCodeSequence);
+            object result = DicomTypeTranslaterReader.GetCSharpValue(dicomDataset, DicomTag.ProcedureCodeSequence);
 
 
-            var flat = DicomTypeTranslater.Flatten(result);
+            object flat = DicomTypeTranslater.Flatten(result);
             Console.WriteLine(flat);
 
             StringAssert.Contains("CPELVD", (string)flat);

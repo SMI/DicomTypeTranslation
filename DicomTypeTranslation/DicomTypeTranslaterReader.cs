@@ -294,10 +294,7 @@ namespace DicomTypeTranslation
 
         private static BsonValue GetBsonValue(object val)
         {
-            if (_csharpToBsonMappingDictionary.ContainsKey(val.GetType()))
-                return _csharpToBsonMappingDictionary[val.GetType()](val);
-
-            throw new ApplicationException("Couldn't get Bson value for item: " + val + "of type: " + val.GetType());
+            return _csharpToBsonMappingDictionary[val.GetType()](val);
         }
 
         /// <summary>
@@ -355,32 +352,44 @@ namespace DicomTypeTranslation
         /// </summary>
         /// <param name="dataset"></param>
         /// <param name="item"></param>
+        /// <param name="writeVr"></param>
         /// <returns></returns>
-        private static BsonValue CreateBsonValue(DicomDataset dataset, DicomItem item)
+        private static BsonValue CreateBsonValue(DicomDataset dataset, DicomItem item, bool writeVr)
         {
             // Handle some special cases first of all
 
-            if (item as DicomSequence != null)
+            if (item is DicomSequence)
                 return CreateBsonValueFromSequence(dataset, item.Tag);
 
             var element = dataset.GetDicomItem<DicomElement>(item.Tag);
+            BsonValue retVal;
 
             if (element.Count == 0)
-                return BsonNull.Value;
+                retVal = BsonNull.Value;
 
-            if (element.ValueRepresentation.IsString)
-                return (BsonString)dataset.GetString(element.Tag);
+            else if (element is DicomStringElement)
+                retVal = (BsonString)dataset.GetString(element.Tag);
 
-            if (element.ValueRepresentation == DicomVR.AT)
-                return (BsonString)string.Join("\\", dataset.GetValues<string>(element.Tag));
+            else if (element.ValueRepresentation == DicomVR.AT)
+                retVal = (BsonString)string.Join("\\", dataset.GetValues<string>(element.Tag));
 
-            // Else do a general conversion
+            else
+            {
+                object cSharpValue = GetCSharpValue(dataset, element);
 
-            object cSharpValue = GetCSharpValue(dataset, element);
-
-            return cSharpValue == null
+                retVal = cSharpValue == null
                     ? BsonNull.Value
                     : CreateBsonValue(cSharpValue);
+            }
+
+            if (!writeVr)
+                return retVal;
+
+            return new BsonDocument
+            {
+                { "vr", item.ValueRepresentation.Code },
+                { "val", retVal }
+            };
         }
 
         /// <summary>
@@ -395,7 +404,13 @@ namespace DicomTypeTranslation
             foreach (DicomItem item in dataset)
             {
                 string bsonKey = GetBsonKeyForTag(item.Tag);
-                BsonValue bsonVal = CreateBsonValue(dataset, item);
+
+                // For private tags, or tags which have an ambiguous ValueRepresentation, we need to include the VR as well as the value
+                bool writeVr =
+                    item.Tag.IsPrivate ||
+                    item.Tag.DictionaryEntry.ValueRepresentations.Length > 1;
+
+                BsonValue bsonVal = CreateBsonValue(dataset, item, writeVr);
 
                 datasetDoc.Add(bsonKey, bsonVal);
             }

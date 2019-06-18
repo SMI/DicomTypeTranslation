@@ -175,11 +175,11 @@ namespace DicomTypeTranslation.Tests
 
             var dataset = new DicomDataset
             {
-                { DicomTag.SOPInstanceUID, "1.2.3.4" }
+                { DicomTag.SOPInstanceUID, "1.2.3.4" },
+                new DicomCodeString(new DicomTag(1953, 16), "ELSCINT1"),
+                new DicomUnsignedShort(new DicomTag(1953, 4176, "ELSCINT1"), 20)
             };
 
-            dataset.Add(new DicomCodeString(new DicomTag(1953, 16), "ELSCINT1"));
-            dataset.Add(new DicomUnsignedShort(new DicomTag(1953, 4176, "ELSCINT1"), 20));
 
             BsonDocument bson = DicomTypeTranslaterReader.BuildDatasetDocument(dataset);
             Assert.NotNull(bson);
@@ -190,21 +190,112 @@ namespace DicomTypeTranslation.Tests
             Assert.True(DicomDatasetHelpers.ValueEquals(dataset, recoDataset));
         }
 
+        /// <summary>
+        /// Tests that VR information is correctly written to Bson
+        /// </summary>
         [Test]
-        public void TestBsonDatasetRebuild_WithPrivateTags_CreatorMissing()
+        public void TestWriteVr()
         {
-            var dataset = new DicomDataset
+            // Dataset with:
+            // Standard SOPInstanceUID tag 
+            // Private tags
+            // Tag with multiple possible VRs
+            // Sequence containing private tags
+            var ds = new DicomDataset
             {
-                { DicomTag.SOPInstanceUID, "1.2.3.4" }
+                { DicomTag.SOPInstanceUID, "1.2.3.4" },
+                { DicomTag.SequenceOfUltrasoundRegions,
+                    new DicomDataset
+                    {
+                        new DicomCodeString(new DicomTag(1953, 16), "ELSCINT1"),
+                        new DicomUnsignedShort(new DicomTag(1953, 4176, "ELSCINT1"), 123),
+                    },
+                    new DicomDataset
+                    {
+                        new DicomCodeString(new DicomTag(1953, 16), "ELSCINT2"),
+                        new DicomUnsignedShort(new DicomTag(1953, 4176, "ELSCINT2"), 456),
+                    }
+                },
+                { DicomVR.US, DicomTag.GrayLookupTableDataRETIRED, ushort.MinValue, ushort.MaxValue },
+                new DicomCodeString(new DicomTag(1953, 16), "ELSCINT3"),
+                new DicomUnsignedShort(new DicomTag(1953, 4176, "ELSCINT3"), 789)
             };
 
-            dataset.Add(new DicomCodeString(new DicomTag(1953, 16), "AAAHHHH"));
-            dataset.Add(new DicomUnsignedShort(new DicomTag(1953, 4176, "AAAHHHH"), 20));
+            BsonDocument convertedDoc = DicomTypeTranslaterReader.BuildDatasetDocument(ds);
 
-            BsonDocument bson = DicomTypeTranslaterReader.BuildDatasetDocument(dataset);
-            Assert.NotNull(bson);
+            // Expected result of conversion
+            var expectedDoc = new BsonDocument
+            {
+                { "SOPInstanceUID", "1.2.3.4" },
+                { "SequenceOfUltrasoundRegions",
+                    new BsonArray
+                    {
+                        new BsonDocument
+                        {
+                            { "(07a1,0010)-PrivateCreator",
+                                new BsonDocument
+                                {
+                                    { "vr", "CS" },
+                                    { "val", "ELSCINT1" }
+                                }
+                            },
+                            { "(07a1,1050:ELSCINT1)-Unknown",
+                                new BsonDocument
+                                {
+                                    { "vr", "US" },
+                                    { "val", 123 }
+                                }
+                            }
+                        },
+                        new BsonDocument
+                        {
+                            { "(07a1,0010)-PrivateCreator",
+                                new BsonDocument
+                                {
+                                    { "vr", "CS" },
+                                    { "val", "ELSCINT2" }
+                                }
+                            },
+                            { "(07a1,1050:ELSCINT2)-Unknown",
+                                new BsonDocument
+                                {
+                                    { "vr", "US" },
+                                    { "val", 456 }
+                                }
+                            }
+                        }
+                    }
+                },
+                { "GrayLookupTableData",
+                    new BsonDocument
+                    {
+                        { "vr", "US" },
+                        { "val",
+                            new BsonArray
+                            {
+                                ushort.MinValue,
+                                ushort.MaxValue
+                            }
+                        }
+                    }
+                },
+                { "(07a1,0010)-PrivateCreator",
+                    new BsonDocument
+                    {
+                        { "vr", "CS" },
+                        { "val", "ELSCINT3" }
+                    }
+                },
+                { "(07a1,1050:ELSCINT3)-Unknown",
+                    new BsonDocument
+                    {
+                        { "vr", "US" },
+                        { "val", 789 }
+                    }
+                }
+            };
 
-            Assert.Throws<ApplicationException>(() => DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(bson));
+            Assert.AreEqual(expectedDoc, convertedDoc);
         }
 
         #endregion
