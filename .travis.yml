@@ -1,2 +1,2 @@
 language: csharp
-solution: DicomTypeTranslation.sln.sln
+solution: DicomTypeTranslation.sln
