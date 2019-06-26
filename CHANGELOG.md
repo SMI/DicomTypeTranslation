@@ -17,7 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Improved README
 - Update and refactor of DICOM-JSON converter
 - Set default converter to SmiLazyJsonDicomConverter
-
+- Added list of nuget package inventory
+- Updated to latest version of FAnsiSql (0.9.1.10)
 
 ## [1.0.0.3] - 2019-05-24
 
