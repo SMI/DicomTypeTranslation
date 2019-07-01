@@ -1,11 +1,16 @@
-﻿
-using Dicom;
-using JetBrains.Annotations;
-using MongoDB.Bson;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+
+using Dicom;
+
+using JetBrains.Annotations;
+
+using MongoDB.Bson;
+
 
 namespace DicomTypeTranslation
 {
@@ -21,6 +26,8 @@ namespace DicomTypeTranslation
         private static readonly Dictionary<Type, Action<DicomDataset, DicomTag, object>> _dicomAddMethodDictionary = new Dictionary<Type, Action<DicomDataset, DicomTag, object>>();
 
         private static readonly Regex _privateCreatorRegex = new Regex(@":(.*)\)-");
+
+        private static readonly string[] _ignoredBsonKeys = { "_id", "header" };
 
 
         static DicomTypeTranslaterWriter()
@@ -66,23 +73,6 @@ namespace DicomTypeTranslation
             //Those Involving something more complicated than simply forcing the generic <T> by casting something already of that Type
             _dicomAddMethodDictionary.Add(typeof(TimeSpan), (ds, t, o) => ds.Add(t, TimeSpanToDate((TimeSpan)o)));
             _dicomAddMethodDictionary.Add(typeof(TimeSpan[]), (ds, t, o) => ds.Add(t, ((TimeSpan[])o).Select(TimeSpanToDate).ToArray()));
-
-            // Build Bson VR mapping dictionary
-            _getTypeForValueVr = new Dictionary<DicomVR, Func<object, object>>
-            {
-                { DicomVR.FD, o => Convert.ToDouble(o) },
-                { DicomVR.FL, o => Convert.ToSingle(o) },
-                { DicomVR.SL, o => Convert.ToInt32(o)  },
-                { DicomVR.SS, o => Convert.ToInt16(o)  },
-                { DicomVR.UL, o => Convert.ToUInt32(o) },
-                { DicomVR.US, o => Convert.ToUInt16(o) },
-                { DicomVR.OW, o => Convert.ToUInt16(o) },
-                { DicomVR.OD, o => Convert.ToDouble(o) },
-                { DicomVR.OF, o => Convert.ToSingle(o) },
-                { DicomVR.OL, o => Convert.ToUInt32(o) },
-                { DicomVR.OB, o => ConvertBsonBytes(o) },
-                { DicomVR.UN, o => ConvertBsonBytes(o) }
-            };
         }
 
         private static DateTime TimeSpanToDate(TimeSpan ts)
@@ -121,7 +111,7 @@ namespace DicomTypeTranslation
                 return;
             }
 
-            //otherwise do generic add
+            // Otherwise do generic add
             Type key;
             if (_dicomAddMethodDictionary.ContainsKey(value.GetType()))
                 key = value.GetType();
@@ -155,12 +145,37 @@ namespace DicomTypeTranslation
 
         #region Bson Types
 
-        private static readonly BsonTypeMapperOptions _bsonTypeMapperOptions = new BsonTypeMapperOptions
+        /// <summary>
+        /// Converts the <paramref name="document"/> into a <see cref="DicomDataset"/>
+        /// </summary>
+        /// <param name="document"></param>
+        /// <returns></returns>
+        public static DicomDataset BuildDicomDataset(BsonDocument document)
         {
-            MapBsonArrayTo = typeof(object[])
-        };
+            var dataset = new DicomDataset();
 
-        private static readonly Dictionary<DicomVR, Func<object, object>> _getTypeForValueVr;
+            foreach (BsonElement element in document)
+            {
+                if (_ignoredBsonKeys.Contains(element.Name))
+                    continue;
+
+                if (element.Name.Contains("PrivateCreator"))
+                {
+                    DicomTag creatorTag = DicomTag.Parse(element.Name);
+                    dataset.Add(new DicomLongString(new DicomTag(creatorTag.Group, creatorTag.Element), element.Value["val"].AsString));
+                    continue;
+                }
+
+                DicomTag tag = TryParseTag(dataset, element);
+                DicomVR vr = TryParseVr(element.Value);
+                if (vr == null)
+                    dataset.Add(CreateDicomItem(tag, element.Value));
+                else
+                    dataset.Add(CreateDicomItem(tag, element.Value["val"], vr));
+            }
+
+            return dataset;
+        }
 
         private static DicomTag TryParseTag(DicomDataset dataset, BsonElement element)
         {
@@ -175,7 +190,6 @@ namespace DicomTypeTranslation
                 if (!tag.IsPrivate)
                     return tag;
 
-                //TODO Error handling
                 string creatorName = _privateCreatorRegex.Match(element.Name).Groups[1].Value;
                 tag = dataset.GetPrivateTag(new DicomTag(tag.Group, tag.Element, DicomDictionary.Default.GetPrivateCreator(creatorName)));
 
@@ -187,129 +201,164 @@ namespace DicomTypeTranslation
             }
         }
 
-        private static byte ConvertBsonBytes(object o)
-        {
-            var asByteArray = o as byte[];
-
-            if (asByteArray == null || asByteArray.Length != 1)
-                throw new ApplicationException("Invalid byte content");
-
-            return asByteArray[0];
-        }
-
-        private static bool IsSmiIdentifier(BsonValue bsonValue)
-        {
-            var asBsonString = bsonValue as BsonString;
-            return asBsonString != null && ((string)asBsonString).StartsWith("SMI:");
-        }
-
-        private static object GetObjectFromBsonValue(DicomDataset dataset, BsonValue bsonValue, DicomVR[] possibleVrs)
+        private static DicomVR TryParseVr(BsonValue bsonValue)
         {
             if (bsonValue == BsonNull.Value)
                 return null;
 
-            if (IsSmiIdentifier(bsonValue))
+            var asBsonDocument = bsonValue as BsonDocument;
+            if (asBsonDocument == null || !asBsonDocument.Contains("vr"))
                 return null;
 
-            if (possibleVrs[0] == DicomVR.SQ)
-                return BuildSequenceDictionaryFromBsonArray(dataset, (BsonArray)bsonValue);
-
-            if (possibleVrs.Length == 1 && !_getTypeForValueVr.ContainsKey(possibleVrs[0]))
-                return BsonTypeMapper.MapToDotNetValue(bsonValue);
-
-            var asArray = bsonValue as BsonArray;
-
-            if (asArray == null)
-                return TryParseMultipleVrs(bsonValue, possibleVrs);
-
-            return TryParseMultipleVrs(asArray, possibleVrs);
+            return DicomVR.Parse(asBsonDocument["vr"].AsString);
         }
 
-        private static object TryParseMultipleVrs(BsonValue bsonValue, DicomVR[] possibleVrs)
+        private static DicomItem CreateDicomItem(DicomTag tag, BsonValue data, DicomVR vr = null)
         {
-            return TryParseMultipleVrs(new BsonArray { bsonValue }, possibleVrs).GetValue(0);
-        }
+            if (data.IsBsonNull)
+                return null;
 
-        private static Array TryParseMultipleVrs(BsonArray bsonArray, DicomVR[] possibleVrs)
-        {
-            var asObjectArray = (object[])BsonTypeMapper.MapToDotNetValue(bsonArray, _bsonTypeMapperOptions);
+            // Ok to throw an exception here - we should always be writing the VR into the Bson document if it's ambiguous
+            if (vr == null)
+                vr = tag.DictionaryEntry.ValueRepresentations.Single();
 
-            foreach (DicomVR vr in possibleVrs)
+            DicomItem item;
+
+            switch (vr.Code)
             {
-                try
-                {
-                    object[] convertedItems = asObjectArray.Select(_getTypeForValueVr[vr]).ToArray();
-
-                    Array typedItems = Array.CreateInstance(convertedItems[0].GetType(), convertedItems.Length);
-                    Array.Copy(convertedItems, typedItems, convertedItems.Length);
-
-                    return typedItems;
-                }
-                catch (Exception) { /* Ignored */ }
+                case "AE":
+                    item = new DicomApplicationEntity(tag, data.AsString);
+                    break;
+                case "AS":
+                    item = new DicomAgeString(tag, data.AsString);
+                    break;
+                case "AT":
+                    item = new DicomAttributeTag(tag, ParseAttributeTag(data.AsString));
+                    break;
+                case "CS":
+                    item = new DicomCodeString(tag, data.AsString);
+                    break;
+                case "DA":
+                    item = new DicomDate(tag, data.AsString);
+                    break;
+                case "DS":
+                    item = new DicomDecimalString(tag, data.AsString);
+                    break;
+                case "DT":
+                    item = new DicomDateTime(tag, data.AsString);
+                    break;
+                case "FD":
+                    item = new DicomFloatingPointDouble(tag, (double[])GetTypedArray<double>(data.AsBsonArray));
+                    break;
+                case "FL":
+                    item = new DicomFloatingPointSingle(tag, (float[])GetTypedArray<float>(data.AsBsonArray));
+                    break;
+                case "IS":
+                    item = new DicomIntegerString(tag, data.AsString);
+                    break;
+                case "LO":
+                    item = new DicomLongString(tag, Encoding.UTF8, data.AsString);
+                    break;
+                case "LT":
+                    item = new DicomLongText(tag, Encoding.UTF8, data.AsString);
+                    break;
+                case "OD":
+                    item = new DicomOtherDouble(tag, (double[])GetTypedArray<double>(data.AsBsonArray));
+                    break;
+                case "OF":
+                    item = new DicomOtherFloat(tag, (float[])GetTypedArray<float>(data.AsBsonArray));
+                    break;
+                case "OL":
+                    item = new DicomOtherLong(tag, (uint[])GetTypedArray<uint>(data.AsBsonArray));
+                    break;
+                case "PN":
+                    item = new DicomPersonName(tag, Encoding.UTF8, data.AsString);
+                    break;
+                case "SH":
+                    item = new DicomShortString(tag, Encoding.UTF8, data.AsString);
+                    break;
+                case "SL":
+                    item = new DicomSignedLong(tag, (int[])GetTypedArray<int>(data.AsBsonArray));
+                    break;
+                case "SS":
+                    item = new DicomSignedShort(tag, (short[])GetTypedArray<short>(data.AsBsonArray));
+                    break;
+                case "ST":
+                    item = new DicomShortText(tag, Encoding.UTF8, data.AsString);
+                    break;
+                case "SQ":
+                    item = new DicomSequence(tag,
+                        data.AsBsonArray
+                            .Select(x => BuildDicomDataset(x.AsBsonDocument))
+                            .ToArray());
+                    break;
+                case "TM":
+                    item = new DicomTime(tag, data.AsString);
+                    break;
+                case "UC":
+                    item = new DicomUnlimitedCharacters(tag, Encoding.UTF8, data.AsString);
+                    break;
+                case "UI":
+                    item = new DicomUniqueIdentifier(tag, data.AsString);
+                    break;
+                case "UL":
+                    item = new DicomUnsignedLong(tag, (uint[])GetTypedArray<uint>(data.AsBsonArray));
+                    break;
+                case "UR":
+                    item = new DicomUniversalResource(tag, Encoding.UTF8, data.AsString);
+                    break;
+                case "US":
+                    item = new DicomUnsignedShort(tag, (ushort[])GetTypedArray<ushort>(data.AsBsonArray));
+                    break;
+                case "UT":
+                    item = new DicomUnlimitedText(tag, Encoding.UTF8, data.AsString);
+                    break;
+                case var o when DicomTypeTranslater.DicomBsonVrBlacklist.Contains(DicomVR.Parse(o)):
+                    item = null;
+                    break;
+                default:
+                    throw new NotSupportedException($"Unsupported value representation {vr}");
             }
 
-            // Only reach here if we can't parse the array items into any of the types for the given VRs
-            throw new Exception("Couldn't parse BsonArray to dicom values");
+            return item;
         }
 
-        private static Dictionary<DicomTag, object>[] BuildSequenceDictionaryFromBsonArray(DicomDataset dataset, BsonArray bsonArray)
+        private static DicomTag[] ParseAttributeTag(string tagStr)
         {
-            var subDatasets = new List<Dictionary<DicomTag, object>>();
-
-            foreach (BsonValue arrayItem in bsonArray)
+            var parsed = new List<DicomTag>();
+            foreach (string subTagStr in tagStr.Split('\\'))
             {
-                var asSubDocument = arrayItem as BsonDocument;
-
-                if (asSubDocument == null)
-                    throw new ApplicationException("Array element was not a BsonDocument");
-
-                var subDictionary = new Dictionary<DicomTag, object>();
-
-                foreach (BsonElement subItem in asSubDocument)
-                {
-                    DicomTag tag = TryParseTag(dataset, subItem);
-                    object value = GetObjectFromBsonValue(dataset, subItem.Value, tag.DictionaryEntry.ValueRepresentations);
-
-                    subDictionary.Add(tag, value);
-                }
-
-                subDatasets.Add(subDictionary);
+                ushort group = Convert.ToUInt16(subTagStr.Substring(0, 4), 16);
+                ushort element = Convert.ToUInt16(subTagStr.Substring(4), 16);
+                parsed.Add(new DicomTag(group, element));
             }
-
-            return subDatasets.ToArray();
+            return parsed.ToArray();
         }
 
-        private static void AddPrivateCreator(DicomDataset dataset, BsonElement element)
+        private static readonly BsonTypeMapperOptions _bsonTypeMapperOptions = new BsonTypeMapperOptions
         {
-            DicomTag creatorTag = DicomTag.Parse(element.Name);
-            dataset.Add(new DicomCodeString(new DicomTag(creatorTag.Group, creatorTag.Element), element.Value.AsString));
-        }
+            MapBsonArrayTo = typeof(object[])
+        };
 
-        /// <summary>
-        /// Converts the <paramref name="document"/> into a <see cref="DicomDataset"/>
-        /// </summary>
-        /// <param name="document"></param>
-        /// <returns></returns>
-        public static DicomDataset BuildDatasetFromBsonDocument(BsonDocument document)
+        private static Array GetTypedArray<T>(BsonArray bsonArray) where T : struct
         {
-            var dataset = new DicomDataset();
+            Array typedArray = new T[bsonArray.Count];
+            var mappedBsonArray = (object[])BsonTypeMapper.MapToDotNetValue(bsonArray, _bsonTypeMapperOptions);
 
-            document.Remove("_id");
-            document.Remove("header");
+            // Some types have to be stored in larger representations for storage in MongoDB. Need to manually convert them back.
+            if (typeof(T) == typeof(float))
+                Array.Copy(mappedBsonArray.Select(Convert.ToSingle).ToArray(), typedArray, typedArray.Length);
+            else if (typeof(T) == typeof(uint))
+                Array.Copy(mappedBsonArray.Select(Convert.ToUInt32).ToArray(), typedArray, typedArray.Length);
+            else if (typeof(T) == typeof(short))
+                Array.Copy(mappedBsonArray.Select(Convert.ToInt16).ToArray(), typedArray, typedArray.Length);
+            else if (typeof(T) == typeof(ushort))
+                Array.Copy(mappedBsonArray.Select(Convert.ToUInt16).ToArray(), typedArray, typedArray.Length);
+            // Otherwise we can convert normally
+            else
+                Array.Copy(mappedBsonArray, typedArray, typedArray.Length);
 
-            foreach (BsonElement element in document)
-            {
-                if (element.Name.Contains("PrivateCreator"))
-                {
-                    AddPrivateCreator(dataset, element);
-                    continue;
-                }
-
-                DicomTag tag = TryParseTag(dataset, element);
-                SetDicomTag(dataset, tag, GetObjectFromBsonValue(dataset, element.Value, tag.DictionaryEntry.ValueRepresentations));
-            }
-
-            return dataset;
+            return typedArray;
         }
 
         #endregion

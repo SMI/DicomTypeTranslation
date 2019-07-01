@@ -1,18 +1,22 @@
 ﻿
-using Dicom;
-using Dicom.Serialization;
-using DicomTypeTranslation.Converters;
-using DicomTypeTranslation.Helpers;
-using DicomTypeTranslation.Tests.ElevationTests;
-using DicomTypeTranslation.Tests.Helpers;
-using MongoDB.Bson;
-using Newtonsoft.Json;
-using NLog;
-using NUnit.Framework;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+
+using Dicom;
+using Dicom.Serialization;
+
+using DicomTypeTranslation.Converters;
+using DicomTypeTranslation.Helpers;
+using DicomTypeTranslation.Tests.ElevationTests;
+using DicomTypeTranslation.Tests.Helpers;
+
+using Newtonsoft.Json;
+
+using NLog;
+
+using NUnit.Framework;
 
 namespace DicomTypeTranslation.Tests
 {
@@ -199,13 +203,6 @@ namespace DicomTypeTranslation.Tests
 
             DicomDataset recoDataset = DicomTypeTranslater.DeserializeJsonToDataset(json, _jsonDicomConverter);
             Assert.True(DicomDatasetHelpers.ValueEquals(dataset, recoDataset));
-
-            // Move Bson stuff
-            BsonDocument doc = DicomTypeTranslaterReader.BuildDatasetDocument(recoDataset);
-            _logger.Debug(doc.ToJson());
-
-            recoDataset = DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument(doc);
-            Assert.True(DicomDatasetHelpers.ValueEquals(dataset, recoDataset));
         }
 
         [Test]
@@ -244,16 +241,19 @@ namespace DicomTypeTranslation.Tests
             //Example: OverlayRows element has a masked tag of (60xx,0010)
             _logger.Info("DicomTag.OverlayRows.DictionaryEntry.MaskTag: " + DicomTag.OverlayRows.DictionaryEntry.MaskTag);
 
-            string rawJson = "{\"60000010\":{\"vr\":\"US\",\"Value\":[128]},\"60000011\":{\"vr\":\"US\",\"Value\":[614]},\"60000040\":{\"vr\":\"CS\",\"Value\":[\"G\"]},\"60000050\":{\"vr\":\"SS\",\"Value\":[0,0]},\"60000100\":{\"vr\":\"US\",\"Value\":[1]},\"60000102\":{\"vr\":\"US\",\"Value\":[0]},\"60020010\":{\"vr\":\"US\",\"Value\":[512]},\"60020011\":{\"vr\":\"US\",\"Value\":[614]},\"60020040\":{\"vr\":\"CS\",\"Value\":[\"G\"]},\"60020050\":{\"vr\":\"SS\",\"Value\":[0,0]},\"60020100\":{\"vr\":\"US\",\"Value\":[1]},\"60020102\":{\"vr\":\"US\",\"Value\":[0]}}";
+            const string rawJson = "{\"60000010\":{\"vr\":\"US\",\"val\":[128]},\"60000011\":{\"vr\":\"US\",\"val\":[614]},\"60000040\":" +
+                                   "{\"vr\":\"CS\",\"val\":\"G\"},\"60000050\":{\"vr\":\"SS\",\"val\":[0,0]},\"60000100\":{\"vr\":\"US\"," +
+                                   "\"val\":[1]},\"60000102\":{\"vr\":\"US\",\"val\":[0]},\"60020010\":{\"vr\":\"US\",\"val\":[512]}," +
+                                   "\"60020011\":{\"vr\":\"US\",\"val\":[614]},\"60020040\":{\"vr\":\"CS\",\"val\":\"G\"},\"60020050\":" +
+                                   "{\"vr\":\"SS\",\"val\":[0,0]},\"60020100\":{\"vr\":\"US\",\"val\":[1]},\"60020102\":{\"vr\":\"US\",\"val\":[0]}}";
 
-            DicomDataset maskDataset = DicomTypeTranslater.DeserializeJsonToDataset(rawJson, new SmiStrictJsonDicomConverter());
+            DicomDataset maskDataset = DicomTypeTranslater.DeserializeJsonToDataset(rawJson);
 
             foreach (DicomItem item in maskDataset.Where(x => x.Tag.DictionaryEntry.Keyword == DicomTag.OverlayRows.DictionaryEntry.Keyword))
                 _logger.Debug("{0} {1} - Val: {2}", item.Tag, item.Tag.DictionaryEntry.Keyword, maskDataset.GetString(item.Tag));
 
             VerifyJsonTripleTrip(maskDataset);
         }
-
 
         [Test]
         public void TestDecimalStringSerialization()
@@ -312,7 +312,6 @@ namespace DicomTypeTranslation.Tests
             ds.AddOrUpdate(DicomTag.PatientWeight, testValues);
             VerifyJsonTripleTrip(ds);
         }
-
 
         [Test]
         public void TestLongIntegerStringSerialization()

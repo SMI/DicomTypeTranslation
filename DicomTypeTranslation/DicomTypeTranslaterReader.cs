@@ -1,9 +1,12 @@
 
-using Dicom;
-using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Dicom;
+
+using MongoDB.Bson;
+
 
 namespace DicomTypeTranslation
 {
@@ -13,38 +16,6 @@ namespace DicomTypeTranslation
     /// </summary>
     public static class DicomTypeTranslaterReader
     {
-        /// <summary>
-        /// Value Representations which are set to null when writing Bson documents
-        /// </summary>
-        private static readonly DicomVR[] _dicomVrBlackList =
-        {
-            DicomVR.OW,
-            DicomVR.OB,
-            DicomVR.UN
-        };
-
-        static DicomTypeTranslaterReader()
-        {
-            _csharpToBsonMappingDictionary = new Dictionary<Type, Func<object, BsonValue>>
-            {
-                {typeof(byte), (value) => new BsonBinaryData(new [] { (byte)value })},
-
-                {typeof(DateTime), (value) => new BsonString(value.ToString()) },
-                {typeof(TimeSpan), (value) => new BsonString(value.ToString()) },
-
-                {typeof(decimal), (value) => new BsonDecimal128((decimal)value) },
-                {typeof(double), (value) => new BsonDouble((double)value) },
-                {typeof(float), (value) => new BsonDouble((float) value) },
-                {typeof(int), (value) => new BsonInt32((int)value) },
-                {typeof(short), (value) => new BsonInt32((short)value) },
-
-                {typeof(string), (value) => new BsonString((string)value) },
-
-                {typeof(uint), (value) => new BsonInt64((uint)value)},
-                {typeof(ushort), (value) => new BsonInt32((ushort)value) },
-            };
-        }
-
 
         /// <summary>
         /// Returns a column name for a DicomTag either the Dicom standard keyword on it's own or the (group,element) tag number followed by the keyword.
@@ -284,8 +255,6 @@ namespace DicomTypeTranslation
 
         #region Bson Types
 
-        private static readonly Dictionary<Type, Func<object, BsonValue>> _csharpToBsonMappingDictionary;
-
         /// <summary>
         /// Returns a key for a DicomTag either the Dicom standard keyword on it's own or the (group,element) tag number followed by the keyword. Strips out any "." for MongoDb. 
         /// </summary>
@@ -302,48 +271,6 @@ namespace DicomTypeTranslation
             return tagName.Replace(".", "_");
         }
 
-        private static BsonValue GetBsonValue(object val)
-        {
-            return _csharpToBsonMappingDictionary[val.GetType()](val);
-        }
-
-        /// <summary>
-        /// Returns a Bson object that represents basic typed object <paramref name="val"/>
-        /// </summary>
-        /// <param name="val"></param>
-        /// <returns></returns>
-        private static BsonValue CreateBsonValue(object val)
-        {
-            if (val == null)
-                return BsonNull.Value;
-
-            // Sequences
-            if (val is Dictionary<DicomTag, object> asDict)
-            {
-                var subDoc = new BsonDocument();
-
-                foreach (KeyValuePair<DicomTag, object> subItem in asDict)
-                    subDoc.Add(GetBsonKeyForTag(subItem.Key), CreateBsonValue(subItem.Value));
-
-                return subDoc;
-            }
-
-            // Multiplicity
-            if (!(val is Array asArray))
-                return GetBsonValue(val);
-
-            bool isDictArray = asArray.GetType().GetElementType() == typeof(Dictionary<DicomTag, object>);
-
-            var arr = new BsonArray();
-
-            foreach (object item in asArray)
-                arr.Add(isDictArray
-                            ? CreateBsonValue(item)
-                            : GetBsonValue(item));
-
-            return arr;
-        }
-
         private static BsonArray CreateBsonValueFromSequence(DicomDataset ds, DicomTag tag)
         {
             if (!ds.Contains(tag))
@@ -352,7 +279,7 @@ namespace DicomTypeTranslation
             var sequenceArray = new BsonArray();
 
             foreach (DicomDataset sequenceElement in ds.GetSequence(tag))
-                sequenceArray.Add(BuildDatasetDocument(sequenceElement));
+                sequenceArray.Add(BuildBsonDocument(sequenceElement));
 
             return sequenceArray;
         }
@@ -372,22 +299,24 @@ namespace DicomTypeTranslation
             var element = dataset.GetDicomItem<DicomElement>(item.Tag);
             BsonValue retVal;
 
-            if (element is null || element.Count == 0 || _dicomVrBlackList.Contains(item.ValueRepresentation))
+            if (element is null
+                || element.Count == 0
+                || DicomTypeTranslater.DicomBsonVrBlacklist.Contains(item.ValueRepresentation))
+            {
                 retVal = BsonNull.Value;
+            }
 
-            else if (element is DicomStringElement)
+            else if (element is DicomStringElement) // Handles single and multi-string elements
                 retVal = (BsonString)dataset.GetString(element.Tag);
 
-            else if (element.ValueRepresentation == DicomVR.AT)
-                retVal = (BsonString)string.Join("\\", dataset.GetValues<string>(element.Tag));
+            else if (element.ValueRepresentation == DicomVR.AT) // Special case - need to construct manually
+                retVal = GetAttributeTagString(dataset, element.Tag);
 
             else
             {
-                object cSharpValue = GetCSharpValue(dataset, element);
-
-                retVal = cSharpValue == null
-                    ? BsonNull.Value
-                    : CreateBsonValue(cSharpValue);
+                // Must be a numeric element - convert using default BSON mapper
+                object[] val = dataset.GetValues<object>(item.Tag);
+                retVal = BsonTypeMapper.MapToBsonValue(val);
             }
 
             if (!writeVr)
@@ -400,17 +329,31 @@ namespace DicomTypeTranslation
             };
         }
 
+        private static BsonValue GetAttributeTagString(DicomDataset dataset, DicomTag tag)
+        {
+            return (BsonString)string
+                .Join("\\", dataset.GetValues<string>(tag))
+                .Replace("(", string.Empty)
+                .Replace(",", string.Empty)
+                .Replace(")", string.Empty)
+                .ToUpper();
+        }
+
         /// <summary>
         /// Build an entire BsonDocument from a dataset
         /// </summary>
         /// <param name="dataset"></param>
         /// <returns></returns>
-        public static BsonDocument BuildDatasetDocument(DicomDataset dataset)
+        public static BsonDocument BuildBsonDocument(DicomDataset dataset)
         {
             var datasetDoc = new BsonDocument();
 
             foreach (DicomItem item in dataset)
             {
+                // Don't serialize group length elements
+                if (((uint)item.Tag & 0xffff) == 0)
+                    continue;
+
                 string bsonKey = GetBsonKeyForTag(item.Tag);
 
                 // For private tags, or tags which have an ambiguous ValueRepresentation, we need to include the VR as well as the value
