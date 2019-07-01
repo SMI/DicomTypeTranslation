@@ -11,11 +11,9 @@
     <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Converters\JsonDicomConverters.md" />
     <None Include="DicomTypeTranslation.cd" />
     <Content Include="Elevation\Serialization\TagElevationRequestCollectionExample.xml" />
     <None Include="Elevation\TagElevation.cd" />
-    <None Include="MongoDbDataSchema.md" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="fo-dicom.NetCore" Version="4.0.1" />
