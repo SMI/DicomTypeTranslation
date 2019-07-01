@@ -1,7 +1,7 @@
 # DicomTypeTranslation
 [Fo Dicom](https://github.com/fo-dicom/fo-dicom)/[FAnsiSql](https://github.com/HicServices/FAnsiSql) powered library for converting [dicom](https://www.dicomlibrary.com/dicom/) types into database/C# types at speed.  The library lets you cherry pick specific tags from dicom images (e.g. PatientID) and populate a relational (or mongo) database with flat record results (e.g. 1 record per image).  With DicomTypeTranslation you can create whatever schema works for you in whatever DBMS you want and then link it with existing EHR data you already have (E.g. by PatientID).
 
-![Copying dicom tags into a database](LibraryPurpose.png "What we do, take dicom tags and put them in a database")
+![Copying dicom tags into a database](docs/images/LibraryPurpose.png "What we do, take dicom tags and put them in a database")
 
 Heres a simple worked example:
 
@@ -56,7 +56,7 @@ using(var insert = tbl.BeginBulkInsert())
 
 This results in the following table (with sensible datatypes):
 
-![Results of running above code](ExampleTable.png "Results of running the above code, a table with all tags populated")
+![Results of running above code](docs/images/ExampleTable.png "Results of running the above code, a table with all tags populated")
 
 ## Installing Nuget Package
 
