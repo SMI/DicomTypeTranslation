@@ -3,7 +3,9 @@
 
 # DicomTypeTranslation
 
-[Fo Dicom](https://github.com/fo-dicom/fo-dicom)/[FAnsiSql](https://github.com/HicServices/FAnsiSql) powered library for converting [dicom](https://www.dicomlibrary.com/dicom/) types into database/C# types at speed.  The library lets you cherry pick specific tags from dicom images (e.g. PatientID) and populate a relational (or mongo) database with flat record results (e.g. 1 record per image).  With DicomTypeTranslation you can create whatever schema works for you in whatever DBMS you want and then link it with existing EHR data you already have (E.g. by PatientID).
+[Fo Dicom](https://github.com/fo-dicom/fo-dicom)/[FAnsiSql](https://github.com/HicServices/FAnsiSql) powered library for converting [dicom](https://www.dicomlibrary.com/dicom/) types into database/C# types at speed. The library lets you cherry pick specific tags from dicom images (e.g. PatientID) and populate a relational (or mongo) database with flat record results (e.g. 1 record per image). With DicomTypeTranslation you can create whatever schema works for you in whatever DBMS you want and then link it with existing EHR data you already have (E.g. by PatientID).
+
+Also included is a DICOM to JSON converter, which aims to allow better coverage when converting "real world" DICOM data than the standard fo-dicom implementation. More details [here](docs/JsonDicomConverters.md).
 
 ![Copying dicom tags into a database](docs/images/LibraryPurpose.png "What we do, take dicom tags and put them in a database")
 

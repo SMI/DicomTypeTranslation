@@ -19,6 +19,7 @@ namespace DicomTypeTranslation.Converters
     /// Converts a DicomDataset object to and from JSON using the NewtonSoft Json.NET library
     /// COPIED VERSION - Original is: https://github.com/fo-dicom/fo-dicom/blob/development/Serialization/Json/JsonDicomConverter.cs
     /// </summary>
+    [Obsolete("Will be removed")]
     public sealed class SmiStrictJsonDicomConverter : JsonConverter
     {
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();

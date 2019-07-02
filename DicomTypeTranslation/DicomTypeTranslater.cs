@@ -1,15 +1,19 @@
 ﻿
-using Dicom;
-using DicomTypeTranslation.Converters;
-using DicomTypeTranslation.Helpers;
-using FAnsi.Discovery;
-using FAnsi.Discovery.TypeTranslation;
-using JetBrains.Annotations;
-using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
+using Dicom;
+
+using DicomTypeTranslation.Converters;
+using DicomTypeTranslation.Helpers;
+
+using FAnsi.Discovery;
+using FAnsi.Discovery.TypeTranslation;
+
+using Newtonsoft.Json;
+
 
 namespace DicomTypeTranslation
 {
@@ -18,7 +22,17 @@ namespace DicomTypeTranslation
     /// </summary>
     public static class DicomTypeTranslater
     {
-        private static JsonConverter _defaultJsonDicomConverter = new SmiLazyJsonDicomConverter();
+        private static readonly JsonConverter _defaultJsonDicomConverter = new SmiLazyJsonDicomConverter();
+
+        /// <summary>
+        /// Value Representations which are ignored when reading and writing Bson documents
+        /// </summary>
+        public static readonly DicomVR[] DicomBsonVrBlacklist =
+        {
+            DicomVR.OW,
+            DicomVR.OB,
+            DicomVR.UN
+        };
 
         /// <summary>
         /// Serialize a <see cref="DicomDataset"/> to a json <see cref="string"/>.
@@ -52,19 +66,6 @@ namespace DicomTypeTranslation
                 converter = _defaultJsonDicomConverter;
 
             return JsonConvert.DeserializeObject<DicomDataset>(json, converter);
-        }
-
-        /// <summary>
-        /// Set the default json conversion method 
-        /// </summary>
-        /// <param name="lazy"></param>
-        [UsedImplicitly]
-        public static void SetLazyConversion(bool lazy)
-        {
-            if (lazy)
-                _defaultJsonDicomConverter = new SmiLazyJsonDicomConverter();
-            else
-                _defaultJsonDicomConverter = new SmiStrictJsonDicomConverter();
         }
 
         /// <summary>
@@ -143,6 +144,7 @@ namespace DicomTypeTranslation
 
             return Math.Max(a.Value, b.Value);
         }
+
         /// <inheritdoc cref="GetNaturalTypeForVr(DicomVR[], DicomVM)"/>
         public static DatabaseTypeRequest GetNaturalTypeForVr(DicomVR dicomVr, DicomVM valueMultiplicity)
         {

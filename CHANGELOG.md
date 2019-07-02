@@ -19,6 +19,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Set default converter to SmiLazyJsonDicomConverter
 - Added list of nuget package inventory
 - Updated to latest version of FAnsiSql (0.9.1.10)
+- Updated to latest version of MongoDB.Driver (2.8.1)
+- Renamed DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument -> BuildDicomDataset
+- Renamed DicomTypeTranslaterReader.BuildDatasetDocument -> BuildBsonDocument
+
+### Removed
+
+- DicomTypeTranslater.SetLazyConversion
+- DicomTypeTranslaterReader.GetBsonKeyForTag from public API
+- DicomTypeTranslaterReader.CreateBsonValue from public API
+- DicomTypeTranslaterReader.StripLargeArrays
+- DicomTypeTranslaterWriter.MaxVrsToExpect
+
+## [1.0.4] - 2019-06-25
+
+### Added
+
+- Added Travis config
+- Added CHANGELOG file
+
+### Changed
+
+- Changed rake to use msbuild directly without albacore
 
 ## [1.0.0.3] - 2019-05-24
 
@@ -59,7 +81,8 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/1.0.0.3...develop
+[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/1.0.4...develop
+[1.0.4]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.3...1.0.4
 [1.0.0.3]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.2...1.0.0.3
 [1.0.0.2]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.1...1.0.0.2
 [1.0.0.1]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.0...1.0.0.1
