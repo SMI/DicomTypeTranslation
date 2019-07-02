@@ -6,8 +6,6 @@ This document describes how fo-dicom `DicomDataset`s are (de)serialized into Mon
 - [DicomTypeTranslaterReader.cs](../DicomTypeTranslation/DicomTypeTranslaterReader.cs) `static BsonDocument BuildBsonDocument(DicomDataset dataset)`
 - [DicomTypeTranslaterWriter.cs](../DicomTypeTranslation/DicomTypeTranslaterWriter.cs) `static DicomDataset BuildDicomDataset(BsonDocument document)`
 
-- Support for private tags
-
 ## Schema format
 
 [This]() test shows and example `BsonDocument` for a complex `DicomDataset` example. Below is the general format:
