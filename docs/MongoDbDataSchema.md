@@ -8,7 +8,7 @@ This document describes how fo-dicom `DicomDataset`s are (de)serialized into Mon
 
 ## Schema format
 
-[This]() test shows and example `BsonDocument` for a complex `DicomDataset` example. Below is the general format:
+[This](../DicomTypeTranslation.Tests/BsonTranslationTests.cs#L104) test shows and example `BsonDocument` for a complex `DicomDataset` example. Below is the general format:
 
 ```javascript
 {
