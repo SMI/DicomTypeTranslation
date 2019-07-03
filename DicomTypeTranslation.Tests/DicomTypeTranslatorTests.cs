@@ -1,13 +1,14 @@
 ﻿
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using Dicom;
 using DicomTypeTranslation.Helpers;
 using DicomTypeTranslation.Tests.Helpers;
 using NLog;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace DicomTypeTranslation.Tests
 {
@@ -205,6 +206,32 @@ namespace DicomTypeTranslation.Tests
             };
 
             Assert.Throws<FormatException>(() => DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.SelectorDSValue));
+        }
+
+        [Test]
+        public void ShowBlacklistedTags()
+        {
+            List<DicomTag> blacklistedTags = typeof(DicomTag)
+                .GetFields(BindingFlags.Public | BindingFlags.Static)
+                .Where(field => field.FieldType == typeof(DicomTag))
+                .Select(field => (DicomTag)field.GetValue(null))
+                .Where(tag => tag.DictionaryEntry.ValueRepresentations
+                    .Any(vr => DicomTypeTranslater.DicomVrBlacklist.Contains(vr)))
+                .ToList();
+
+            Console.WriteLine($"Total blacklisted elements {blacklistedTags.Count}");
+
+            foreach (DicomTag tag in blacklistedTags.OrderBy(x => x.DictionaryEntry.Keyword))
+                Console.WriteLine($"{tag} || {tag.DictionaryEntry.Keyword}");
+        }
+
+        /// <summary>
+        /// Some new VRs have been added for the 2019 DICOM standard. This test will fail when the new VRs are added by fo-dicom
+        /// </summary>
+        [Test]
+        public void CheckForNewVrs()
+        {
+            Assert.AreEqual(31, TranslationTestHelpers.AllVrCodes.Length);
         }
 
         #endregion

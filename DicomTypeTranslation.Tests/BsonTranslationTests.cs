@@ -1,10 +1,11 @@
 ﻿
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 
 using Dicom;
-
+using Dicom.IO.Buffer;
 using DicomTypeTranslation.Helpers;
 using DicomTypeTranslation.Tests.Helpers;
 
@@ -250,6 +251,43 @@ namespace DicomTypeTranslation.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [Test]
+        public void DicomToBson_EmptyElements_StoredAsBsonNull()
+        {
+            var ds = new DicomDataset
+            {
+                new DicomAttributeTag(DicomTag.SelectorATValue),
+                new DicomLongString(DicomTag.SelectorLOValue),
+                new DicomOtherLong(DicomTag.SelectorOLValue),
+                new DicomOtherWord(DicomTag.SelectorOWValue),
+                new DicomSequence(DicomTag.SelectorCodeSequenceValue)
+            };
+
+            BsonDocument doc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
+
+            Assert.AreEqual(ds.Count(), doc.Count());
+
+            foreach (BsonElement element in doc)
+                Assert.True(element.Value.IsBsonNull);
+        }
+
+        [Test]
+        public void DicomToBson_EmptyPrivateElements_StoredAsBsonNull()
+        {
+            DicomDataset ds = TranslationTestHelpers.BuildAllTypesNullDataset();
+            BsonDocument doc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
+
+            Assert.AreEqual(ds.Count(), doc.Count());
+
+            foreach (BsonElement element in doc)
+            {
+                BsonDocument asBsonDoc = element.Value.AsBsonDocument;
+                Assert.NotNull(asBsonDoc);
+
+                Assert.True(asBsonDoc.GetValue("val").IsBsonNull); // Private elements
+            }
+        }
+
         #endregion
     }
 
@@ -270,10 +308,8 @@ namespace DicomTypeTranslation.Tests
 
         #region Test Helpers
 
-        private static void VerifyBsonTripleTrip_BlacklistedRemoved(DicomDataset ds)
+        private static void VerifyBsonTripleTrip(DicomDataset ds)
         {
-            ds.Remove(x => DicomTypeTranslater.DicomBsonVrBlacklist.Contains(x.ValueRepresentation));
-
             BsonDocument bsonDoc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
             DicomDataset recoDataset = DicomTypeTranslaterWriter.BuildDicomDataset(bsonDoc);
             BsonDocument recoDoc = DicomTypeTranslaterReader.BuildBsonDocument(recoDataset);
@@ -292,7 +328,7 @@ namespace DicomTypeTranslation.Tests
         {
             Assert.True(File.Exists(filePath));
             DicomDataset ds = DicomFile.Open(filePath).Dataset;
-            VerifyBsonTripleTrip_BlacklistedRemoved(ds);
+            VerifyBsonTripleTrip(ds);
         }
 
         [Test]
@@ -303,12 +339,14 @@ namespace DicomTypeTranslation.Tests
                 { DicomTag.SOPInstanceUID, "SOPInstanceUID-Test" }
             };
 
-            VerifyBsonTripleTrip_BlacklistedRemoved(ds);
+            VerifyBsonTripleTrip(ds);
         }
 
         [Test]
         public void BsonRoundTrip_TagWithMultipleVrs_SameAfterConversion()
         {
+            DicomTypeTranslater.SerializeBinaryData = true;
+
             var usItem = new DicomUnsignedShort(DicomTag.GrayLookupTableDataRETIRED, 0, 1, ushort.MaxValue);
             var owItem = new DicomOtherWord(DicomTag.GrayLookupTableDataRETIRED, 0, 1, ushort.MaxValue);
 
@@ -332,10 +370,26 @@ namespace DicomTypeTranslation.Tests
         }
 
         [Test]
-        public void BsonRoundTrip_PrivateDataset_SameAfterConversion()
+        public void BsonRoundTrip_NormalPrivateDataset_SameAfterConversion()
         {
             DicomDataset ds = TranslationTestHelpers.BuildPrivateDataset();
-            VerifyBsonTripleTrip_BlacklistedRemoved(ds);
+            ds = new DicomDataset(ds.Where(x => !DicomTypeTranslater.DicomVrBlacklist.Contains(x.ValueRepresentation)));
+            VerifyBsonTripleTrip(ds);
+        }
+
+        [Test]
+        public void BsonRoundTrip_BlacklistPrivateDataset_ZeroAfterConversion()
+        {
+            DicomDataset ds = TranslationTestHelpers.BuildPrivateDataset();
+            ds = new DicomDataset(ds.Where(x => DicomTypeTranslater.DicomVrBlacklist.Contains(x.ValueRepresentation)));
+            BsonDocument doc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
+            DicomDataset recoDataset = DicomTypeTranslaterWriter.BuildDicomDataset(doc);
+            BsonDocument recoDoc = DicomTypeTranslaterReader.BuildBsonDocument(recoDataset);
+
+            Assert.AreEqual(doc, recoDoc);
+
+            foreach (DicomElement element in recoDataset.Select(x => (DicomElement)x))
+                Assert.Zero(element.Buffer.Size);
         }
 
         /// <summary>
@@ -358,7 +412,7 @@ namespace DicomTypeTranslation.Tests
                 new DicomUnsignedShort(DicomTag.SelectorUSValue, 0, 1, ushort.MaxValue),
             };
 
-            VerifyBsonTripleTrip_BlacklistedRemoved(ds);
+            VerifyBsonTripleTrip(ds);
         }
 
         [Test]
@@ -369,7 +423,7 @@ namespace DicomTypeTranslation.Tests
                 new DicomAttributeTag(DicomTag.SelectorATValue, DicomTag.SOPInstanceUID, DicomTag.SeriesInstanceUID)
             };
 
-            VerifyBsonTripleTrip_BlacklistedRemoved(ds);
+            VerifyBsonTripleTrip(ds);
         }
 
         /// <summary>
@@ -391,7 +445,7 @@ namespace DicomTypeTranslation.Tests
             foreach (DicomItem item in maskDataset.Where(x => x.Tag.DictionaryEntry.Keyword == DicomTag.OverlayRows.DictionaryEntry.Keyword))
                 _logger.Debug("{0} {1} - Val: {2}", item.Tag, item.Tag.DictionaryEntry.Keyword, maskDataset.GetString(item.Tag));
 
-            VerifyBsonTripleTrip_BlacklistedRemoved(maskDataset);
+            VerifyBsonTripleTrip(maskDataset);
         }
 
         [Test]
@@ -402,7 +456,7 @@ namespace DicomTypeTranslation.Tests
                 new DicomUnlimitedText(DicomTag.TextValue, Encoding.UTF8, "¥£€$¢₡₢₣₤₥₦₧₨₩₪₫₭₮₯₹")
             };
 
-            VerifyBsonTripleTrip_BlacklistedRemoved(ds);
+            VerifyBsonTripleTrip(ds);
         }
 
         /// <summary>
@@ -420,8 +474,8 @@ namespace DicomTypeTranslation.Tests
 
             // Ensure this test fails if we update the blacklist later
             Assert.True(
-                ds.Select(x => x.ValueRepresentation).All(DicomTypeTranslater.DicomBsonVrBlacklist.Contains)
-                && ds.Count() == DicomTypeTranslater.DicomBsonVrBlacklist.Length);
+                ds.Select(x => x.ValueRepresentation).All(DicomTypeTranslater.DicomVrBlacklist.Contains)
+                && ds.Count() == DicomTypeTranslater.DicomVrBlacklist.Length);
 
             BsonDocument doc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
 
@@ -430,41 +484,58 @@ namespace DicomTypeTranslation.Tests
 
             DicomDataset recoDs = DicomTypeTranslaterWriter.BuildDicomDataset(doc);
 
-            Assert.NotNull(doc);
-            Assert.AreEqual(0, recoDs.Count());
+            Assert.AreEqual(3, recoDs.Count());
+            foreach (DicomItem item in recoDs)
+                Assert.Zero(((DicomElement)item).Count);
         }
 
         [Test]
-        [TestCase(null)] // Change this to test a specific VR on its own
-        public void BsonRoundTrip_SingleVrs_ConvertedCorrectly(string vrString)
+        public void BsonRoundTrip_NormalDataset_SameAfterConversion()
         {
-            DicomVR vrToTest = null;
+            var ds = new DicomDataset(TranslationTestHelpers.BuildZooDataset()
+                .Where(x => !DicomTypeTranslater.DicomVrBlacklist.Contains(x.ValueRepresentation)));
 
-            if (!string.IsNullOrWhiteSpace(vrString))
-                vrToTest = DicomVR.Parse(vrString);
+            VerifyBsonTripleTrip(ds);
+        }
 
-            foreach (DicomVR vr in TranslationTestHelpers.AllVrCodes)
+        [Test]
+        public void BsonRoundTrip_EmptyElements_ConvertedCorrectly()
+        {
+            var ds = new DicomDataset
             {
-                if (vrToTest != null && vr != vrToTest)
-                    continue;
+                new DicomAttributeTag(DicomTag.SelectorATValue),    // DicomAttributeTag
+                new DicomCodeString(DicomTag.SelectorCSValue),      // DicomMultiStringElement
+                new DicomLongText(DicomTag.SelectorLTValue, DicomEncoding.Default, EmptyBuffer.Value),  // DicomStringElement
+                new DicomOtherLong(DicomTag.SelectorOLValue),       // DicomValueElement<uint>
+                new DicomOtherWord(DicomTag.SelectorOWValue),       // DicomValueElement<ushort>
+                new DicomSequence(DicomTag.SelectorCodeSequenceValue) // DicomSequence
+            };
 
-                DicomDataset ds = TranslationTestHelpers.BuildVrDataset(vr);
+            VerifyBsonTripleTrip(ds);
+        }
 
-                BsonDocument document = DicomTypeTranslaterReader.BuildBsonDocument(ds);
-                Assert.NotNull(document);
+        [Test]
+        public void BsonRoundTrip_EmptyPrivateElements_ConvertedCorrectly()
+        {
+            DicomDataset ds = TranslationTestHelpers.BuildAllTypesNullDataset();
+            VerifyBsonTripleTrip(ds);
+        }
 
-                DicomDataset reconstructedDataset = DicomTypeTranslaterWriter.BuildDicomDataset(document);
-                Assert.NotNull(reconstructedDataset);
+        [Test]
+        public void BsonRoundTrip_StringEncoding_ConvertedCorrectly()
+        {
+            var ds = new DicomDataset
+            {
+                new DicomShortString(DicomTag.SelectorSHValue, Encoding.ASCII, "simples"),
+                new DicomLongString(DicomTag.SelectorLOValue, Encoding.UTF8, "(╯°□°）╯︵ ┻━┻")
+            };
 
-                if (!DicomTypeTranslater.DicomBsonVrBlacklist.Contains(vr))
-                {
-                    Assert.AreEqual(1, reconstructedDataset.Count());
-                    Assert.True(DicomDatasetHelpers.ValueEquals(ds, reconstructedDataset));
-                }
-                else
-                {
-                    Assert.AreEqual(0, reconstructedDataset.Count());
-                }
+            DicomDataset recoDs = DicomTypeTranslaterWriter.BuildDicomDataset(DicomTypeTranslaterReader.BuildBsonDocument(ds));
+
+            foreach (DicomStringElement stringElement in recoDs.Select(x => x as DicomStringElement))
+            {
+                Assert.NotNull(stringElement);
+                Assert.AreEqual(Encoding.UTF8, stringElement.Encoding);
             }
         }
 

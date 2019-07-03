@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Dicom;
-
 using MongoDB.Bson;
 
 
@@ -271,7 +269,7 @@ namespace DicomTypeTranslation
             return tagName.Replace(".", "_");
         }
 
-        private static BsonArray CreateBsonValueFromSequence(DicomDataset ds, DicomTag tag)
+        private static BsonValue CreateBsonValueFromSequence(DicomDataset ds, DicomTag tag, bool writeVr)
         {
             if (!ds.Contains(tag))
                 throw new ArgumentException("The DicomDataset does not contain the item");
@@ -281,7 +279,16 @@ namespace DicomTypeTranslation
             foreach (DicomDataset sequenceElement in ds.GetSequence(tag))
                 sequenceArray.Add(BuildBsonDocument(sequenceElement));
 
-            return sequenceArray;
+            if (sequenceArray.Count > 0)
+                return sequenceArray;
+
+            return writeVr
+                ? (BsonValue)new BsonDocument
+                    {
+                        { "vr", "SQ" },
+                        { "val", BsonNull.Value }
+                    }
+                : BsonNull.Value;
         }
 
         /// <summary>
@@ -294,20 +301,25 @@ namespace DicomTypeTranslation
         private static BsonValue CreateBsonValue(DicomDataset dataset, DicomItem item, bool writeVr)
         {
             if (item is DicomSequence)
-                return CreateBsonValueFromSequence(dataset, item.Tag);
+                return CreateBsonValueFromSequence(dataset, item.Tag, writeVr);
 
             var element = dataset.GetDicomItem<DicomElement>(item.Tag);
+
             BsonValue retVal;
 
-            if (element is null
-                || element.Count == 0
-                || DicomTypeTranslater.DicomBsonVrBlacklist.Contains(item.ValueRepresentation))
-            {
+            if (element is null || element.Count == 0)
                 retVal = BsonNull.Value;
-            }
 
-            else if (element is DicomStringElement) // Handles single and multi-string elements
-                retVal = (BsonString)dataset.GetString(element.Tag);
+            else if (!DicomTypeTranslater.SerializeBinaryData && DicomTypeTranslater.DicomVrBlacklist.Contains(item.ValueRepresentation))
+                retVal = BsonNull.Value;
+
+            else if (element is DicomStringElement)
+            {
+                if (!(element is DicomMultiStringElement) && element.Length == 0)
+                    retVal = BsonNull.Value;
+                else
+                    retVal = (BsonString)dataset.GetString(element.Tag);
+            }
 
             else if (element.ValueRepresentation == DicomVR.AT) // Special case - need to construct manually
                 retVal = GetAttributeTagString(dataset, element.Tag);

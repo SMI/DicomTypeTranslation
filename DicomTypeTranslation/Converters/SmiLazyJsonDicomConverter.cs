@@ -1,12 +1,12 @@
 ﻿
-using Dicom;
-using Dicom.IO.Buffer;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Dicom;
+using Dicom.IO.Buffer;
+using Newtonsoft.Json;
 
 namespace DicomTypeTranslation.Converters
 {
@@ -26,10 +26,9 @@ namespace DicomTypeTranslation.Converters
         /// Constructor with 1 bool argument required for compatibility testing with
         /// original version of the class.
         /// </summary>
-        /// <param name="unused"></param>
+        /// <param name="_"></param>
         // ReSharper disable once UnusedParameter.Local
-        public SmiLazyJsonDicomConverter(bool unused = false) { }
-
+        public SmiLazyJsonDicomConverter(bool _ = false) { }
 
         #region JsonConverter overrides
 
@@ -271,6 +270,8 @@ namespace DicomTypeTranslation.Converters
         }
         private static void WriteJsonOther(JsonWriter writer, DicomElement elem)
         {
+            if (!DicomTypeTranslater.SerializeBinaryData && DicomTypeTranslater.DicomVrBlacklist.Contains(elem.ValueRepresentation))
+                return;
 
             if (elem.Buffer is IBulkDataUriByteBuffer buffer)
             {

@@ -1,12 +1,12 @@
 ﻿
-using Dicom;
-using MongoDB.Bson;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Dicom;
+using MongoDB.Bson;
+using Newtonsoft.Json;
 
 namespace DicomTypeTranslation.Tests.Helpers
 {
@@ -45,7 +45,12 @@ namespace DicomTypeTranslation.Tests.Helpers
                 new DicomPersonName(DicomTag.SelectorPNValue, new [] { "Morrison-Jones^Susan^^^Ph.D.1", "Morrison-Jones^Susan^^^Ph.D.2"}),
                 new DicomShortString(DicomTag.SelectorSHValue, "ShortString-1", "Short-String-2"),
                 new DicomSignedLong(DicomTag.SelectorSLValue, 0, int.MinValue, int.MaxValue),
-                new DicomSequence(DicomTag.AdmittingDiagnosesCodeSequence, new DicomDataset {new DicomShortText(DicomTag.SelectorSTValue, "Short\\Text"), new DicomIntegerString(DicomTag.ImagesInAcquisition, "1234")}),
+                new DicomSequence(DicomTag.AdmittingDiagnosesCodeSequence, new DicomDataset
+                {
+                    new DicomShortText(DicomTag.SelectorSTValue, "Short\\Text"),
+                    new DicomIntegerString(DicomTag.ImagesInAcquisition, "1234"),
+                    new DicomOtherWord(DicomTag.SelectorOWValue, 0, ushort.MaxValue)
+                }),
                 new DicomSignedShort(DicomTag.SelectorSSValue, 0, short.MinValue, short.MaxValue),
                 new DicomShortText(DicomTag.SelectorSTValue, "Short\\Text\\Backslashes should be ok: \\\\\\"),
                 new DicomTime(DicomTag.SelectorTMValue, "123456", "235959"),
@@ -160,26 +165,26 @@ namespace DicomTypeTranslation.Tests.Helpers
                            new DicomFloatingPointDouble(new DicomTag(3, 0x100a, privateCreator)),
                            new DicomIntegerString(new DicomTag(3, 0x100b, privateCreator), new string[0]),
                            new DicomLongString(new DicomTag(3, 0x100c, privateCreator)),
-                           new DicomLongText(new DicomTag(3, 0x100d, privateCreator), null),
-                           new DicomOtherByte(new DicomTag(3, 0x100e, privateCreator), new byte[0]),
-                           new DicomOtherDouble(new DicomTag(3, 0x100f, privateCreator), new double[0]),
-                           new DicomOtherFloat(new DicomTag(3, 0x1010, privateCreator), new float[0]),
-                           new DicomOtherLong(new DicomTag(3, 0x1014, privateCreator), new uint[0]),
-                           new DicomOtherWord(new DicomTag(3, 0x1011, privateCreator), new ushort[0]),
+                           new DicomLongText(new DicomTag(3, 0x100d, privateCreator), string.Empty),
+                           new DicomOtherByte(new DicomTag(3, 0x100e, privateCreator)),
+                           new DicomOtherDouble(new DicomTag(3, 0x100f, privateCreator)),
+                           new DicomOtherFloat(new DicomTag(3, 0x1010, privateCreator)),
+                           new DicomOtherLong(new DicomTag(3, 0x1014, privateCreator)),
+                           new DicomOtherWord(new DicomTag(3, 0x1011, privateCreator)),
                            new DicomPersonName(new DicomTag(3, 0x1012, privateCreator)),
                            new DicomShortString(new DicomTag(3, 0x1013, privateCreator)),
                            new DicomSignedLong(new DicomTag(3, 0x1001, privateCreator)),
                            new DicomSequence(new DicomTag(3, 0x1015, privateCreator)),
                            new DicomSignedShort(new DicomTag(3, 0x1017, privateCreator)),
-                           new DicomShortText(new DicomTag(3, 0x1018, privateCreator), null),
+                           new DicomShortText(new DicomTag(3, 0x1018, privateCreator), string.Empty),
                            new DicomTime(new DicomTag(3, 0x1019, privateCreator), new string[0]),
-                           new DicomUnlimitedCharacters(new DicomTag(3, 0x101a, privateCreator), (string)null),
+                           new DicomUnlimitedCharacters(new DicomTag(3, 0x101a, privateCreator)),
                            new DicomUniqueIdentifier(new DicomTag(3, 0x101b, privateCreator), new string[0]),
                            new DicomUnsignedLong(new DicomTag(3, 0x101c, privateCreator)),
                            new DicomUnknown(new DicomTag(3, 0x101d, privateCreator)),
-                           new DicomUniversalResource(new DicomTag(3, 0x101e, privateCreator), null),
+                           new DicomUniversalResource(new DicomTag(3, 0x101e, privateCreator), string.Empty),
                            new DicomUnsignedShort(new DicomTag(3, 0x101f, privateCreator)),
-                           new DicomUnlimitedText(new DicomTag(3, 0x1020, privateCreator), null)
+                           new DicomUnlimitedText(new DicomTag(3, 0x1020, privateCreator), string.Empty)
                          };
         }
 

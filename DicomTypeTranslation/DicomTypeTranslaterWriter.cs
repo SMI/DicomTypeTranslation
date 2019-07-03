@@ -4,11 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using Dicom;
-
 using JetBrains.Annotations;
-
 using MongoDB.Bson;
 
 
@@ -215,9 +212,6 @@ namespace DicomTypeTranslation
 
         private static DicomItem CreateDicomItem(DicomTag tag, BsonValue data, DicomVR vr = null)
         {
-            if (data.IsBsonNull)
-                return null;
-
             // Ok to throw an exception here - we should always be writing the VR into the Bson document if it's ambiguous
             if (vr == null)
                 vr = tag.DictionaryEntry.ValueRepresentations.Single();
@@ -227,94 +221,103 @@ namespace DicomTypeTranslation
             switch (vr.Code)
             {
                 case "AE":
-                    item = new DicomApplicationEntity(tag, data.AsString);
+                    item = new DicomApplicationEntity(tag, GetString(data));
                     break;
                 case "AS":
-                    item = new DicomAgeString(tag, data.AsString);
+                    item = new DicomAgeString(tag, GetString(data));
                     break;
                 case "AT":
-                    item = new DicomAttributeTag(tag, ParseAttributeTag(data.AsString));
+                    item = ParseAttributeTag(tag, data);
                     break;
                 case "CS":
-                    item = new DicomCodeString(tag, data.AsString);
+                    item = new DicomCodeString(tag, GetString(data));
                     break;
                 case "DA":
-                    item = new DicomDate(tag, data.AsString);
+                    item = new DicomDate(tag, GetString(data));
                     break;
                 case "DS":
-                    item = new DicomDecimalString(tag, data.AsString);
+                    item = new DicomDecimalString(tag, GetString(data));
                     break;
                 case "DT":
-                    item = new DicomDateTime(tag, data.AsString);
+                    item = new DicomDateTime(tag, GetString(data));
                     break;
                 case "FD":
-                    item = new DicomFloatingPointDouble(tag, (double[])GetTypedArray<double>(data.AsBsonArray));
+                    item = new DicomFloatingPointDouble(tag, (double[])GetTypedArray<double>(data));
                     break;
                 case "FL":
-                    item = new DicomFloatingPointSingle(tag, (float[])GetTypedArray<float>(data.AsBsonArray));
+                    item = new DicomFloatingPointSingle(tag, (float[])GetTypedArray<float>(data));
                     break;
                 case "IS":
-                    item = new DicomIntegerString(tag, data.AsString);
+                    item = new DicomIntegerString(tag, GetString(data));
                     break;
                 case "LO":
-                    item = new DicomLongString(tag, Encoding.UTF8, data.AsString);
+                    item = new DicomLongString(tag, Encoding.UTF8, GetString(data));
                     break;
                 case "LT":
-                    item = new DicomLongText(tag, Encoding.UTF8, data.AsString);
+                    item = new DicomLongText(tag, Encoding.UTF8, GetString(data));
+                    break;
+                case "OB":
+                    item = data.IsBsonNull
+                        ? new DicomOtherByte(tag)
+                        : new DicomOtherByte(tag, data.AsByteArray);
                     break;
                 case "OD":
-                    item = new DicomOtherDouble(tag, (double[])GetTypedArray<double>(data.AsBsonArray));
+                    item = new DicomOtherDouble(tag, (double[])GetTypedArray<double>(data));
                     break;
                 case "OF":
-                    item = new DicomOtherFloat(tag, (float[])GetTypedArray<float>(data.AsBsonArray));
+                    item = new DicomOtherFloat(tag, (float[])GetTypedArray<float>(data));
                     break;
                 case "OL":
-                    item = new DicomOtherLong(tag, (uint[])GetTypedArray<uint>(data.AsBsonArray));
+                    item = new DicomOtherLong(tag, (uint[])GetTypedArray<uint>(data));
+                    break;
+                case "OW":
+                    item = data.IsBsonNull
+                        ? new DicomOtherWord(tag)
+                        : new DicomOtherWord(tag, (ushort[])GetTypedArray<ushort>(data));
                     break;
                 case "PN":
-                    item = new DicomPersonName(tag, Encoding.UTF8, data.AsString);
+                    item = new DicomPersonName(tag, Encoding.UTF8, GetString(data));
                     break;
                 case "SH":
-                    item = new DicomShortString(tag, Encoding.UTF8, data.AsString);
+                    item = new DicomShortString(tag, Encoding.UTF8, GetString(data));
                     break;
                 case "SL":
-                    item = new DicomSignedLong(tag, (int[])GetTypedArray<int>(data.AsBsonArray));
+                    item = new DicomSignedLong(tag, (int[])GetTypedArray<int>(data));
                     break;
                 case "SS":
-                    item = new DicomSignedShort(tag, (short[])GetTypedArray<short>(data.AsBsonArray));
+                    item = new DicomSignedShort(tag, (short[])GetTypedArray<short>(data));
                     break;
                 case "ST":
-                    item = new DicomShortText(tag, Encoding.UTF8, data.AsString);
+                    item = new DicomShortText(tag, Encoding.UTF8, GetString(data));
                     break;
                 case "SQ":
-                    item = new DicomSequence(tag,
-                        data.AsBsonArray
-                            .Select(x => BuildDicomDataset(x.AsBsonDocument))
-                            .ToArray());
+                    item = GetDicomSequence(tag, data);
                     break;
                 case "TM":
-                    item = new DicomTime(tag, data.AsString);
+                    item = new DicomTime(tag, GetString(data));
                     break;
                 case "UC":
-                    item = new DicomUnlimitedCharacters(tag, Encoding.UTF8, data.AsString);
+                    item = new DicomUnlimitedCharacters(tag, Encoding.UTF8, GetString(data));
                     break;
                 case "UI":
-                    item = new DicomUniqueIdentifier(tag, data.AsString);
+                    item = new DicomUniqueIdentifier(tag, GetString(data));
                     break;
                 case "UL":
-                    item = new DicomUnsignedLong(tag, (uint[])GetTypedArray<uint>(data.AsBsonArray));
+                    item = new DicomUnsignedLong(tag, (uint[])GetTypedArray<uint>(data));
+                    break;
+                case "UN":
+                    item = data.IsBsonNull
+                        ? new DicomUnknown(tag)
+                        : new DicomUnknown(tag, (byte[])GetTypedArray<byte>(data));
                     break;
                 case "UR":
-                    item = new DicomUniversalResource(tag, Encoding.UTF8, data.AsString);
+                    item = new DicomUniversalResource(tag, Encoding.UTF8, GetString(data));
                     break;
                 case "US":
-                    item = new DicomUnsignedShort(tag, (ushort[])GetTypedArray<ushort>(data.AsBsonArray));
+                    item = new DicomUnsignedShort(tag, (ushort[])GetTypedArray<ushort>(data));
                     break;
                 case "UT":
-                    item = new DicomUnlimitedText(tag, Encoding.UTF8, data.AsString);
-                    break;
-                case var o when DicomTypeTranslater.DicomBsonVrBlacklist.Contains(DicomVR.Parse(o)):
-                    item = null;
+                    item = new DicomUnlimitedText(tag, Encoding.UTF8, GetString(data));
                     break;
                 default:
                     throw new NotSupportedException($"Unsupported value representation {vr}");
@@ -323,16 +326,19 @@ namespace DicomTypeTranslation
             return item;
         }
 
-        private static DicomTag[] ParseAttributeTag(string tagStr)
+        private static DicomAttributeTag ParseAttributeTag(DicomTag tag, BsonValue bsonValue)
         {
+            if (bsonValue.IsBsonNull)
+                return new DicomAttributeTag(tag);
+
             var parsed = new List<DicomTag>();
-            foreach (string subTagStr in tagStr.Split('\\'))
+            foreach (string subTagStr in bsonValue.AsString.Split('\\'))
             {
                 ushort group = Convert.ToUInt16(subTagStr.Substring(0, 4), 16);
                 ushort element = Convert.ToUInt16(subTagStr.Substring(4), 16);
                 parsed.Add(new DicomTag(group, element));
             }
-            return parsed.ToArray();
+            return new DicomAttributeTag(tag, parsed.ToArray());
         }
 
         private static readonly BsonTypeMapperOptions _bsonTypeMapperOptions = new BsonTypeMapperOptions
@@ -340,8 +346,13 @@ namespace DicomTypeTranslation
             MapBsonArrayTo = typeof(object[])
         };
 
-        private static Array GetTypedArray<T>(BsonArray bsonArray) where T : struct
+        private static Array GetTypedArray<T>(BsonValue bsonValue) where T : struct
         {
+            if (bsonValue == BsonNull.Value)
+                return new T[0];
+
+            BsonArray bsonArray = bsonValue.AsBsonArray;
+
             Array typedArray = new T[bsonArray.Count];
             var mappedBsonArray = (object[])BsonTypeMapper.MapToDotNetValue(bsonArray, _bsonTypeMapperOptions);
 
@@ -359,6 +370,18 @@ namespace DicomTypeTranslation
                 Array.Copy(mappedBsonArray, typedArray, typedArray.Length);
 
             return typedArray;
+        }
+
+        private static string GetString(BsonValue bsonValue)
+        {
+            return bsonValue.IsBsonNull ? null : bsonValue.AsString;
+        }
+
+        private static DicomSequence GetDicomSequence(DicomTag tag, BsonValue data)
+        {
+            return data.IsBsonNull
+                ? new DicomSequence(tag)
+                : new DicomSequence(tag, data.AsBsonArray.Select(x => BuildDicomDataset(x.AsBsonDocument)).ToArray());
         }
 
         #endregion

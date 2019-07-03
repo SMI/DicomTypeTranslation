@@ -3,19 +3,15 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-
 using Dicom;
 using Dicom.Serialization;
-
 using DicomTypeTranslation.Converters;
 using DicomTypeTranslation.Helpers;
 using DicomTypeTranslation.Tests.ElevationTests;
 using DicomTypeTranslation.Tests.Helpers;
-
 using Newtonsoft.Json;
-
+using Newtonsoft.Json.Linq;
 using NLog;
-
 using NUnit.Framework;
 
 namespace DicomTypeTranslation.Tests
@@ -396,6 +392,53 @@ namespace DicomTypeTranslation.Tests
 
             // Only the Lazy converter properly handles UTF-8 encoding
             VerifyJsonTripleTrip(ds, expectFail: expectFail);
+        }
+
+        [Test]
+        public void JsonSerialization_SerializeBinaryTrue_ContainsTags()
+        {
+            DicomDataset ds = TranslationTestHelpers.BuildVrDataset();
+
+            DicomTypeTranslater.SerializeBinaryData = true;
+            VerifyJsonTripleTrip(ds);
+        }
+
+        [Test]
+        public void JsonSerialization_SerializeBinaryFalse_ContainsEmptyTags()
+        {
+            if (_jsonDicomConverter.GetType().Name != "SmiLazyJsonDicomConverter")
+                Assert.Pass("Only applicable for SmiLazyJsonDicomConverter");
+
+            var ds = new DicomDataset
+            {
+                new DicomOtherByte(DicomTag.SelectorOBValue, byte.MinValue),
+                new DicomOtherWord(DicomTag.SelectorOWValue, byte.MinValue),
+                new DicomUnknown(DicomTag.SelectorUNValue, byte.MinValue)
+            };
+
+            DicomTypeTranslater.SerializeBinaryData = false;
+            string json = DicomTypeTranslater.SerializeDatasetToJson(ds);
+
+            Assert.DoesNotThrow(() => JToken.Parse(json));
+
+            DicomDataset recoDs = DicomTypeTranslater.DeserializeJsonToDataset(json);
+
+            Assert.AreEqual(ds.Count(), recoDs.Count());
+            AssertBlacklistedNulls(recoDs);
+        }
+
+        private static void AssertBlacklistedNulls(DicomDataset ds)
+        {
+            foreach (DicomItem item in ds.Where(x =>
+                DicomTypeTranslater.DicomVrBlacklist.Contains(x.ValueRepresentation)
+                || x.ValueRepresentation == DicomVR.SQ))
+            {
+                if (item.ValueRepresentation == DicomVR.SQ)
+                    foreach (DicomDataset subDataset in (DicomSequence)item)
+                        AssertBlacklistedNulls(subDataset);
+                else
+                    Assert.Zero(((DicomElement)item).Buffer.Size, $"Expected 0 for {item.Tag.DictionaryEntry.Keyword}");
+            }
         }
 
         #endregion

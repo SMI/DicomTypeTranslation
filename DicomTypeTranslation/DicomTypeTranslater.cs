@@ -22,17 +22,25 @@ namespace DicomTypeTranslation
     /// </summary>
     public static class DicomTypeTranslater
     {
-        private static readonly JsonConverter _defaultJsonDicomConverter = new SmiLazyJsonDicomConverter();
-
         /// <summary>
-        /// Value Representations which are ignored when reading and writing Bson documents
+        /// Value Representations which are ignored when reading and writing Bson and Json objects
         /// </summary>
-        public static readonly DicomVR[] DicomBsonVrBlacklist =
+        public static readonly DicomVR[] DicomVrBlacklist =
         {
             DicomVR.OW,
             DicomVR.OB,
             DicomVR.UN
         };
+
+        /// <summary>
+        /// If false, binary items will have their key serialized but with their values set to null.
+        /// This applies to <see cref="SmiLazyJsonDicomConverter"/> and <see cref="DicomTypeTranslaterReader.BuildBsonDocument"/>
+        /// </summary>
+        public static bool SerializeBinaryData = false;
+
+
+        private static readonly JsonConverter _defaultJsonDicomConverter = new SmiLazyJsonDicomConverter();
+
 
         /// <summary>
         /// Serialize a <see cref="DicomDataset"/> to a json <see cref="string"/>.
