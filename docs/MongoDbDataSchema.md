@@ -82,6 +82,7 @@ With reference to the dicom types as represented in the fo-dicom library [here](
 
 - **DicomSequence**
 	- Sequences are represented in fo-dicom as arrays of sub-datasets. Similarly, we serialize them in MongoDB as arrays of sub-objects, where each sub-object contains the elements of each item in the sequence:
+    - Sequences containing no elements are stored as `BsonNull`
 
 ```javascript
 	"DeidentificationMethodCodeSequence":
@@ -101,8 +102,8 @@ With reference to the dicom types as represented in the fo-dicom library [here](
 ```
 
 - **Binary and Unknown Tags**
-	- Tags of VR `OB`, `OW`, and `UN` represent binary or unknown data and will have their values set to `BsonNull` when storing in the `BsonDocument` format. In addition, they will not be included in the reconstructed `DicomDataset`
-	- This functionality is controlled by the `DicomBsonVrBlacklist` in the main [DicomTypeTranslater](../DicomTypeTranslation/DicomTypeTranslater.cs) class.
+	- By default, tags of VR `OB`, `OW`, and `UN` represent binary or unknown data and will have their values set to `BsonNull` when storing in the `BsonDocument` format. This can be configured with the `DicomTypeTranslater.SerializeBinaryData` option
+	- The `VR`s which are treated like this are set by the `DicomTypeTranslater.DicomBsonVrBlacklist`
 
 - **Tags with no content**
 	- Tags can be present in a dicom file with an empty data buffer. These will be written with `BsonNull` as their value, irrespective of their data type

@@ -24,4 +24,6 @@ This converter is marked obsolete (it will not be updated to follow changes to t
 
 The default converter used by this library, unless otherwise specified. Aims to allow greater coverage when dealing with "real world" DICOM data. In particular, it does not attempt to force the DICOM numeric string types into their respective C# types before converting to JSON.
 
+Additionally, some value representations (`OW`, `OB`, and `UN`) have their tags serialized but their data are omitted. This can be configured with the `DicomTypeTranslater.SerializeBinaryData` option. The `VR`s which are treated like this are set by the `DicomTypeTranslater.DicomBsonVrBlacklist`.
+
 This converter does not follow the DICOM JSON model, and will not support reading JSON data which was not created with this library.
