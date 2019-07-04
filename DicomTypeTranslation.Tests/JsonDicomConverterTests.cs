@@ -25,7 +25,11 @@ namespace DicomTypeTranslation.Tests
 
         private readonly JsonConverter _jsonDicomConverter;
 
-        private readonly string _testDcmPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "testFile.dcm");
+        private static readonly string _dcmDir = Path.GetFullPath(TestContext.CurrentContext.TestDirectory + "/../../../ElevationTests");
+
+        private readonly string _srDcmPath = Path.Combine(_dcmDir, "report01.dcm");
+        private readonly string _imDcmPath = Path.Combine(_dcmDir, "image11.dcm");
+
 
         #region Fixture Methods 
 
@@ -124,8 +128,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestFile_Image11()
         {
-            File.WriteAllBytes(_testDcmPath, TestStructuredReports.image11);
-            DicomDataset ds = DicomFile.Open(_testDcmPath).Dataset;
+            DicomDataset ds = DicomFile.Open(_imDcmPath).Dataset;
             ds.Remove(DicomTag.PixelData);
 
             string convType = _jsonDicomConverter.GetType().Name;
@@ -149,8 +152,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestFile_Report01()
         {
-            File.WriteAllBytes(_testDcmPath, TestStructuredReports.report01);
-            DicomDataset ds = DicomFile.Open(_testDcmPath).Dataset;
+            DicomDataset ds = DicomFile.Open(_srDcmPath).Dataset;
             VerifyJsonTripleTrip(ds);
         }
 
