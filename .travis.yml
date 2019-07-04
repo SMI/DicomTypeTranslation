@@ -1,7 +1,4 @@
 
-# https://travis-ci.community/t/dotnet-core-2-2/1216
-dist: bionic
-
 branches:
   only:
   - master
@@ -10,14 +7,21 @@ branches:
 
 language: csharp
 
-mono: none
-dotnet: 2.2.203
-
 env:  
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
     - DOTNET_CLI_TELEMETRY_OPTOUT=1
     
+dotnet: 2.2.203 # https://travis-ci.community/t/dotnet-core-2-2/1216
+mono: none
+
+matrix:
+  include:
+    - name: "dotnet 2.2 on Bionic Linux"
+      dist: bionic
+    - name: "dotnet 2.2 on Windows"
+      os: windows
+
 script:
   - dotnet restore --no-cache
-  - dotnet test -c Release
+# - dotnet test -c Release
