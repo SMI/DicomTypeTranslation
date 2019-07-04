@@ -6,6 +6,7 @@ branches:
   - /^hotfix\/.*$/
 
 language: csharp
+mono: none
 
 env:  
   global:
@@ -17,7 +18,7 @@ matrix:
     # - name: "Dotnet 2.2 on Bionic Linux"
     #   dist: bionic
     #   dotnet: 2.2.203 # https://travis-ci.community/t/dotnet-core-2-2/1216
-    #   mono: none      
+    
     #   script:
     #     - dotnet restore --no-cache
     #     - dotnet test -c Release
