@@ -13,13 +13,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Simple worked usage example
 - Add handling for string encoding in JSON conversion
+- Added list of nuget package inventory
+- Dependency test to ensure nuspec and csproj are correct
 
 ### Changed
 
 - Improved README
 - Update and refactor of DICOM-JSON converter
 - Set default converter to SmiLazyJsonDicomConverter
-- Added list of nuget package inventory
 - Updated to latest version of FAnsiSql (0.9.1.10)
 - Updated to latest version of MongoDB.Driver (2.8.1)
 - Renamed DicomTypeTranslaterWriter.BuildDatasetFromBsonDocument -> BuildDicomDataset
@@ -32,6 +33,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - DicomTypeTranslaterReader.CreateBsonValue from public API
 - DicomTypeTranslaterReader.StripLargeArrays
 - DicomTypeTranslaterWriter.MaxVrsToExpect
+
+### Fixed
+
+- Fixed Travis dotnet test
+- Fixed TagElevation tests to handle different environments
 
 ## [1.0.4] - 2019-06-25
 
