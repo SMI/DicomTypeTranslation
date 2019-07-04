@@ -1,22 +1,25 @@
 ﻿
-using Dicom;
-using DicomTypeTranslation.Elevation;
-using DicomTypeTranslation.Elevation.Exceptions;
-using NUnit.Framework;
-using FAnsi.Discovery;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Dicom;
+using DicomTypeTranslation.Elevation;
+using DicomTypeTranslation.Elevation.Exceptions;
 using DicomTypeTranslation.Helpers;
+using FAnsi.Discovery;
+using NUnit.Framework;
 
 namespace DicomTypeTranslation.Tests.ElevationTests
 {
     //Includes sample dicom files taken from http://www.dclunie.com/medical-image-faq/html/index.html
-
     public class TagElevatorTests
     {
-        private readonly string srDcmPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "sr.dcm");
+        private static readonly string _dcmDir = Path.GetFullPath(TestContext.CurrentContext.TestDirectory + "/../../../ElevationTests");
+
+        private readonly string _srDcmPath = Path.Combine(_dcmDir, "report01.dcm");
+        private readonly string _imDcmPath = Path.Combine(_dcmDir, "image11.dcm");
+
 
         /// <summary>
         /// Tests that it is illegal to elevate a top level tag
@@ -72,9 +75,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [Test]
         public void TagElevation_TwoDeep_FindValue()
         {
-            File.WriteAllBytes(srDcmPath, TestStructuredReports.image11);
+            //File.WriteAllBytes(srDcmPath, TestStructuredReports.image11);
 
-            var file = DicomFile.Open(srDcmPath);
+            var file = DicomFile.Open(_imDcmPath);
 
             var elevator = new TagElevator("ModalityLUTSequence->LUTExplanation");
 
@@ -89,9 +92,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase("ModalityLUTSequence->TextValue+")]
         public void TagElevation_TagNotFound_ReturnsNull(string path)
         {
-            File.WriteAllBytes(srDcmPath, TestStructuredReports.image11);
+            //File.WriteAllBytes(srDcmPath, TestStructuredReports.image11);
 
-            var file = DicomFile.Open(srDcmPath);
+            var file = DicomFile.Open(_imDcmPath);
 
             var elevator = new TagElevator(path);
 
@@ -105,9 +108,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase("ReferencedPerformedProcedureStepSequence->TextValue+")]
         public void TagElevation_TagNotFoundComplex_ReturnsNull(string path)
         {
-            File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
+            //File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
 
-            var file = DicomFile.Open(srDcmPath);
+            var file = DicomFile.Open(_srDcmPath);
 
             var elevator = new TagElevator(path);
 
@@ -120,9 +123,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [Test]
         public void TagElevation_ThreeDeep_FindValue()
         {
-            File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
+            //File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
 
-            var file = DicomFile.Open(srDcmPath);
+            var file = DicomFile.Open(_srDcmPath);
 
             //for debugging purposes
             ShowContentSequence(file.Dataset);
@@ -131,16 +134,18 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             object value = elevator.GetValue(file.Dataset);
 
-            Assert.AreEqual("Observer Name\r\nObserver Organization Name\r\nDescription\r\nDiagnosis\r\nTreatment", value);
+            string expected =
+                $"Observer Name{Environment.NewLine}Observer Organization Name{Environment.NewLine}Description{Environment.NewLine}Diagnosis{Environment.NewLine}Treatment";
+            Assert.AreEqual(expected, value);
         }
 
         //tests reading a multiple matching leaf nodes (TextValue) from a top level tag (ContentSequence)
         [Test]
         public void TagElevation_TwoDeepReport_FindValue()
         {
-            File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
+            //File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
 
-            var file = DicomFile.Open(srDcmPath);
+            var file = DicomFile.Open(_srDcmPath);
 
             var elevator = new TagElevator("ContentSequence->TextValue+");
 
@@ -160,9 +165,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [Test]
         public void TagElevation_TwoDeepWithConditional_FindValue()
         {
-            File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
+            //File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
 
-            var file = DicomFile.Open(srDcmPath);
+            var file = DicomFile.Open(_srDcmPath);
 
             var elevator = new TagElevator("ContentSequence->TextValue", ".->ConceptNameCodeSequence->CodeMeaning", "Observer Organization Name");
 
@@ -223,6 +228,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase("h", "efgh\r\nhij")]
         public void TagElevation_Multiplicity_Conditional(string toFind, string expectedResults)
         {
+            if (!string.IsNullOrWhiteSpace(expectedResults))
+                expectedResults = expectedResults.Replace("\r\n", Environment.NewLine);
+
             // Arrange
             var ds = new DicomDataset
             {
@@ -313,7 +321,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
             ShowContentSequence(ds, DicomTag.PseudoColorPaletteInstanceReferenceSequence);
 
             //should pass when you do
-            Assert.AreEqual("abcd\\efgh\r\nhij\\klm", elevator.GetValue(ds));
+            Assert.AreEqual($"abcd\\efgh{Environment.NewLine}hij\\klm", elevator.GetValue(ds));
         }
 
 
@@ -363,9 +371,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase(".", "coconuts", false)]
         public void TagElevation_ConditionalCurrentNode(string conditional, string conditionalMatch, bool expectedToFind)
         {
-            File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
+            //File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
 
-            var file = DicomFile.Open(srDcmPath);
+            var file = DicomFile.Open(_srDcmPath);
 
             var elevator = new TagElevator("ContentSequence->ConceptNameCodeSequence->CodeMeaning", conditional, conditionalMatch);
 
@@ -385,9 +393,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase(".->CodingSchemeDesignator", "99_OFFIS_DCMTK", false, true)] //throws because all ContentSequence->ConceptNameCodeSequence->CodeMeaning are designated by the same value Offis...
         public void TagElevation_ConditionalCurrentNode_OtherTags(string conditional, string conditionalMatch, bool expectedToFind, bool expectMultipleMatchesException)
         {
-            File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
+            //File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
 
-            var file = DicomFile.Open(srDcmPath);
+            var file = DicomFile.Open(_srDcmPath);
 
             var elevator = new TagElevator("ContentSequence->ConceptNameCodeSequence->CodeMeaning", conditional, conditionalMatch);
 
@@ -410,9 +418,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase("..->ConceptNameCodeSequence->CodeMeaning", "Treatment")] //parent SQ (i.e. ContentSequence) but we go back into our own tag anyway! (note that if there were multiple ConceptNameCodeSequence in side by side datasets we would go down into all of them)
         public void TagElevation_DoubleDotConditional_FindValue(string conditional, string conditionalMatch)
         {
-            File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
+            //File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
 
-            var file = DicomFile.Open(srDcmPath);
+            var file = DicomFile.Open(_srDcmPath);
 
             var elevator = new TagElevator("ContentSequence->ConceptNameCodeSequence->CodeMeaning", conditional, conditionalMatch);
 
@@ -426,9 +434,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase("..->[..]->TextValue", "The plan of treatment is as follows")] //actually results in matching all elements of ContentSequence (not just [4]) so will match everyone
         public void TagElevation_DoubleDotConditional_ThenArrayElementBuddies_FindValue(string conditional, string conditionalMatch)
         {
-            File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
+            //File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
 
-            var file = DicomFile.Open(srDcmPath);
+            var file = DicomFile.Open(_srDcmPath);
 
             var elevator = new TagElevator("ContentSequence->ConceptNameCodeSequence->CodeMeaning+", conditional, conditionalMatch);
 
@@ -436,7 +444,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             object value = elevator.GetValue(file.Dataset);
 
-            Assert.AreEqual("Observer Name\r\nObserver Organization Name\r\nDescription\r\nDiagnosis\r\nTreatment", value);
+            Assert.AreEqual($"Observer Name{Environment.NewLine}Observer Organization Name{Environment.NewLine}Description{Environment.NewLine}Diagnosis{Environment.NewLine}Treatment", value);
         }
 
 
@@ -445,9 +453,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase("[..]->[..]->..->..->TextValue", "The plan of treatment is as follows")]
         public void TagElevation_DoubleDotConditionalSpam_NeverMatch(string conditional, string conditionalMatch)
         {
-            File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
+            //File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
 
-            var file = DicomFile.Open(srDcmPath);
+            var file = DicomFile.Open(_srDcmPath);
 
             var elevator = new TagElevator("ContentSequence->ConceptNameCodeSequence->CodeMeaning&", conditional, conditionalMatch);
 
@@ -464,9 +472,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase(".->ConceptNameCodeSequence->CodeValue", "IHE.05")]
         public void TagElevation_TextValueConditionals_FindValue(string conditional, string conditionalMatch)
         {
-            File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
+            //File.WriteAllBytes(srDcmPath, TestStructuredReports.report01);
 
-            var file = DicomFile.Open(srDcmPath);
+            var file = DicomFile.Open(_srDcmPath);
 
             var elevator = new TagElevator("ContentSequence->TextValue", conditional, conditionalMatch);
 
@@ -496,6 +504,8 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
         public void TagElevation_SiblingConditionals(string conditional, string conditionalMatch, string expectedResults)
         {
+            expectedResults = expectedResults.Replace("\r\n", Environment.NewLine);
+
             var ds = new DicomDataset
                 (
                         //root->PatientInsurancePlanCodeSequence [array of 3 sibling sequences]
@@ -580,6 +590,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase("PseudoColorPaletteInstanceReferenceSequence->AbstractPriorCodeSequence->ProbeDriveEquipmentSequence->PatientID", "..->SpecimenShortDescription", "2.1", "3.2", TestName = "Complex_Conditional_1")]
         public void ComplexTagNestingTests(string pathway, string conditional, string conditionalMatch, object expectedResults)
         {
+            if (!string.IsNullOrWhiteSpace((string)expectedResults))
+                expectedResults = ((string)expectedResults).Replace("\r\n", Environment.NewLine);
+
             // Arrange
             var ds = new DicomDataset
             {
