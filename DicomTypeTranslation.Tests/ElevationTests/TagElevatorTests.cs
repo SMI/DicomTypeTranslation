@@ -134,7 +134,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             object value = elevator.GetValue(file.Dataset);
 
-            Assert.AreEqual("Observer Name\r\nObserver Organization Name\r\nDescription\r\nDiagnosis\r\nTreatment", value);
+            string expected =
+                $"Observer Name{Environment.NewLine}Observer Organization Name{Environment.NewLine}Description{Environment.NewLine}Diagnosis{Environment.NewLine}Treatment";
+            Assert.AreEqual(expected, value);
         }
 
         //tests reading a multiple matching leaf nodes (TextValue) from a top level tag (ContentSequence)
@@ -226,6 +228,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase("h", "efgh\r\nhij")]
         public void TagElevation_Multiplicity_Conditional(string toFind, string expectedResults)
         {
+            if (!string.IsNullOrWhiteSpace(expectedResults))
+                expectedResults = expectedResults.Replace("\r\n", Environment.NewLine);
+
             // Arrange
             var ds = new DicomDataset
             {
@@ -316,7 +321,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
             ShowContentSequence(ds, DicomTag.PseudoColorPaletteInstanceReferenceSequence);
 
             //should pass when you do
-            Assert.AreEqual("abcd\\efgh\r\nhij\\klm", elevator.GetValue(ds));
+            Assert.AreEqual($"abcd\\efgh{Environment.NewLine}hij\\klm", elevator.GetValue(ds));
         }
 
 
@@ -439,7 +444,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             object value = elevator.GetValue(file.Dataset);
 
-            Assert.AreEqual("Observer Name\r\nObserver Organization Name\r\nDescription\r\nDiagnosis\r\nTreatment", value);
+            Assert.AreEqual($"Observer Name{Environment.NewLine}Observer Organization Name{Environment.NewLine}Description{Environment.NewLine}Diagnosis{Environment.NewLine}Treatment", value);
         }
 
 
@@ -499,6 +504,8 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
         public void TagElevation_SiblingConditionals(string conditional, string conditionalMatch, string expectedResults)
         {
+            expectedResults = expectedResults.Replace("\r\n", Environment.NewLine);
+
             var ds = new DicomDataset
                 (
                         //root->PatientInsurancePlanCodeSequence [array of 3 sibling sequences]
@@ -583,6 +590,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase("PseudoColorPaletteInstanceReferenceSequence->AbstractPriorCodeSequence->ProbeDriveEquipmentSequence->PatientID", "..->SpecimenShortDescription", "2.1", "3.2", TestName = "Complex_Conditional_1")]
         public void ComplexTagNestingTests(string pathway, string conditional, string conditionalMatch, object expectedResults)
         {
+            if (!string.IsNullOrWhiteSpace(conditionalMatch))
+                conditionalMatch = conditionalMatch.Replace("\r\n", Environment.NewLine);
+
             // Arrange
             var ds = new DicomDataset
             {
