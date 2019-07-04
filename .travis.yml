@@ -8,7 +8,7 @@ branches:
 language: csharp
 
 mono: none
-dotnet: 2.2
+dotnet: 2.2.203
 
 env:  
   global:
