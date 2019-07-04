@@ -1,4 +1,7 @@
 
+# https://travis-ci.community/t/dotnet-core-2-2/1216
+dist: bionic
+
 branches:
   only:
   - master
