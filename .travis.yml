@@ -11,18 +11,20 @@ env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
     - DOTNET_CLI_TELEMETRY_OPTOUT=1
-    
-mono: none
 
 matrix:
   include:
-    - name: "dotnet 2.2 on Bionic Linux"
-      dist: bionic
-      dotnet: 2.2.203 # https://travis-ci.community/t/dotnet-core-2-2/1216
-    - name: "dotnet 2.2 on Windows"
+    # - name: "Dotnet 2.2 on Bionic Linux"
+    #   dist: bionic
+    #   dotnet: 2.2.203 # https://travis-ci.community/t/dotnet-core-2-2/1216
+    #   mono: none      
+    #   script:
+    #     - dotnet restore --no-cache
+    #     - dotnet test -c Release
+    - name: "Msbuild on Windows"
       os: windows
-      dotnet: 2.2
-
-script:
-  - dotnet restore --no-cache
-# - dotnet test -c Release
+      install:
+        - choco install visualstudio2017buildtools
+      script:
+        - nuget restore -NoCache
+        - msbuild /p:Configuration=Release
