@@ -590,8 +590,8 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [TestCase("PseudoColorPaletteInstanceReferenceSequence->AbstractPriorCodeSequence->ProbeDriveEquipmentSequence->PatientID", "..->SpecimenShortDescription", "2.1", "3.2", TestName = "Complex_Conditional_1")]
         public void ComplexTagNestingTests(string pathway, string conditional, string conditionalMatch, object expectedResults)
         {
-            if (!string.IsNullOrWhiteSpace(conditionalMatch))
-                conditionalMatch = conditionalMatch.Replace("\r\n", Environment.NewLine);
+            if (!string.IsNullOrWhiteSpace((string)expectedResults))
+                expectedResults = ((string)expectedResults).Replace("\r\n", Environment.NewLine);
 
             // Arrange
             var ds = new DicomDataset
