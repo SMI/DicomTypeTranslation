@@ -198,7 +198,7 @@ namespace DicomTypeTranslation.Converters
                 case "OL":
                 case "OW":
                 case "UN":
-                    WriteJsonOther(writer, (DicomElement)item);
+                    WriteJsonOther(writer, item);
                     break;
 
                 default:
@@ -268,8 +268,15 @@ namespace DicomTypeTranslation.Converters
 
             writer.WriteEndArray();
         }
-        private static void WriteJsonOther(JsonWriter writer, DicomElement elem)
+
+        private static void WriteJsonOther(JsonWriter writer, DicomItem item)
         {
+            // DicomFragmentSequence - Only for pixel data
+            if (!(item is DicomElement))
+                return;
+
+            var elem = (DicomElement)item;
+
             if (!DicomTypeTranslater.SerializeBinaryData && DicomTypeTranslater.DicomVrBlacklist.Contains(elem.ValueRepresentation))
                 return;
 
