@@ -1,7 +1,5 @@
 
-[![Build Status](https://travis-ci.com/HicServices/DicomTypeTranslation.svg?branch=master)](https://travis-ci.com/HicServices/DicomTypeTranslation)
-
-[![NuGet Badge](https://buildstats.info/nuget/HIC.DicomTypeTranslation)](https://buildstats.info/nuget/HIC.DicomTypeTranslation)
+[![Build Status](https://travis-ci.com/HicServices/DicomTypeTranslation.svg?branch=master)](https://travis-ci.com/HicServices/DicomTypeTranslation) [![NuGet Badge](https://buildstats.info/nuget/HIC.DicomTypeTranslation)](https://buildstats.info/nuget/HIC.DicomTypeTranslation)
 
 # DicomTypeTranslation
 
