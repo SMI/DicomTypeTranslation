@@ -24,6 +24,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A1A56FDF-E
 		docs\MongoDbDataSchema.md = docs\MongoDbDataSchema.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{6A04501E-26BE-41E1-9C3E-8A1C1DC90F6D}"
+	ProjectSection(SolutionItems) = preProject
+		Templates\CT.it = Templates\CT.it
+		Templates\MR.it = Templates\MR.it
+		Templates\OTHER.it = Templates\OTHER.it
+		Templates\SmiTagElevation.xml = Templates\SmiTagElevation.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

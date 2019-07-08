@@ -1,12 +1,35 @@
 load 'rakeconfig.rb'
 $MSBUILD15CMD = MSBUILD15CMD.gsub(/\\/,"/")
 
-task :continuous, [:config] => [:assemblyinfo, :build, :tests]
+task :continuous, [:config] => [:setup_connection,:assemblyinfo, :build, :tests]
 
-task :release, [:config] => [:assemblyinfo, :deploy, :pack]
+task :release, [:config] => [:setup_connection,:assemblyinfo, :deploy, :pack]
 
 task :restorepackages do
     sh "nuget restore #{SOLUTION}"
+end
+
+task :setup_connection do 
+    File.open("Tests/DicomTypeTranslation.Tests/TestDatabases.xml", "w") do |f|
+        f.write("<TestDatabases>
+          <Settings>
+            <AllowDatabaseCreation>True</AllowDatabaseCreation>
+            <TestScratchDatabase>FAnsiTests</TestScratchDatabase>
+          </Settings>
+          <TestDatabase>
+            <DatabaseType>MicrosoftSQLServer</DatabaseType>
+            <ConnectionString>server=#{DBSERVER};Trusted_Connection=True;</ConnectionString>
+          </TestDatabase>
+          <TestDatabase>
+            <DatabaseType>MySql</DatabaseType>
+            <ConnectionString>Server=#{MYSQLDB};Uid=#{MYSQLUSR};Pwd=#{MYSQLPASS};Ssl-Mode=Required</ConnectionString>
+          </TestDatabase>
+          <!--<TestDatabase>
+            <DatabaseType>Oracle</DatabaseType>
+            <ConnectionString>Data Source=localhost:1521/orclpdb.dundee.uni;User Id=ora;Password=zombie;</ConnectionString>
+          </TestDatabase>-->
+        </TestDatabases>")
+    end
 end
 
 task :build, [:config] => :restorepackages do |msb, args|

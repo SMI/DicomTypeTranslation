@@ -13,7 +13,18 @@
     <None Remove="TextDetectionTets\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="TestDatabases.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Templates\SmiTagElevation.xml" Link="Templates\SmiTagElevation.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDatabases.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Update="ElevationTests\TestStructuredReports.Designer.cs">
@@ -23,6 +34,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Templates\CT.it" Link="Templates\CT.it">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Templates\MR.it" Link="Templates\MR.it">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Templates\OTHER.it" Link="Templates\OTHER.it">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="ElevationTests\image11.dcm" />
     <None Include="ElevationTests\report01.dcm" />
   </ItemGroup>

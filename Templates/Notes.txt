@@ -1,0 +1,31 @@
+Contrast Agent fields:
+Added to help determine whether contrast was given during series
+
+Slice Thickness added at image level:
+Cohort Identification
+
+
+ProtocolName: This is standard for operation X e.g. pancreatitis
+
+Demographics:
+Patient Age (in years) & Sex 
+For performance reasons in queries and for sanity checking against other datasets e.g. demography
+
+
+NumberOfStudyRelatedInstances / NumberOfSeriesRelatedInstances:
+Included for validation purposes, have we succesfully loaded all the images in this series to relational table
+
+
+PhotometricInterpretation
+Useful for identifying that you don't have colour images 
+
+SeriesDate	SeriesTime
+05/01/2009	15:09:49
+05/01/2009	15:09:50
+05/01/2009	15:09:51
+05/01/2009	15:09:52
+05/01/2009	15:09:53
+05/01/2009	15:09:54
+05/01/2009	15:09:55
+05/01/2009	15:09:56
+05/01/2009	15:09:57

@@ -1,0 +1,17 @@
+<!DOCTYPE TagElevationRequestCollection
+[
+  <!ELEMENT TagElevationRequestCollection (TagElevationRequest*)>
+  <!ELEMENT TagElevationRequest (ColumnName,ElevationPathway,Conditional?)>
+  <!ELEMENT ColumnName (#PCDATA)>
+  <!ELEMENT ElevationPathway (#PCDATA)>
+  <!ELEMENT Conditional (ConditionalPathway,ConditionalRegex)>
+  <!ELEMENT ConditionalPathway (#PCDATA)>
+  <!ELEMENT ConditionalRegex (#PCDATA)>
+]>
+
+<TagElevationRequestCollection>
+  <TagElevationRequest>
+    <ColumnName>ProcedureCodeSequence_CodeValue</ColumnName>
+    <ElevationPathway>ProcedureCodeSequence->CodeValue+</ElevationPathway>
+  </TagElevationRequest>
+</TagElevationRequestCollection>
