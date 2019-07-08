@@ -51,7 +51,7 @@ task :pack, [:config] do |t, args|
 		puts "version: #{version}"
 		
     Dir.chdir('DicomTypeTranslation') do
-        sh "nuget pack HIC.DicomTypeTranslation.nuspec -Properties Configuration=#{args.config} -IncludeReferencedProjects -Symbols -Version #{$VERSION}#{$SUFFIX}"
-        sh "nuget push HIC.DicomTypeTranslation.#{$VERSION}#{$SUFFIX}.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey #{NUGETKEY}"
+        sh "nuget pack HIC.DicomTypeTranslation.nuspec -Properties Configuration=#{args.config} -IncludeReferencedProjects -Symbols -Version #{version}"
+        sh "nuget push HIC.DicomTypeTranslation.#{version}.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey #{NUGETKEY}"
     end
 end
