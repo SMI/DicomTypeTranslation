@@ -46,11 +46,11 @@ end
 desc "Pushes the plugin packages into the specified folder"    
 task :pack, [:config] do |t, args|
 	args.with_defaults(:config => :Release)
-    Dir.chdir('DicomTypeTranslation') do
-		
+	
 		version = File.open('version') {|f| f.readline}
 		puts "version: #{version}"
-	
+		
+    Dir.chdir('DicomTypeTranslation') do
         sh "nuget pack HIC.DicomTypeTranslation.nuspec -Properties Configuration=#{args.config} -IncludeReferencedProjects -Symbols -Version #{$VERSION}#{$SUFFIX}"
         sh "nuget push HIC.DicomTypeTranslation.#{$VERSION}#{$SUFFIX}.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey #{NUGETKEY}"
     end
