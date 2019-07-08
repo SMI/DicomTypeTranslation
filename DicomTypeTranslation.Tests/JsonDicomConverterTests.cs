@@ -25,7 +25,7 @@ namespace DicomTypeTranslation.Tests
 
         private readonly JsonConverter _jsonDicomConverter;
 
-        private static readonly string _dcmDir = Path.GetFullPath(TestContext.CurrentContext.TestDirectory + "/../../../ElevationTests");
+        private static readonly string _dcmDir = Path.Combine(TestContext.CurrentContext.TestDirectory , "TestDicomFiles");
 
         private readonly string _srDcmPath = Path.Combine(_dcmDir, "report01.dcm");
         private readonly string _imDcmPath = Path.Combine(_dcmDir, "image11.dcm");

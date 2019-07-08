@@ -1,7 +1,5 @@
 ﻿using Dicom;
 using DicomTypeTranslation.TableCreation;
-using FAnsi;
-using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
 using NUnit.Framework;
 using System;
@@ -45,8 +43,10 @@ namespace DicomTypeTranslation.Tests
             dt.Columns.Add("PatientID");
             dt.Columns.Add("FileLocation");
 
+            var dir = Path.Combine(TestContext.CurrentContext.TestDirectory ,"TestDicomFiles");
+
             //Load some dicom files and copy tag data into DataTable (where tag exists)
-            foreach (string file in Directory.EnumerateFiles(@"C:\temp\TestDicomFiles", "*.dcm", SearchOption.AllDirectories))
+            foreach (string file in Directory.EnumerateFiles(dir, "*.dcm", SearchOption.AllDirectories))
             {
                 var dcm = DicomFile.Open(file);
                 var ds = dcm.Dataset;

@@ -14,6 +14,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="TestDatabases.xml" />
+    <None Remove="TestDicomFiles\image11.dcm" />
+    <None Remove="TestDicomFiles\report01.dcm" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
@@ -27,13 +29,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="ElevationTests\TestStructuredReports.Designer.cs">
-      <DependentUpon>TestStructuredReports.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="..\Templates\CT.it" Link="Templates\CT.it">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -43,8 +38,12 @@
     <Content Include="..\Templates\OTHER.it" Link="Templates\OTHER.it">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="ElevationTests\image11.dcm" />
-    <None Include="ElevationTests\report01.dcm" />
+    <Content Include="TestDicomFiles\image11.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDicomFiles\report01.dcm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="fo-dicom.Json" Version="4.0.1" />
@@ -58,12 +57,5 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="ElevationTests\TestStructuredReports.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>TestStructuredReports.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
 </Project>
