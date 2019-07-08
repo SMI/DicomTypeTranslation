@@ -10,7 +10,7 @@ task :restorepackages do
 end
 
 task :setup_connection do 
-    File.open("Tests/DicomTypeTranslation.Tests/TestDatabases.xml", "w") do |f|
+    File.open("DicomTypeTranslation.Tests/TestDatabases.xml", "w") do |f|
         f.write("<TestDatabases>
           <Settings>
             <AllowDatabaseCreation>True</AllowDatabaseCreation>
