@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Support for arbitrary (not based on a specific DicomTag) columns in image table templates
+
+### Changed
+- Updated to latest version of FAnsiSql (0.9.2)
+
 ## [2.0.0]
 
 ### Added
