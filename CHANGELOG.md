@@ -90,7 +90,7 @@ Initial commit of code from old SMIPlugin repo
 
 
 [Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/release/2.0.0...develop
-[2.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.4...release/2.0.0
+[2.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.4...2.0.0
 [1.0.4]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.3...1.0.4
 [1.0.0.3]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.2...1.0.0.3
 [1.0.0.2]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.1...1.0.0.2
