@@ -72,8 +72,25 @@ namespace DicomTypeTranslation.TableCreation
         }
 
         /// <summary>
+        /// Returns a <see cref="DatabaseColumnRequest"/> that describes the provided <paramref name="col"/>.  If the column is a
+        /// <see cref="DicomTag"/> then <see cref="ImageColumnTemplate.Type"/> can be null
+        /// </summary>
+        /// <param name="col"></param>
+        /// <returns></returns>
+        public DatabaseColumnRequest GetColumnDefinition(ImageColumnTemplate col)
+        {
+            if (col.Type != null)
+                return new DatabaseColumnRequest(col.ColumnName, col.Type, col.AllowNulls) { IsPrimaryKey = col.IsPrimaryKey };
+
+            return GetColumnDefinition(col.ColumnName,col.AllowNulls,col.IsPrimaryKey);
+        }
+
+        /// <summary>
         /// Returns a <see cref="DatabaseColumnRequest"/> that describes the provided dicom <paramref name="tag"/> (See <see cref="GetDataTypeForTag"/>).  Also supports
-        /// <see cref="RelativeFileArchiveURI"/> as <paramref name="tag"/>
+        /// <see cref="RelativeFileArchiveURI"/> as <paramref name="tag"/>.
+        /// 
+        /// <para>This overload does NOT handle arbitrary (non DicomTag) columns, use <see cref="GetColumnDefinition(ImageColumnTemplate)"/> instead</para>
+        /// 
         /// </summary>
         /// <param name="tag">The name of a dicom tag or <see cref="RelativeFileArchiveURI"/></param>
         /// <param name="allowNulls"></param>
@@ -103,7 +120,7 @@ namespace DicomTypeTranslation.TableCreation
             var tag = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == keyword);
 
             if (tag == null)
-                throw new NotSupportedException("Keyword '" + keyword + "' is not a valid Dicom Tag.");
+                throw new NotSupportedException("Keyword '" + keyword + "' is not a valid Dicom Tag and no DatabaseTypeRequest was provided");
 
             var type = DicomTypeTranslater.GetNaturalTypeForVr(tag.ValueRepresentations, tag.ValueMultiplicity);
             return tt.GetSQLDBTypeForCSharpType(type);

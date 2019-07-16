@@ -30,7 +30,7 @@ namespace DicomTypeTranslation.TableCreation
         public DatabaseColumnRequest[] GetColumns(FAnsi.DatabaseType databaseType)
         {
             var tableCreation = new ImagingTableCreation(new QuerySyntaxHelperFactory().Create(databaseType));
-            return Columns.Select(c => tableCreation.GetColumnDefinition(c.ColumnName, c.AllowNulls, c.IsPrimaryKey)).ToArray();
+            return Columns.Select(c => tableCreation.GetColumnDefinition(c)).ToArray();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FAnsi;
+using FAnsi.Discovery;
 using YamlDotNet.Serialization;
 
 namespace DicomTypeTranslation.TableCreation
@@ -36,6 +37,8 @@ namespace DicomTypeTranslation.TableCreation
         {
             var deserializer = new DeserializerBuilder()
                                  .IgnoreUnmatchedProperties()
+                                 .WithTypeConverter(new SystemTypeTypeConverter())
+                                 .WithObjectFactory(new ImageTableTemplateObjectFactory())
                                  .Build();
 
             return deserializer.Deserialize<ImageTableTemplateCollection>(yaml);
@@ -47,7 +50,12 @@ namespace DicomTypeTranslation.TableCreation
         /// <returns></returns>
         public string Serialize()
         {
-            Serializer serializer = new Serializer();
+
+            var serializer = new SerializerBuilder()
+                                .WithAttributeOverride<DecimalSize>(s=>s.Precision, new YamlIgnoreAttribute())
+                                .WithAttributeOverride<DecimalSize>(s => s.Scale, new YamlIgnoreAttribute())
+                                .WithTypeConverter(new SystemTypeTypeConverter())
+                                .Build();
 
             return serializer.Serialize(this);
         }
