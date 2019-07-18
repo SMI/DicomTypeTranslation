@@ -214,7 +214,16 @@ namespace DicomTypeTranslation
         {
             // Ok to throw an exception here - we should always be writing the VR into the Bson document if it's ambiguous
             if (vr == null)
-                vr = tag.DictionaryEntry.ValueRepresentations.Single();
+                try
+                {
+                    vr = tag.DictionaryEntry.ValueRepresentations.Single();
+                }
+                catch (InvalidOperationException e)
+                {
+                    // Add info on the tag if we do throw
+                    e.Data["DicomTag"] += tag.DictionaryEntry.Keyword;
+                    throw;
+                }
 
             DicomItem item;
 

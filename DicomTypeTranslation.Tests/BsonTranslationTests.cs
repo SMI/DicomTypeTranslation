@@ -292,6 +292,41 @@ namespace DicomTypeTranslation.Tests
     }
 
     [TestFixture]
+    public class BsonToDicomTranslationTests
+    {
+        #region Tests
+
+        /// <summary>
+        /// Tests that if the VR of a multi-VR tag isn't specified in the document, then the
+        /// exception message contains enough data to debug the specific tag causing the issue.
+        /// </summary>
+        [Test]
+        public void BsonToDicom_UnspecifiedMultiVrTag_ThrowsWithInfoMessage()
+        {
+            var doc = new BsonDocument
+            {
+                { "DarkCurrentCounts", new BsonArray() }
+            };
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                try
+                {
+                    DicomTypeTranslaterWriter.BuildDicomDataset(doc);
+                }
+                catch (InvalidOperationException e)
+                {
+                    Assert.AreEqual("DarkCurrentCounts", e.Data["DicomTag"]);
+                    throw;
+                }
+            });
+        }
+
+        #endregion
+    }
+
+
+    [TestFixture]
     public class BsonRoundTripTranslationTests
     {
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
