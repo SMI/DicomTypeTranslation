@@ -322,6 +322,34 @@ namespace DicomTypeTranslation.Tests
             });
         }
 
+        [Test]
+        public void BsonToDicom_UnknownPrivateSequence_DoesNotThrow()
+        {
+            var doc = new BsonDocument
+            {
+                { "(7015,1173:PMTF INFORMATION DATA)-Unknown", new BsonArray
+                    { new BsonDocument
+                        {
+                            { "(0029,0010)-PrivateCreator", new BsonDocument
+                                {
+                                    { "vr", "LO" },
+                                    { "val", "aaah" }
+                                }
+                            },
+                            { "(0029,1090:PMTF INFORMATION DATA)-Unknown", new BsonDocument
+                                {
+                                    { "vr", "OB" },
+                                    { "val", BsonNull.Value }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            Assert.DoesNotThrow(() => DicomTypeTranslaterWriter.BuildDicomDataset(doc));
+        }
+
         #endregion
     }
 
@@ -572,6 +600,21 @@ namespace DicomTypeTranslation.Tests
                 Assert.NotNull(stringElement);
                 Assert.AreEqual(Encoding.UTF8, stringElement.Encoding);
             }
+        }
+
+        /// <summary>
+        /// Tests that private sequence elements are handled properly when the private creator mapping isn't known
+        /// </summary>
+        [Test]
+        public void BsonRoundTrip_UnknownPrivateSequence_ConvertedCorrectly()
+        {
+            DicomPrivateCreator privateCreator = DicomDictionary.Default.GetPrivateCreator("???");
+            
+            var ds = new DicomDataset();
+            ds.Add(new DicomSequence(ds.GetPrivateTag(new DicomTag(3, 0x0017, privateCreator)),
+                new DicomDataset { new DicomShortText(new DicomTag(3, 0x0018, privateCreator), "ಠ_ಠ") }));
+
+            VerifyBsonTripleTrip(ds);
         }
 
         #endregion

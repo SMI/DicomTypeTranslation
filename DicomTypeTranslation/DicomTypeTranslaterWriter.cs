@@ -212,18 +212,8 @@ namespace DicomTypeTranslation
 
         private static DicomItem CreateDicomItem(DicomTag tag, BsonValue data, DicomVR vr = null)
         {
-            // Ok to throw an exception here - we should always be writing the VR into the Bson document if it's ambiguous
             if (vr == null)
-                try
-                {
-                    vr = tag.DictionaryEntry.ValueRepresentations.Single();
-                }
-                catch (InvalidOperationException e)
-                {
-                    // Add info on the tag if we do throw
-                    e.Data["DicomTag"] += tag.DictionaryEntry.Keyword;
-                    throw;
-                }
+                vr = GetVrForTag(tag, data);
 
             DicomItem item;
 
@@ -391,6 +381,27 @@ namespace DicomTypeTranslation
             return data.IsBsonNull
                 ? new DicomSequence(tag)
                 : new DicomSequence(tag, data.AsBsonArray.Select(x => BuildDicomDataset(x.AsBsonDocument)).ToArray());
+        }
+
+        private static DicomVR GetVrForTag(DicomTag tag, BsonValue data)
+        {
+            DicomVR vr;
+
+            try
+            {
+                if (tag.IsPrivate && data is BsonArray)
+                    vr = DicomVR.SQ;
+                else
+                    vr = tag.DictionaryEntry.ValueRepresentations.Single();
+            }
+            catch (InvalidOperationException e)
+            {
+                // Ok to throw an exception here - we should always be writing the VR into the Bson document if it's ambiguous
+                e.Data["DicomTag"] += tag.DictionaryEntry.Keyword;
+                throw;
+            }
+
+            return vr;
         }
 
         #endregion
