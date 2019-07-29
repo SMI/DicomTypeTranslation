@@ -222,3 +222,6 @@ Assert.AreEqual("varchar2(64)",tt.GetSQLDBTypeForCSharpType(type));
 
 This lets you build adhoc database schemas in any DBMS (supported by FAnsi) based on arbitrary dicom tags picked by your users.
 
+## Building
+
+Building requires MSBuild 15 or later (or Visual Studio 2017 or later).  You will also need to install the DotNetCore 2.2 SDK.
