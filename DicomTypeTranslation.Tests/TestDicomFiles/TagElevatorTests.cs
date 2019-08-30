@@ -59,8 +59,8 @@ namespace DicomTypeTranslation.Tests.ElevationTests
             foreach (DicomDictionaryEntry entry in DicomDictionary.Default)
             {
                 //that can be Sequences
-                if (entry.Keyword != QuerySyntaxHelper.MakeHeaderNameSane(entry.Keyword))
-                    dodgy.Add(entry.Keyword, QuerySyntaxHelper.MakeHeaderNameSane(entry.Keyword));
+                if (entry.Keyword != QuerySyntaxHelper.MakeHeaderNameSensible(entry.Keyword))
+                    dodgy.Add(entry.Keyword, QuerySyntaxHelper.MakeHeaderNameSensible(entry.Keyword));
             }
 
             foreach (var kvp in dodgy)

@@ -7,6 +7,7 @@ using FAnsi.Discovery.TypeTranslation;
 using NUnit.Framework;
 using System;
 using System.IO;
+using TypeGuesser;
 
 namespace DicomTypeTranslation.Tests
 {

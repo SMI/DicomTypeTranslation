@@ -7,20 +7,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.1.0] - 2019-08-30
+
 ### Added
 
 - Support for arbitrary (not based on a specific DicomTag) columns in image table templates
 
 ### Changed
 
-- Updated to latest version of FAnsiSql (0.9.2)
+- Updated to latest version of FAnsiSql (0.10.0)
 
 ### Fixed
 
 - DicomTypeTranslaterWriter: Fixed parsing of private sequence elements when the private creator is unknown
 
 
-## [2.0.0]
+## [2.0.0] - 2019-07-08
 
 ### Added
 
@@ -102,7 +104,8 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.0.0...develop
+[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.1.0...develop
+[2.1.0]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.0.0..2.1.0
 [2.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.4...2.0.0
 [1.0.4]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.3...1.0.4
 [1.0.0.3]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.2...1.0.0.3
