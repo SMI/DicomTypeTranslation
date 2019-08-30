@@ -5,6 +5,7 @@ using DicomTypeTranslation;
 using FAnsi.Discovery;
 using FAnsi.Discovery.QuerySyntax;
 using FAnsi.Discovery.TypeTranslation;
+using TypeGuesser;
 
 namespace DicomTypeTranslation.TableCreation
 {

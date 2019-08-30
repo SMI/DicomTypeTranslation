@@ -13,6 +13,7 @@ using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
 
 using Newtonsoft.Json;
+using TypeGuesser;
 
 
 namespace DicomTypeTranslation
@@ -132,8 +133,8 @@ namespace DicomTypeTranslation
 
                 toReturn = new DatabaseTypeRequest(
                     t,
-                    Conflate(toReturn.MaxWidthForStrings, newType.MaxWidthForStrings),
-                    DecimalSize.Combine(toReturn.DecimalPlacesBeforeAndAfter, newType.DecimalPlacesBeforeAndAfter));
+                    Conflate(toReturn.Width, newType.Width),
+                    DecimalSize.Combine(toReturn.Size, newType.Size));
             }
 
             return toReturn;

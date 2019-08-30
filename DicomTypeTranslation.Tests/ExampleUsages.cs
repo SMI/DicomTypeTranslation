@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using TypeGuesser;
 
 namespace DicomTypeTranslation.Tests
 {
@@ -93,7 +94,7 @@ namespace DicomTypeTranslation.Tests
             DatabaseTypeRequest type = DicomTypeTranslater.GetNaturalTypeForVr(tag.DictionaryEntry.ValueRepresentations, tag.DictionaryEntry.ValueMultiplicity);
 
             Assert.AreEqual(typeof(string), type.CSharpType);
-            Assert.AreEqual(64, type.MaxWidthForStrings);
+            Assert.AreEqual(64, type.Width);
 
             TypeTranslater tt = new MicrosoftSQLTypeTranslater();
             Assert.AreEqual("varchar(64)", tt.GetSQLDBTypeForCSharpType(type));

@@ -1,6 +1,7 @@
 ﻿using Dicom;
 using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
+using TypeGuesser;
 
 namespace DicomTypeTranslation.TableCreation
 {

@@ -1,6 +1,7 @@
 ﻿using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
 using System;
+using TypeGuesser;
 using YamlDotNet.Serialization;
 
 namespace DicomTypeTranslation.TableCreation

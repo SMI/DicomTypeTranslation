@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Updated to latest version of FAnsiSql (0.9.2)
+- Updated to latest version of FAnsiSql (0.10.0)
 
 ### Fixed
 

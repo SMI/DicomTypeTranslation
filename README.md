@@ -207,7 +207,7 @@ The library supports translating DicomTags into the matching [FAnsiSql](https://
 DatabaseTypeRequest type = DicomTypeTranslater.GetNaturalTypeForVr(tag.DictionaryEntry.ValueRepresentations,tag.DictionaryEntry.ValueMultiplicity);
 
 Assert.AreEqual(typeof(string),type.CSharpType);
-Assert.AreEqual(64,type.MaxWidthForStrings);
+Assert.AreEqual(64,type.Width);
 ```
 
 This `DataTypeRequest` can then be converted to the appropriate database column type:
