@@ -3,7 +3,7 @@
 
 # DicomTypeTranslation
 
-[Fo Dicom](https://github.com/fo-dicom/fo-dicom)/[FAnsiSql](https://github.com/HicServices/FAnsiSql) powered library for converting [dicom](https://www.dicomlibrary.com/dicom/) types into database/C# types at speed. The library lets you cherry pick specific tags from dicom images (e.g. PatientID) and populate a relational (or mongo) database with flat record results (e.g. 1 record per image). With DicomTypeTranslation you can create whatever schema works for you in whatever DBMS you want and then link it with existing EHR data you already have (E.g. by PatientID).
+[Fo Dicom](https://github.com/fo-dicom/fo-dicom)/[FAnsiSql](https://github.com/HicServices/FAnsiSql) powered library for converting [dicom](https://www.dicomlibrary.com/dicom/) types into database/C# types at speed. The library lets you cherry pick specific tags from dicom images (e.g. PatientID) and populate a relational (or MongoDB) database with flat record results (e.g. 1 record per image). With DicomTypeTranslation you can create whatever schema works for you in whatever DBMS you want and then link it with existing EHR data you already have (E.g. by PatientID).
 
 Also included is a DICOM to JSON converter, which aims to allow better coverage when converting "real world" DICOM data than the standard fo-dicom implementation. More details [here](docs/JsonDicomConverters.md).
 
@@ -222,3 +222,6 @@ Assert.AreEqual("varchar2(64)",tt.GetSQLDBTypeForCSharpType(type));
 
 This lets you build adhoc database schemas in any DBMS (supported by FAnsi) based on arbitrary dicom tags picked by your users.
 
+## Building
+
+Building requires MSBuild 15 or later (or Visual Studio 2017 or later).  You will also need to install the DotNetCore 2.2 SDK.
