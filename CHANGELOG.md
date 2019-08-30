@@ -102,7 +102,7 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/release/2.0.0...develop
+[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.0.0...develop
 [2.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.4...2.0.0
 [1.0.4]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.3...1.0.4
 [1.0.0.3]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.2...1.0.0.3
