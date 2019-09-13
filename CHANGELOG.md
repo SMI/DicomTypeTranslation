@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [2.1.1] - 2019-08-30
+## [2.1.1] - 2019-09-13
 
 ### Changed
 
@@ -111,7 +111,7 @@ Initial commit of code from old SMIPlugin repo
 
 
 [Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.1.1...develop
-[2.1.1]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.0.0..2.1.1
+[2.1.1]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.1.0..2.1.1
 [2.1.0]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.0.0..2.1.0
 [2.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.4...2.0.0
 [1.0.4]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.3...1.0.4
