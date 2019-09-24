@@ -1,5 +1,9 @@
 # Templates
 
+- [CT](#ct-computerised-tomography)
+- [MR](#mr-magnetic-resonance)
+- [OTHER](#other)
+
 ## CT (Computerised Tomography)
 
 Schema with 
