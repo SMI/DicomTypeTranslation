@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 		Templates\CT.it = Templates\CT.it
 		Templates\MR.it = Templates\MR.it
 		Templates\OTHER.it = Templates\OTHER.it
+		Templates\README.md = Templates\README.md
 		Templates\SmiTagElevation.xml = Templates\SmiTagElevation.xml
 	EndProjectSection
 EndProject

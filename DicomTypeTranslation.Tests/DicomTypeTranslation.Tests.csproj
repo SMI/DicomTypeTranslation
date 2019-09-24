@@ -46,6 +46,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Templates\README.md" Link="Templates\README.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="fo-dicom.Json" Version="4.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.0" />
     <PackageReference Include="NUnit" Version="3.11.0" />
