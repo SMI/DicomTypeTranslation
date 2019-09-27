@@ -7,12 +7,30 @@ using FAnsi.Discovery.TypeTranslation;
 using NUnit.Framework;
 using System;
 using System.IO;
+using System.Linq;
 using TypeGuesser;
 
 namespace DicomTypeTranslation.Tests
 {
     class TemplateTests:DatabaseTests
     {
+        [Test]
+        public void Template_ExampleYaml()
+        {
+            ImageTableTemplateCollection collection = new ImageTableTemplateCollection();
+            ImageTableTemplate table = new ImageTableTemplate();
+            
+            var colTemplate = new ImageColumnTemplate();
+            colTemplate.ColumnName = "mycol";
+            colTemplate.AllowNulls = true;
+            colTemplate.Type = new DatabaseTypeRequest(typeof(string),100);
+
+            table.Columns = new[] {colTemplate};
+            collection.Tables.Add(table);
+
+            TestContext.Write(collection.Serialize());
+        }
+
         [TestCase("CT", FAnsi.DatabaseType.MicrosoftSQLServer)]
         [TestCase("CT", FAnsi.DatabaseType.MySql)]
         [TestCase("CT", FAnsi.DatabaseType.Oracle)]

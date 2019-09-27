@@ -29,19 +29,26 @@ Tables:
     IsPrimaryKey: true
   - ColumnName: Modality
     AllowNulls: true
-  - ColumnName: SourceApplicationEntityTitle
-    AllowNulls: true
   - ColumnName: InstitutionName
-    AllowNulls: true
-  - ColumnName: ProcedureCodeSequence
     AllowNulls: true
   - ColumnName: ProtocolName
     AllowNulls: true
-  - ColumnName: PerformedProcedureStepID
+  - ColumnName: ProcedureCodeSequence_CodeValue
     AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 100
   - ColumnName: PerformedProcedureStepDescription
     AllowNulls: true
   - ColumnName: SeriesDescription
+    AllowNulls: true
+  - ColumnName: SeriesDate
+    AllowNulls: true
+  - ColumnName: SeriesTime
+    AllowNulls: true
+  - ColumnName: ImageType
     AllowNulls: true
   - ColumnName: BodyPartExamined
     AllowNulls: true
@@ -66,10 +73,6 @@ Tables:
   - ColumnName: SeriesInstanceUID
   - ColumnName: SOPInstanceUID
     IsPrimaryKey: true
-  - ColumnName: SeriesDate
-    AllowNulls: true
-  - ColumnName: SeriesTime
-    AllowNulls: true
   - ColumnName: BurnedInAnnotation
     AllowNulls: true
   - ColumnName: RelativeFileArchiveURI
@@ -87,6 +90,8 @@ Tables:
   - ColumnName: ManufacturerModelName
     AllowNulls: true
   - ColumnName: Manufacturer
+    AllowNulls: true
+  - ColumnName: SoftwareVersions
     AllowNulls: true
   - ColumnName: PhotometricInterpretation
     AllowNulls: true
@@ -111,8 +116,6 @@ Tables:
   - ColumnName: FieldOfViewDimensionsInFloat
     AllowNulls: true
   - ColumnName: DerivationDescription
-    AllowNulls: true
-  - ColumnName: TransferSyntaxUID
     AllowNulls: true
   - ColumnName: LossyImageCompression
     AllowNulls: true

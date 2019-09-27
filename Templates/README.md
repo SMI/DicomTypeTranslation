@@ -31,13 +31,14 @@ Schema with
 | StudyInstanceUID |  |
 | SeriesInstanceUID |  |
 | Modality |  |
-| SourceApplicationEntityTitle |  |
 | InstitutionName |  |
-| ProcedureCodeSequence |  |
 | ProtocolName |  |
-| PerformedProcedureStepID |  |
+| ProcedureCodeSequence_CodeValue |  |
 | PerformedProcedureStepDescription |  |
 | SeriesDescription |  |
+| SeriesDate |  |
+| SeriesTime |  |
+| ImageType |  |
 | BodyPartExamined |  |
 | DeviceSerialNumber |  |
 | NumberOfSeriesRelatedInstances |  |
@@ -49,8 +50,6 @@ Schema with
 | ------------- | ------------- |
 | SeriesInstanceUID |  |
 | SOPInstanceUID |  |
-| SeriesDate |  |
-| SeriesTime |  |
 | BurnedInAnnotation |  |
 | RelativeFileArchiveURI |  |
 | MessageGuid |  |
@@ -64,6 +63,7 @@ Schema with
 | ImageType |  |
 | ManufacturerModelName |  |
 | Manufacturer |  |
+| SoftwareVersions |  |
 | XRayTubeCurrent |  |
 | PhotometricInterpretation |  |
 | ContrastBolusRoute |  |
@@ -76,13 +76,11 @@ Schema with
 | FieldOfViewDimensions |  |
 | FieldOfViewDimensionsInFloat |  |
 | DerivationDescription |  |
-| TransferSyntaxUID |  |
 | LossyImageCompression |  |
 | LossyImageCompressionMethod |  |
 | LossyImageCompressionRatio |  |
 | LossyImageCompressionRetired |  |
 | ScanOptions |  |
-
 ## MR (Magnetic Resonance)
 
 ### StudyTable
@@ -108,13 +106,14 @@ Schema with
 | StudyInstanceUID |  |
 | SeriesInstanceUID |  |
 | Modality |  |
-| SourceApplicationEntityTitle |  |
 | InstitutionName |  |
-| ProcedureCodeSequence |  |
 | ProtocolName |  |
-| PerformedProcedureStepID |  |
+| ProcedureCodeSequence_CodeValue |  |
 | PerformedProcedureStepDescription |  |
 | SeriesDescription |  |
+| SeriesDate |  |
+| SeriesTime |  |
+| ImageType |  |
 | BodyPartExamined |  |
 | DeviceSerialNumber |  |
 | NumberOfSeriesRelatedInstances |  |
@@ -131,8 +130,6 @@ Schema with
 | ------------- | ------------- |
 | SeriesInstanceUID |  |
 | SOPInstanceUID |  |
-| SeriesDate |  |
-| SeriesTime |  |
 | BurnedInAnnotation |  |
 | RelativeFileArchiveURI |  |
 | MessageGuid |  |
@@ -142,6 +139,7 @@ Schema with
 | ImageType |  |
 | ManufacturerModelName |  |
 | Manufacturer |  |
+| SoftwareVersions |  |
 | PhotometricInterpretation |  |
 | ContrastBolusRoute |  |
 | ContrastBolusAgent |  |
@@ -154,7 +152,6 @@ Schema with
 | FieldOfViewDimensions |  |
 | FieldOfViewDimensionsInFloat |  |
 | DerivationDescription |  |
-| TransferSyntaxUID |  |
 | LossyImageCompression |  |
 | LossyImageCompressionMethod |  |
 | LossyImageCompressionRatio |  |
