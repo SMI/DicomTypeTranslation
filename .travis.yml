@@ -1,34 +1,22 @@
-
-branches:
-  only:
-  - master
-  - /^release\/.*$/
-  - /^hotfix\/.*$/
-
 language: csharp
 mono: none
+dotnet: 2.2.100
 
-env:  
-  global:
-    - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
-    - DOTNET_CLI_TELEMETRY_OPTOUT=1
+addons:
+  postgresql: "10"
+  apt:
+    packages:
+    - postgresql-10
+    - postgresql-client-10
 
-matrix:
-  include:
-    - name: "Dotnet 2.2 on Bionic Linux"
-      dist: bionic
-      dotnet: 2.2.203 # https://travis-ci.community/t/dotnet-core-2-2/1216    
-      script:
-        - dotnet restore --no-cache
-        - dotnet test -c Release
-    # NOTE: Broken currently. See: https://travis-ci.com/HicServices/DicomTypeTranslation/jobs/213276241
-    # - name: "Msbuild on Windows"
-    #   os: windows
-    #   env:
-    #     - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin"
-    #   install:
-    #     - choco install nuget.commandline
-    #   script:
-    #     - export PATH=$MSBUILD_PATH:$PATH
-    #     - nuget restore -NoCache
-    #     - msbuild /p:Configuration=Release
+services:
+  - postgresql
+  - mysql
+
+before_script:
+- sudo docker run --name=mssql-server-linux-latest -e 'ACCEPT_EULA=Y' -e 'MSSQL_SA_PASSWORD=YourStrong!Passw0rd' -p 1433:1433 -d microsoft/mssql-server-linux:2017-latest
+
+script:
+ - dotnet restore
+ - dotnet build
+ - dotnet test
