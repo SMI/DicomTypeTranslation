@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.1.2] - 2019-11-20
+
 ### Changed
 
 - Updated to latest version of FAnsiSql (0.10.12)
@@ -114,7 +116,8 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.1.1...develop
+[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.1.2...develop
+[2.1.2]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.1.1..2.1.2
 [2.1.1]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.1.0..2.1.1
 [2.1.0]: https://github.com/HicServices/DicomTypeTranslation/compare/tags/2.0.0..2.1.0
 [2.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.4...2.0.0
