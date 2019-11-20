@@ -9,7 +9,7 @@
 
 | Package | Source Code | Version | License | Purpose | Additional Risk Assessment |
 | ------- | ------------| --------| ------- | ------- | -------------------------- |
-| HIC.FAnsiSql |[GitHub](https://github.com/HicServices/FAnsiSql) | [0.10.4](https://www.nuget.org/packages/HIC.FansiSql/0.10.4) | [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.html) | Handles assigning translating database types and DBMS interactions|
+| HIC.FAnsiSql |[GitHub](https://github.com/HicServices/FAnsiSql) | [0.10.12](https://www.nuget.org/packages/HIC.FansiSql/0.10.12) | [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.html) | Handles assigning translating database types and DBMS interactions|
 |[MongoDB.Driver](https://docs.mongodb.com/ecosystem/drivers/csharp/)| [GitHub](https://github.com/mongodb/mongo-csharp-driver) |[2.8.1](https://www.nuget.org/packages/MongoDB.Driver/2.8.1)| [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0) | Types for writting dicom tags into MongoDb databases|
 | fo-dicom.NetCore | [GitHub](https://github.com/fo-dicom/fo-dicom) |[4.0.1](https://www.nuget.org/packages/fo-dicom.NetCore/4.0.1)|[MS-PL](https://opensource.org/licenses/MS-PL) | Handles reading/writing dicom tags from dicom datasets | |
 | fo-dicom.Json | [GitHub](https://github.com/fo-dicom/fo-dicom) |[4.0.1](https://www.nuget.org/packages/fo-dicom.Json/4.0.1)|[MS-PL](https://opensource.org/licenses/MS-PL) | Handles serializing dicom datasets | |

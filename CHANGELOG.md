@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Updated to latest version of FAnsiSql (0.10.12)
+
 ## [2.1.1] - 2019-09-13
 
 ### Changed
