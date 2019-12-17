@@ -208,6 +208,25 @@ namespace DicomTypeTranslation.Tests
             Assert.Throws<FormatException>(() => DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.SelectorDSValue));
         }
 
+
+        [Test]
+        public void Test_GetCSharpValue_PrivateTags()
+        {
+            //Create a dataset with the private tag in it
+            var aTag = new DicomTag(0x3001, 0x08, "PRIVATE");
+            var ds = new DicomDataset();
+            ds.Add<int>(aTag, 1);
+            
+            //Somehow aTag has the right value
+            Assert.AreEqual(1,ds.GetSingleValue<int>(aTag));
+            Assert.AreEqual(1,DicomTypeTranslaterReader.GetCSharpValue(ds, aTag));
+            
+            //but it doesn't when we loop through
+            foreach (DicomItem item in ds)
+                if (item.ToString().Contains("(3001,1008)"))
+                    Assert.AreEqual(1, DicomTypeTranslaterReader.GetCSharpValue(ds, item)); //<- error here
+        }
+
         [Test]
         public void ShowBlacklistedTags()
         {
