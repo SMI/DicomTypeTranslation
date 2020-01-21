@@ -1,3 +1,4 @@
+#Last Modified: 2020-01-21
 Tables:
 - TableName: StudyTable
   Columns:
@@ -47,8 +48,6 @@ Tables:
   - ColumnName: SeriesDate
     AllowNulls: true
   - ColumnName: SeriesTime
-    AllowNulls: true
-  - ColumnName: ImageType
     AllowNulls: true
   - ColumnName: BodyPartExamined
     AllowNulls: true

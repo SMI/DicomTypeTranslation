@@ -39,7 +39,6 @@ Schema with
 | SeriesDescription |  |
 | SeriesDate |  |
 | SeriesTime |  |
-| ImageType |  |
 | BodyPartExamined |  |
 | DeviceSerialNumber |  |
 | NumberOfSeriesRelatedInstances |  |
@@ -114,7 +113,6 @@ Schema with
 | SeriesDescription |  |
 | SeriesDate |  |
 | SeriesTime |  |
-| ImageType |  |
 | BodyPartExamined |  |
 | DeviceSerialNumber |  |
 | NumberOfSeriesRelatedInstances |  |
@@ -213,7 +211,6 @@ Observations
 | SeriesDescription |  |
 | SeriesDate |  |
 | SeriesTime |  |
-| ImageType |  |
 | BodyPartExamined |  |
 | DeviceSerialNumber |  |
 | NumberOfSeriesRelatedInstances |  |
