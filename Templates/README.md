@@ -41,7 +41,6 @@ Schema with
 | SeriesTime |  |
 | BodyPartExamined |  |
 | DeviceSerialNumber |  |
-| NumberOfSeriesRelatedInstances |  |
 | SeriesNumber |  |
 
 ### ImageTable
@@ -115,7 +114,6 @@ Schema with
 | SeriesTime |  |
 | BodyPartExamined |  |
 | DeviceSerialNumber |  |
-| NumberOfSeriesRelatedInstances |  |
 | SeriesNumber |  |
 | MRAcquisitionType |  |
 | AngioFlag |  |
@@ -213,7 +211,6 @@ Observations
 | SeriesTime |  |
 | BodyPartExamined |  |
 | DeviceSerialNumber |  |
-| NumberOfSeriesRelatedInstances |  |
 | SeriesNumber |  |
 
 ### ImageTable
@@ -284,7 +281,6 @@ Observations
 | SeriesDescription |  |
 | BodyPartExamined |  |
 | DeviceSerialNumber |  |
-| NumberOfSeriesRelatedInstances |  |
 | SeriesNumber |  |
 | SequenceName |  |
 | SOPInstanceUID |  |

@@ -44,8 +44,6 @@ Tables:
     AllowNulls: true
   - ColumnName: DeviceSerialNumber
     AllowNulls: true
-  - ColumnName: NumberOfSeriesRelatedInstances
-    AllowNulls: true
   - ColumnName: SeriesNumber
     AllowNulls: true
   - ColumnName: SequenceName
