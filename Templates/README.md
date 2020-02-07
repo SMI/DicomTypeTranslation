@@ -212,6 +212,21 @@ Observations
 | BodyPartExamined |  |
 | DeviceSerialNumber |  |
 | SeriesNumber |  |
+| NumberOfSlices |  |
+| EnergyWindowRangeSequence_EnergyWindowLowerLimit |  |
+| EnergyWindowRangeSequence_EnergyWindowUpperLimit |  |
+| RadiopharmaceuticalInformationSequence_Radiopharmaceutical |  |
+| RadiopharmaceuticalInformationSequence_RadiopharmaceuticalVolume |  |
+| RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeValue |  |
+| RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeMeaning |  |
+| RadiopharmaceuticalInformationSequence_RadionuclideTotalDose |  |
+| RandomsCorrectionMethod |  |
+| AttenuationCorrectionMethod |  |
+| DecayCorrection |  |
+| ReconstructionMethod |  |
+| ScatterCorrectionMethod |  |
+| DateOfLastCalibration |  |
+|TimeOfLastCalibration | |
 
 ### ImageTable
 
@@ -225,18 +240,11 @@ Observations
 | SliceLocation |  |
 | SliceThickness |  |
 | SpacingBetweenSlices |  |
-| SpiralPitchFactor |  |
-| KVP |  |
-| ExposureTime |  |
-| Exposure |  |
 | ImageType |  |
 | ManufacturerModelName |  |
 | Manufacturer |  |
 | SoftwareVersions |  |
-| XRayTubeCurrent |  |
 | PhotometricInterpretation |  |
-| ContrastBolusRoute |  |
-| ContrastBolusAgent |  |
 | AcquisitionNumber |  |
 | AcquisitionDate |  |
 | AcquisitionTime |  |
@@ -250,7 +258,7 @@ Observations
 | LossyImageCompressionRatio |  |
 | LossyImageCompressionRetired |  |
 | ScanOptions |  |
-
+| ActualFrameDuration | |
 
 
 ## OTHER
