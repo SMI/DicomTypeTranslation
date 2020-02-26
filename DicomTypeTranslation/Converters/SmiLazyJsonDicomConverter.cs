@@ -22,6 +22,11 @@ namespace DicomTypeTranslation.Converters
         private const string VR_PROPERTY_NAME = "vr";
 
 
+        static SmiLazyJsonDicomConverter()
+        {
+            DicomValidation.AutoValidation = false;
+        }
+
         /// <summary>
         /// Constructor with 1 bool argument required for compatibility testing with
         /// original version of the class.

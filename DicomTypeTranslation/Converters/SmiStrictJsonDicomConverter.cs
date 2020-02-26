@@ -25,6 +25,11 @@ namespace DicomTypeTranslation.Converters
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
 
+        static SmiStrictJsonDicomConverter()
+        {
+            DicomValidation.AutoValidation = false;
+        }
+
         /// <summary>
         /// Constructor with 1 bool argument required for compatibility testing with
         /// original version of the class.
