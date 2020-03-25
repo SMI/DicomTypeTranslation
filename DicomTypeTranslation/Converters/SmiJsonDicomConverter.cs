@@ -14,7 +14,7 @@ namespace DicomTypeTranslation.Converters
     /// SMI JSON to DICOM converter. Lazily converts between certain DICOM value types to allow greater coverage over real data.
     /// This means it does not comply with the formal DICOM JSON specification.
     /// </summary>
-    public class SmiLazyJsonDicomConverter : JsonConverter
+    public class SmiJsonDicomConverter : JsonConverter
     {
         private const string VALUE_PROPERTY_NAME = "val";
         private const string INL_BIN_PROPERTY_NAME = "bin";
@@ -22,7 +22,7 @@ namespace DicomTypeTranslation.Converters
         private const string VR_PROPERTY_NAME = "vr";
 
 
-        static SmiLazyJsonDicomConverter()
+        static SmiJsonDicomConverter()
         {
 #pragma warning disable CS0618 // Obsolete
             DicomValidation.AutoValidation = false;
@@ -35,7 +35,7 @@ namespace DicomTypeTranslation.Converters
         /// </summary>
         /// <param name="_"></param>
         // ReSharper disable once UnusedParameter.Local
-        public SmiLazyJsonDicomConverter(bool _ = false) { }
+        public SmiJsonDicomConverter(bool _ = false) { }
 
         #region JsonConverter overrides
 

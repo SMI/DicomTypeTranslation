@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace DicomTypeTranslation.Tests
 {
     [TestFixture(ConverterTestCase.Standard)]
-    [TestFixture(ConverterTestCase.SmiLazy)]
+    [TestFixture(ConverterTestCase.Smi)]
     public class JsonDicomConverterTests
     {
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
@@ -41,8 +41,8 @@ namespace DicomTypeTranslation.Tests
                 case ConverterTestCase.Standard:
                     converterType = typeof(JsonDicomConverter);
                     break;
-                case ConverterTestCase.SmiLazy:
-                    converterType = typeof(SmiLazyJsonDicomConverter);
+                case ConverterTestCase.Smi:
+                    converterType = typeof(SmiJsonDicomConverter);
                     break;
                 default:
                     throw new Exception("No converter for test case " + converterTestCase);
@@ -67,7 +67,7 @@ namespace DicomTypeTranslation.Tests
         public enum ConverterTestCase
         {
             Standard,   // The standard Json converter used in fo-dicom. Conforms to Dicom specification for Json representation
-            SmiLazy     // Our custom version of the converter which just uses the underlying element value types used by fo-dicom
+            Smi     // Our custom version of the converter which just uses the underlying element value types used by fo-dicom
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace DicomTypeTranslation.Tests
             string convType = _jsonDicomConverter.GetType().Name;
             switch (convType)
             {
-                case "SmiLazyJsonDicomConverter":
+                case "SmiJsonDicomConverter":
                     VerifyJsonTripleTrip(ds);
                     break;
 
@@ -270,7 +270,7 @@ namespace DicomTypeTranslation.Tests
 
                 switch (convType)
                 {
-                    case "SmiLazyJsonDicomConverter":
+                    case "SmiJsonDicomConverter":
                         json = DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter);
                         string expected = testValues[i].TrimEnd('\0');
                         Assert.AreEqual($"{{\"00101030\":{{\"vr\":\"DS\",\"val\":\"{expected}\"}}}}", json);
@@ -292,7 +292,7 @@ namespace DicomTypeTranslation.Tests
                 }
             }
 
-            if (_jsonDicomConverter.GetType().Name != "SmiLazyJsonDicomConverter")
+            if (_jsonDicomConverter.GetType().Name != "SmiJsonDicomConverter")
                 return;
 
             // Test all in a single element
@@ -325,7 +325,7 @@ namespace DicomTypeTranslation.Tests
 
                 switch (convType)
                 {
-                    case "SmiLazyJsonDicomConverter":
+                    case "SmiJsonDicomConverter":
                         string json = DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter);
                         Assert.AreEqual($"{{\"00720056\":{{\"vr\":\"IS\",\"val\":\"{testValues[i]}\"}}}}", json);
                         break;
@@ -350,8 +350,8 @@ namespace DicomTypeTranslation.Tests
                     // Default converter will try and force it into an int -> OverflowException
                     Assert.Throws<OverflowException>(() => DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter));
                     break;
-                    
-                case "SmiLazyJsonDicomConverter":
+
+                case "SmiJsonDicomConverter":
                     // Our converter doesn't enforce types, so this should pass
                     string json = DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter);
                     Assert.AreEqual("{\"00720056\":{\"vr\":\"IS\",\"val\":\"10001234123412\"}}", json);
@@ -372,8 +372,8 @@ namespace DicomTypeTranslation.Tests
             {
                 new DicomUnlimitedText(DicomTag.TextValue, Encoding.UTF8, "¥£€$¢₡₢₣₤₥₦₧₨₩₪₫₭₮₯₹")
             };
-            
-            // Only the Lazy converter properly handles UTF-8 encoding
+
+            // Both converters should now correctly handle UTF-8 encoding
             VerifyJsonTripleTrip(ds);
         }
 
@@ -389,8 +389,8 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void JsonSerialization_SerializeBinaryFalse_ContainsEmptyTags()
         {
-            if (_jsonDicomConverter.GetType().Name != "SmiLazyJsonDicomConverter")
-                Assert.Pass("Only applicable for SmiLazyJsonDicomConverter");
+            if (_jsonDicomConverter.GetType().Name != "SmiJsonDicomConverter")
+                Assert.Pass("Only applicable for SmiJsonDicomConverter");
 
             var ds = new DicomDataset
             {
