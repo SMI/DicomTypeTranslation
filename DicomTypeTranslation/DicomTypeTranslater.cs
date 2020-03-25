@@ -30,6 +30,7 @@ namespace DicomTypeTranslation
         {
             DicomVR.OW,
             DicomVR.OB,
+            DicomVR.OV,
             DicomVR.UN
         };
 

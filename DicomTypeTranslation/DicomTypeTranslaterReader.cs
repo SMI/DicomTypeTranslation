@@ -125,6 +125,10 @@ namespace DicomTypeTranslation
                 case "OL":
                     return GetValueFromDatasetWithMultiplicity<uint>(dataset, item.Tag);
 
+                // OV - Other Very Long
+                case "OV":
+                    return GetValueFromDatasetWithMultiplicity<ulong>(dataset, item.Tag);
+
                 // OW - Other Word String
                 case "OW":
                     return GetValueFromDatasetWithMultiplicity<ushort>(dataset, item.Tag);
@@ -152,6 +156,10 @@ namespace DicomTypeTranslation
                 // ST - Short Text
                 case "ST":
                     return GetValueFromDatasetWithMultiplicity<string>(dataset, item.Tag);
+
+                // SV - Signed Very Long
+                case "SV":
+                    return GetValueFromDatasetWithMultiplicity<long>(dataset, item.Tag);
 
                 // TM - Time
                 case "TM":
@@ -190,6 +198,10 @@ namespace DicomTypeTranslation
                 // UT - Unlimited Text
                 case "UT":
                     return GetValueFromDatasetWithMultiplicity<string>(dataset, item.Tag);
+
+                // UV - Unsigned Very Long
+                case "UV":
+                    return GetValueFromDatasetWithMultiplicity<ulong>(dataset, item.Tag);
 
                 // NONE
                 case "NONE":
