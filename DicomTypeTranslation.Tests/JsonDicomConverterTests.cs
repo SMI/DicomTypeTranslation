@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.IO;
 using System.Linq;
@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace DicomTypeTranslation.Tests
 {
     [TestFixture(ConverterTestCase.Standard)]
-    [TestFixture(ConverterTestCase.SmiStrict)]
     [TestFixture(ConverterTestCase.SmiLazy)]
     public class JsonDicomConverterTests
     {
@@ -41,9 +40,6 @@ namespace DicomTypeTranslation.Tests
             {
                 case ConverterTestCase.Standard:
                     converterType = typeof(JsonDicomConverter);
-                    break;
-                case ConverterTestCase.SmiStrict:
-                    converterType = typeof(SmiStrictJsonDicomConverter);
                     break;
                 case ConverterTestCase.SmiLazy:
                     converterType = typeof(SmiLazyJsonDicomConverter);
@@ -71,7 +67,6 @@ namespace DicomTypeTranslation.Tests
         public enum ConverterTestCase
         {
             Standard,   // The standard Json converter used in fo-dicom. Conforms to Dicom specification for Json representation
-            SmiStrict,  // Our version of the standard converter, with some extra handling of 'dodgy' data
             SmiLazy     // Our custom version of the converter which just uses the underlying element value types used by fo-dicom
         }
 
@@ -138,7 +133,6 @@ namespace DicomTypeTranslation.Tests
                     VerifyJsonTripleTrip(ds);
                     break;
 
-                case "SmiStrictJsonDicomConverter":
                 case "JsonDicomConverter":
                     Assert.Throws<FormatException>(() => VerifyJsonTripleTrip(ds), $"[{convType}] Expected FormatException parsing 2.500000 as an IntegerString");
                     break;
@@ -282,11 +276,6 @@ namespace DicomTypeTranslation.Tests
                         Assert.AreEqual($"{{\"00101030\":{{\"vr\":\"DS\",\"val\":\"{expected}\"}}}}", json);
                         break;
 
-                    case "SmiStrictJsonDicomConverter":
-                        json = DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter);
-                        Assert.True(json.Equals("{\"00101030\":{\"vr\":\"DS\",\"Value\":[" + expectedValues[i] + "]}}"));
-                        break;
-
                     case "JsonDicomConverter":
                         if (i == 2 || i == 3)
                             Assert.Throws<ArgumentException>(() => DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter));
@@ -325,7 +314,7 @@ namespace DicomTypeTranslation.Tests
                 "00001234123412"    // A value we can fix and parse
             };
 
-            // Values which will be 'fixed' by the SmiStrictJsonDicomConverter
+            // Values which will be 'fixed' by the standard JsonDicomConverter
             string[] expectedValues = { "123", "-123", "0", "123", "1234123412" };
 
             string convType = _jsonDicomConverter.GetType().Name;
@@ -341,7 +330,6 @@ namespace DicomTypeTranslation.Tests
                         Assert.AreEqual($"{{\"00720056\":{{\"vr\":\"IS\",\"val\":\"{testValues[i]}\"}}}}", json);
                         break;
 
-                    case "SmiStrictJsonDicomConverter":
                     case "JsonDicomConverter":
                         json = DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter);
                         Assert.AreEqual(("{\"00720056\":{\"vr\":\"IS\",\"Value\":[" + expectedValues[i] + "]}}"), json);
@@ -362,12 +350,7 @@ namespace DicomTypeTranslation.Tests
                     // Default converter will try and force it into an int -> OverflowException
                     Assert.Throws<OverflowException>(() => DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter));
                     break;
-
-                case "SmiStrictJsonDicomConverter":
-                    // Strict converter will try and 'fix' it, before throwing a FormatException
-                    Assert.Throws<FormatException>(() => DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter));
-                    break;
-
+                    
                 case "SmiLazyJsonDicomConverter":
                     // Our converter doesn't enforce types, so this should pass
                     string json = DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter);
@@ -389,11 +372,9 @@ namespace DicomTypeTranslation.Tests
             {
                 new DicomUnlimitedText(DicomTag.TextValue, Encoding.UTF8, "¥£€$¢₡₢₣₤₥₦₧₨₩₪₫₭₮₯₹")
             };
-
-            bool expectFail = _jsonDicomConverter.GetType().Name == "SmiStrictJsonDicomConverter";
-
+            
             // Only the Lazy converter properly handles UTF-8 encoding
-            VerifyJsonTripleTrip(ds, expectFail: expectFail);
+            VerifyJsonTripleTrip(ds);
         }
 
         [Test]
