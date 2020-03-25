@@ -390,7 +390,7 @@ namespace DicomTypeTranslation.Tests
                 new DicomUnlimitedText(DicomTag.TextValue, Encoding.UTF8, "¥£€$¢₡₢₣₤₥₦₧₨₩₪₫₭₮₯₹")
             };
 
-            bool expectFail = _jsonDicomConverter.GetType().Name != "SmiLazyJsonDicomConverter";
+            bool expectFail = _jsonDicomConverter.GetType().Name == "SmiStrictJsonDicomConverter";
 
             // Only the Lazy converter properly handles UTF-8 encoding
             VerifyJsonTripleTrip(ds, expectFail: expectFail);
