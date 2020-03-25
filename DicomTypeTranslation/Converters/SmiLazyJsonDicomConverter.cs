@@ -24,7 +24,9 @@ namespace DicomTypeTranslation.Converters
 
         static SmiLazyJsonDicomConverter()
         {
+#pragma warning disable CS0618 // Obsolete
             DicomValidation.AutoValidation = false;
+#pragma warning restore CS0618
         }
 
         /// <summary>
