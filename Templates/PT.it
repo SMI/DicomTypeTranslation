@@ -1,3 +1,4 @@
+#Last Modified: 2020-02-07
 Tables:
 - TableName: StudyTable
   Columns:
@@ -48,15 +49,63 @@ Tables:
     AllowNulls: true
   - ColumnName: SeriesTime
     AllowNulls: true
-  - ColumnName: ImageType
-    AllowNulls: true
   - ColumnName: BodyPartExamined
     AllowNulls: true
   - ColumnName: DeviceSerialNumber
     AllowNulls: true
-  - ColumnName: NumberOfSeriesRelatedInstances
-    AllowNulls: true
   - ColumnName: SeriesNumber
+    AllowNulls: true
+  - ColumnName: NumberOfSlices
+    AllowNulls: true
+  - ColumnName: EnergyWindowRangeSequence_EnergyWindowLowerLimit
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 100
+  - ColumnName: EnergyWindowRangeSequence_EnergyWindowUpperLimit
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 100
+  - ColumnName: RadiopharmaceuticalInformationSequence_Radiopharmaceutical
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 100
+  - ColumnName: RadiopharmaceuticalInformationSequence_RadiopharmaceuticalVolume
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 100
+  - ColumnName: RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeValue
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 100
+  - ColumnName: RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeMeaning
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 100
+  - ColumnName: RadiopharmaceuticalInformationSequence_RadionuclideTotalDose
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 100
+    AllowNulls: true
+  - ColumnName: RandomsCorrectionMethod
+    AllowNulls: true
+  - ColumnName: AttenuationCorrectionMethod
+    AllowNulls: true
+  - ColumnName: DecayCorrection
+    AllowNulls: true
+  - ColumnName: ReconstructionMethod
+    AllowNulls: true
+  - ColumnName: ScatterCorrectionMethod
+    AllowNulls: true
+  - ColumnName: DateOfLastCalibration
+    AllowNulls: true
+  - ColumnName: TimeOfLastCalibration
     AllowNulls: true
 - TableName: ImageTable
   Columns:
@@ -75,14 +124,6 @@ Tables:
     AllowNulls: true
   - ColumnName: SpacingBetweenSlices
     AllowNulls: true
-  - ColumnName: SpiralPitchFactor
-    AllowNulls: true
-  - ColumnName: KVP
-    AllowNulls: true
-  - ColumnName: ExposureTime
-    AllowNulls: true
-  - ColumnName: Exposure
-    AllowNulls: true
   - ColumnName: ImageType
     AllowNulls: true
   - ColumnName: ManufacturerModelName
@@ -91,13 +132,7 @@ Tables:
     AllowNulls: true
   - ColumnName: SoftwareVersions
     AllowNulls: true
-  - ColumnName: XRayTubeCurrent
-    AllowNulls: true
   - ColumnName: PhotometricInterpretation
-    AllowNulls: true
-  - ColumnName: ContrastBolusRoute
-    AllowNulls: true
-  - ColumnName: ContrastBolusAgent
     AllowNulls: true
   - ColumnName: AcquisitionNumber
     AllowNulls: true
@@ -110,6 +145,8 @@ Tables:
   - ColumnName: PixelSpacing
     AllowNulls: true
   - ColumnName: FieldOfViewDimensions
+    AllowNulls: true
+  - ColumnName: ActualFrameDuration
     AllowNulls: true
   - ColumnName: FieldOfViewDimensionsInFloat
     AllowNulls: true

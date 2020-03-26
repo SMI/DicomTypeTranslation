@@ -14,7 +14,7 @@ namespace DicomTypeTranslation.Converters
     /// SMI JSON to DICOM converter. Lazily converts between certain DICOM value types to allow greater coverage over real data.
     /// This means it does not comply with the formal DICOM JSON specification.
     /// </summary>
-    public class SmiLazyJsonDicomConverter : JsonConverter
+    public class SmiJsonDicomConverter : JsonConverter
     {
         private const string VALUE_PROPERTY_NAME = "val";
         private const string INL_BIN_PROPERTY_NAME = "bin";
@@ -22,13 +22,20 @@ namespace DicomTypeTranslation.Converters
         private const string VR_PROPERTY_NAME = "vr";
 
 
+        static SmiJsonDicomConverter()
+        {
+#pragma warning disable CS0618 // Obsolete
+            DicomValidation.AutoValidation = false;
+#pragma warning restore CS0618
+        }
+
         /// <summary>
         /// Constructor with 1 bool argument required for compatibility testing with
         /// original version of the class.
         /// </summary>
         /// <param name="_"></param>
         // ReSharper disable once UnusedParameter.Local
-        public SmiLazyJsonDicomConverter(bool _ = false) { }
+        public SmiJsonDicomConverter(bool _ = false) { }
 
         #region JsonConverter overrides
 
@@ -177,9 +184,17 @@ namespace DicomTypeTranslation.Converters
                     WriteDicomValueElement<short>(writer, (DicomElement)item);
                     break;
 
+                case "SV": // Signed 64-bit Very Long
+                    WriteDicomValueElement<long>(writer, (DicomElement)item);
+                    break;
+
                 // DicomValueElement<ushort>
                 case "US": // Unsigned Short
                     WriteDicomValueElement<ushort>(writer, (DicomElement)item);
+                    break;
+
+                case "UV": // Unsigned 64-bit Very Long
+                    WriteDicomValueElement<ulong>(writer, (DicomElement)item);
                     break;
 
                 // Other element types
@@ -196,6 +211,7 @@ namespace DicomTypeTranslation.Converters
                 case "OD":
                 case "OF":
                 case "OL":
+                case "OV":
                 case "OW":
                 case "UN":
                     WriteJsonOther(writer, item);
@@ -381,9 +397,17 @@ namespace DicomTypeTranslation.Converters
                     data = ReadJsonNumeric<short>(reader);
                     break;
 
+                case "SV":
+                    data = ReadJsonNumeric<long>(reader);
+                    break;
+
                 // DicomValueElement<ushort>
                 case "US": // Unsigned Short
                     data = ReadJsonNumeric<ushort>(reader);
+                    break;
+
+                case "UV":
+                    data = ReadJsonNumeric<ulong>(reader);
                     break;
 
                 // Sequence
@@ -397,6 +421,7 @@ namespace DicomTypeTranslation.Converters
                 case "OF":
                 case "OL":
                 case "OW":
+                case "OV":
                 case "UN":
                     data = ReadJsonOX(reader);
                     break;
@@ -449,18 +474,22 @@ namespace DicomTypeTranslation.Converters
                     return new DicomOtherLong(tag, (IByteBuffer)data);
                 case "OW":
                     return new DicomOtherWord(tag, (IByteBuffer)data);
+                case "OV":
+                    return new DicomOtherVeryLong(tag, (IByteBuffer)data);
                 case "PN":
                     return new DicomPersonName(tag, Encoding.UTF8, (string)data);
                 case "SH":
                     return new DicomShortString(tag, Encoding.UTF8, (string)data);
                 case "SL":
                     return new DicomSignedLong(tag, (int[])data);
+                case "SQ":
+                    return new DicomSequence(tag, (DicomDataset[])data);
                 case "SS":
                     return new DicomSignedShort(tag, (short[])data);
                 case "ST":
                     return new DicomShortText(tag, Encoding.UTF8, (string)data);
-                case "SQ":
-                    return new DicomSequence(tag, (DicomDataset[])data);
+                case "SV":
+                    return new DicomSignedVeryLong(tag, (long[])data);
                 case "TM":
                     return new DicomTime(tag, (string)data);
                 case "UC":
@@ -477,7 +506,8 @@ namespace DicomTypeTranslation.Converters
                     return new DicomUnsignedShort(tag, (ushort[])data);
                 case "UT":
                     return new DicomUnlimitedText(tag, Encoding.UTF8, (string)data);
-
+                case "UV":
+                    return new DicomUnsignedVeryLong(tag, (ulong[])data);
                 default:
                     throw new ArgumentException("No method implemented to create a DicomItem of VR " + vr + " from JSON");
             }

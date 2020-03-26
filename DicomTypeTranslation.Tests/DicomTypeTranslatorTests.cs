@@ -208,6 +208,26 @@ namespace DicomTypeTranslation.Tests
             Assert.Throws<FormatException>(() => DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.SelectorDSValue));
         }
 
+
+        [Test]
+        public void Test_GetCSharpValue_PrivateTags()
+        {
+            // Create a dataset with the private tag in it
+            var aTag = new DicomTag(0x3001, 0x08, "PRIVATE");
+            var ds = new DicomDataset();
+            ds.Add<int>(aTag, 1);
+
+            // Getting the value directly is fine
+            Assert.AreEqual(1, ds.GetSingleValue<int>(aTag));
+            Assert.AreEqual(1, DicomTypeTranslaterReader.GetCSharpValue(ds, aTag));
+
+            // Getting it by iterating through the dataset also works
+            // NOTE(rkm 2020-03-26) When creating a dataset with private tags, the "Private Creator" tags are also implicitly added to the dataset
+            foreach (DicomItem item in ds)
+                if (item.ToString().Contains("(3001,1008)"))
+                    Assert.AreEqual(1, DicomTypeTranslaterReader.GetCSharpValue(ds, item));
+        }
+
         [Test]
         public void ShowBlacklistedTags()
         {
@@ -226,12 +246,35 @@ namespace DicomTypeTranslation.Tests
         }
 
         /// <summary>
-        /// Some new VRs have been added for the 2019 DICOM standard. This test will fail when the new VRs are added by fo-dicom
+        /// This test will fail when new VRs are added by fo-dicom (as part of new DICOM standards). This library needs to handle new VRs in the following places:
+        /// - SmiJsonConverter: WriteJsonDicomItem, ReadJsonDicomItem, CreateDicomItem (???)
+        /// - DicomTypeTranslater
+        /// - DicomTypeTranslaterWriter
+        /// - DicomTypeTranslaterReader
+        /// - Test code for the above
         /// </summary>
         [Test]
         public void CheckForNewVrs()
         {
-            Assert.AreEqual(31, TranslationTestHelpers.AllVrCodes.Length);
+            Assert.AreEqual(34, TranslationTestHelpers.AllVrCodes.Length);
+        }
+
+        [Test]
+        [TestCase("SV")]
+        [TestCase("UV")]
+        public void TestVrsWithNoTags(string vrName)
+        {
+            DicomVR vr = DicomVR.Parse(vrName);
+
+            // NOTE(rkm 2020-03-25) When this fails, add an entry for the new VR to the datasets TranslationTestHelpers
+            List<DicomTag> vrTags = typeof(DicomTag)
+                .GetFields(BindingFlags.Static | BindingFlags.Public)
+                .Where(field => field.FieldType == typeof(DicomTag))
+                .Select(x => (DicomTag)x.GetValue(null))
+                .Where(tag => tag.DictionaryEntry.ValueRepresentations[0] == vr)
+                .ToList();
+
+            Assert.AreEqual(0, vrTags.Count);
         }
 
         #endregion

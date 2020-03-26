@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.IO;
 using System.Linq;
@@ -441,6 +441,24 @@ namespace DicomTypeTranslation.Tests
         }
 
         [Test]
+        public void BsonRoundTrip_DicomUnsignedVeryLong_SameAfterConversion()
+        {
+            DicomPrivateCreator privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
+            DicomDictionary pDict = DicomDictionary.Default[privateCreator];
+            pDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx01"), "Private Tag 01", "PrivateTag01", DicomVM.VM_1, false, DicomVR.UV));
+            pDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx02"), "Private Tag 02", "PrivateTag02", DicomVM.VM_1, false, DicomVR.UV));
+            pDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx03"), "Private Tag 03", "PrivateTag03", DicomVM.VM_1, false, DicomVR.UV));
+
+            var ds = new DicomDataset();
+            ds.Add(new DicomUnsignedVeryLong(ds.GetPrivateTag(new DicomTag(3, 0x0001, privateCreator)), 0x0));
+            ds.Add(new DicomUnsignedVeryLong(ds.GetPrivateTag(new DicomTag(3, 0x0002, privateCreator)), 0xffffffffffffffff - 123));
+            ds.Add(new DicomUnsignedVeryLong(ds.GetPrivateTag(new DicomTag(3, 0x0003, privateCreator)), 0xffffffffffffffff));
+
+            ds = new DicomDataset(ds.Where(x => !DicomTypeTranslater.DicomVrBlacklist.Contains(x.ValueRepresentation)));
+            VerifyBsonTripleTrip(ds);
+        }
+
+        [Test]
         public void BsonRoundTrip_BlacklistPrivateDataset_ZeroAfterConversion()
         {
             DicomDataset ds = TranslationTestHelpers.BuildPrivateDataset();
@@ -530,9 +548,10 @@ namespace DicomTypeTranslation.Tests
         {
             var ds = new DicomDataset
             {
-                new DicomOtherByte(DicomTag.SelectorOBValue, byte.MinValue),
-                new DicomOtherWord(DicomTag.SelectorOWValue, byte.MinValue),
-                new DicomUnknown(DicomTag.SelectorUNValue, byte.MinValue)
+                new DicomOtherByte(DicomTag.SelectorOBValue, byte.MaxValue),
+                new DicomOtherVeryLong(DicomTag.ExtendedOffsetTable, ulong.MaxValue),
+                new DicomOtherWord(DicomTag.SelectorOWValue, byte.MaxValue),
+                new DicomUnknown(DicomTag.SelectorUNValue, byte.MaxValue)
             };
 
             // Ensure this test fails if we update the blacklist later
@@ -547,7 +566,7 @@ namespace DicomTypeTranslation.Tests
 
             DicomDataset recoDs = DicomTypeTranslaterWriter.BuildDicomDataset(doc);
 
-            Assert.AreEqual(3, recoDs.Count());
+            Assert.AreEqual(4, recoDs.Count());
             foreach (DicomItem item in recoDs)
                 Assert.Zero(((DicomElement)item).Count);
         }
