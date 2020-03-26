@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+- Upgrade fo-dicom to 4.0.4
+  - Disable DicomValidation.AutoValidation in JSON converters
+  - Disable compiler warning for validation
+  - Remove the unused "SmiStrictJsonDicomConverter"
+  - Remove the "lazy" qualifier from our JsonDicomConverter
+  - Add support for three new DICOM VRs: OV, SV, and UV
+
 ## [2.1.2] - 2019-11-20
 
 ### Changed

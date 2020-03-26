@@ -10,17 +10,9 @@ The default converter as found in fo-dicom, at the current version as specified 
 
 It is recommended to use this converter if you wish to read JSON data which has been created to follow the DICOM JSON model.
 
-## SmiStrictJsonDicomConverter
+## SmiJsonDicomConverter
 
-- [Class](../DicomTypeTranslation/Converters/SmiStrictJsonDicomConverter.cs)
-
-Essentially the same as the fo-dicom converter, except it handles a few cases where DICOM Decimal/IntegerString elements can be 'fixed' before attempting to convert them to their respective numeric types.
-
-This converter is marked obsolete (it will not be updated to follow changes to the default converter), and will be removed at the next major version release.
-
-## SmiLazyJsonDicomConverter
-
-- [Class](../DicomTypeTranslation/Converters/SmiLazyJsonDicomConverter.cs)
+- [Class](../DicomTypeTranslation/Converters/SmiJsonDicomConverter.cs)
 
 The default converter used by this library, unless otherwise specified. Aims to allow greater coverage when dealing with "real world" DICOM data. In particular, it does not attempt to force the DICOM numeric string types into their respective C# types before converting to JSON.
 

@@ -269,6 +269,9 @@ namespace DicomTypeTranslation
                 case "OL":
                     item = new DicomOtherLong(tag, (uint[])GetTypedArray<uint>(data));
                     break;
+                case "OV":
+                    item = new DicomOtherVeryLong(tag, (ulong[])GetTypedArray<ulong>(data));
+                    break;
                 case "OW":
                     item = data.IsBsonNull
                         ? new DicomOtherWord(tag)
@@ -283,14 +286,17 @@ namespace DicomTypeTranslation
                 case "SL":
                     item = new DicomSignedLong(tag, (int[])GetTypedArray<int>(data));
                     break;
+                case "SQ":
+                    item = GetDicomSequence(tag, data);
+                    break;
                 case "SS":
                     item = new DicomSignedShort(tag, (short[])GetTypedArray<short>(data));
                     break;
                 case "ST":
                     item = new DicomShortText(tag, Encoding.UTF8, GetString(data));
                     break;
-                case "SQ":
-                    item = GetDicomSequence(tag, data);
+                case "SV":
+                    item = new DicomSignedVeryLong(tag, (long[])GetTypedArray<long>(data));
                     break;
                 case "TM":
                     item = new DicomTime(tag, GetString(data));
@@ -317,6 +323,9 @@ namespace DicomTypeTranslation
                     break;
                 case "UT":
                     item = new DicomUnlimitedText(tag, Encoding.UTF8, GetString(data));
+                    break;
+                case "UV":
+                    item = new DicomUnsignedVeryLong(tag, (ulong[])GetTypedArray<ulong>(data));
                     break;
                 default:
                     throw new NotSupportedException($"Unsupported value representation {vr}");
@@ -364,6 +373,14 @@ namespace DicomTypeTranslation
                 Array.Copy(mappedBsonArray.Select(Convert.ToInt16).ToArray(), typedArray, typedArray.Length);
             else if (typeof(T) == typeof(ushort))
                 Array.Copy(mappedBsonArray.Select(Convert.ToUInt16).ToArray(), typedArray, typedArray.Length);
+            else if (typeof(T) == typeof(ulong))
+            {
+                // NOTE(rkm 2020-03-25) MongoDB only has a *signed* 64-bit integer type, so we have to special-case when dealing with *unsigned* 64-bit ints which are valid DICOM
+                var tmp = new ulong[typedArray.Length];
+                for (var i = 0; i < mappedBsonArray.Length; ++i)
+                    tmp[i] = BitConverter.ToUInt64(BitConverter.GetBytes((long)mappedBsonArray[i]), 0);
+                Array.Copy(tmp, typedArray, typedArray.Length);
+            }
             // Otherwise we can convert normally
             else
                 Array.Copy(mappedBsonArray, typedArray, typedArray.Length);

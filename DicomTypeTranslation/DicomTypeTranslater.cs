@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,17 +30,18 @@ namespace DicomTypeTranslation
         {
             DicomVR.OW,
             DicomVR.OB,
+            DicomVR.OV,
             DicomVR.UN
         };
 
         /// <summary>
         /// If false, binary items will have their key serialized but with their values set to null.
-        /// This applies to <see cref="SmiLazyJsonDicomConverter"/> and <see cref="DicomTypeTranslaterReader.BuildBsonDocument"/>
+        /// This applies to <see cref="SmiJsonDicomConverter"/> and <see cref="DicomTypeTranslaterReader.BuildBsonDocument"/>
         /// </summary>
         public static bool SerializeBinaryData = false;
 
 
-        private static readonly JsonConverter _defaultJsonDicomConverter = new SmiLazyJsonDicomConverter();
+        private static readonly JsonConverter _defaultJsonDicomConverter = new SmiJsonDicomConverter();
 
 
         /// <summary>

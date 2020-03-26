@@ -4,6 +4,7 @@
 // RDMP is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
@@ -48,6 +49,10 @@ namespace DicomTypeTranslation.Tests
             {
                 string package = p.Groups[1].Value;
                 string version = p.Groups[2].Value;
+
+                // NOTE(rkm 2020-02-14) Fix for specifiers which contain lower or upper bounds
+                if (version.Contains("[") || version.Contains("("))
+                    version = version.Substring(1, version.Length - 2);
 
                 bool found = false;
 
