@@ -212,19 +212,20 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void Test_GetCSharpValue_PrivateTags()
         {
-            //Create a dataset with the private tag in it
+            // Create a dataset with the private tag in it
             var aTag = new DicomTag(0x3001, 0x08, "PRIVATE");
             var ds = new DicomDataset();
             ds.Add<int>(aTag, 1);
 
-            //Somehow aTag has the right value
+            // Getting the value directly is fine
             Assert.AreEqual(1, ds.GetSingleValue<int>(aTag));
             Assert.AreEqual(1, DicomTypeTranslaterReader.GetCSharpValue(ds, aTag));
 
-            //but it doesn't when we loop through
+            // Getting it by iterating through the dataset also works
+            // NOTE(rkm 2020-03-26) When creating a dataset with private tags, the "Private Creator" tags are also implicitly added to the dataset
             foreach (DicomItem item in ds)
                 if (item.ToString().Contains("(3001,1008)"))
-                    Assert.AreEqual(1, DicomTypeTranslaterReader.GetCSharpValue(ds, item)); //<- error here
+                    Assert.AreEqual(1, DicomTypeTranslaterReader.GetCSharpValue(ds, item));
         }
 
         [Test]
