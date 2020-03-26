@@ -1,4 +1,4 @@
-﻿
+
 using Dicom;
 using Dicom.IO.Buffer;
 using JetBrains.Annotations;
@@ -32,25 +32,6 @@ namespace DicomTypeTranslation.Helpers
                 return false;
             }
         }
-
-        /// <summary>
-        /// Removes group length elements from the DICOM dataset. These have been retired in the DICOM standard.
-        /// </summary>
-        /// <remarks><see href="http://dicom.nema.org/medical/dicom/current/output/html/part05.html#sect_7.2"/></remarks>
-        /// <param name="dataset">DICOM dataset</param>
-        public static void RemoveGroupLengths(this DicomDataset dataset)
-        {
-            if (dataset == null)
-                return;
-
-            dataset.Remove(x => x.Tag.Element == 0x0000);
-
-            // Handle sequences
-            foreach (DicomSequence sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>())
-                foreach (DicomDataset item in sq.Items)
-                    item.RemoveGroupLengths();
-        }
-
 
         /// <summary>
         /// Returns true if the elements in <paramref name="a"/> are the same set of tags and values as <paramref name="b"/>
