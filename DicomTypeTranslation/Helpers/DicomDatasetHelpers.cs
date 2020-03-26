@@ -18,6 +18,7 @@ namespace DicomTypeTranslation.Helpers
         /// Checks  the correct fo-dicom library is present for the platform at runtime
         /// </summary>
         /// <returns></returns>
+        [Obsolete("This is likely no longer needed since we explicitly build (and fo-dicom provides) packages for both Windows & Linux")]
         [UsedImplicitly]
         public static bool CorrectFoDicomVersion()
         {
