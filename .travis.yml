@@ -22,6 +22,10 @@ env:
   - MSSQL_SA_PASSWORD="YourStrong!Passw0rd"
   - ACCEPT_EULA=Y
   - MSSQL_PID='developer'
+cache:
+  directories:
+  - $HOME/.local/share/NuGet/
+  - $HOME/.nuget
 
 before_script:
 - sudo apt-get install -y --no-install-recommends mssql-tools mssql-server dotnet-runtime-2.2 dotnet-sdk-3.1
