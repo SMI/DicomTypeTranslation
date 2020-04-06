@@ -14,7 +14,7 @@ namespace DicomTypeTranslation.TableCreation
 
         public object ReadYaml(IParser parser, Type type)
         {
-            var scalar = parser.Expect<Scalar>();
+            var scalar = parser.Consume<Scalar>();
             return Type.GetType(scalar.Value);
         }
 
