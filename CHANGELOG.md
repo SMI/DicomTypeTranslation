@@ -7,7 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
--
+- Update HIC.FAnsiSql to 0.11.1
+  - This updates the MySQL client to MySQLConnector
+  - Any connection string containing 'ssl-mode' must be updated to 'sslmode'
+- Update MongoDB.Driver to 2.10.2
+- Update Newtonsoft.Json to 12.0.3
+- Update NLog to 4.7.0
+- Update YamlDotNet to 8.1.0
 
 ## [2.2.0] - 2020-03-26
 
