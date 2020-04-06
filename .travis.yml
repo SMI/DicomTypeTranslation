@@ -1,6 +1,5 @@
-language: csharp
+language: generic
 mono: none
-dotnet: 2.2.100
 
 addons:
   postgresql: "10"
@@ -8,13 +7,22 @@ addons:
     packages:
     - postgresql-10
     - postgresql-client-10
+    sources:
+    - sourceline: 'deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main'
+      key_url: 'https://packages.microsoft.com/keys/microsoft.asc'
+    - sourceline: 'deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/ubuntu/16.04/mssql-server-2017 xenial main'
 
 services:
   - postgresql
   - mysql
+  env:
+  - MSSQL_SA_PASSWORD="YourStrong!Passw0rd"
+  - ACCEPT_EULA=Y
+  - MSSQL_PID='developer'
 
 before_script:
-- sudo docker run --name=mssql-server-linux-latest -e 'ACCEPT_EULA=Y' -e 'MSSQL_SA_PASSWORD=YourStrong!Passw0rd' -p 1433:1433 -d microsoft/mssql-server-linux:2017-latest
+- sudo apt-get install -y --no-install-recommends mssql-tools mssql-server dotnet-runtime-2.2 dotnet-sdk-3.1
+- sudo /opt/mssql/bin/mssql-conf -n setup accept-eula
 
 script:
  - dotnet restore
