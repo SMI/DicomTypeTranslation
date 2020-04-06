@@ -13,12 +13,12 @@ addons:
     - sourceline: 'deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/ubuntu/16.04/mssql-server-2017 xenial main'
 
 services:
-  - postgresql
-  - mysql
-  env:
-  - MSSQL_SA_PASSWORD="YourStrong!Passw0rd"
-  - ACCEPT_EULA=Y
-  - MSSQL_PID='developer'
+- postgresql
+- mysql
+env:
+- MSSQL_SA_PASSWORD="YourStrong!Passw0rd"
+- ACCEPT_EULA=Y
+- MSSQL_PID='developer'
 
 before_script:
 - sudo apt-get install -y --no-install-recommends mssql-tools mssql-server dotnet-runtime-2.2 dotnet-sdk-3.1
