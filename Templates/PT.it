@@ -57,37 +57,37 @@ Tables:
     AllowNulls: true
   - ColumnName: NumberOfSlices
     AllowNulls: true
-  - ColumnName: EnergyWindowRangeSequence_EnergyWindowLowerLimit
+  - ColumnName: EnergyWindowRange_EnergyWindowLowerLimit
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: EnergyWindowRangeSequence_EnergyWindowUpperLimit
+  - ColumnName: EnergyWindowRange_EnergyWindowUpperLimit
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformationSequence_Radiopharmaceutical
+  - ColumnName: Radiopharmaceutical_Radiopharmaceutical
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformationSequence_RadiopharmaceuticalVolume
+  - ColumnName: Radiopharmaceutical_RadiopharmaceuticalVolume
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeValue
+  - ColumnName: Radiopharmaceutical_RadionuclideCode_CodeValue
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeMeaning
+  - ColumnName: Radiopharmaceutical_RadionuclideCode_CodeMeaning
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformationSequence_RadionuclideTotalDose
+  - ColumnName: Radiopharmaceutical_RadionuclideTotalDose
     AllowNulls: true
     Type:
        CSharpType: System.String

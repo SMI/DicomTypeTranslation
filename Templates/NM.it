@@ -57,85 +57,85 @@ Tables:
     AllowNulls: true
   - ColumnName: NumberOfSlices
     AllowNulls: true
-  - ColumnName: EnergyWindowRangeSequence_EnergyWindowLowerLimit
+  - ColumnName: EnergyWindowRange_EnergyWindowLowerLimit
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: EnergyWindowRangeSequence_EnergyWindowUpperLimit
+  - ColumnName: EnergyWindowRange_EnergyWindowUpperLimit
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformationSequence_Radiopharmaceutical
+  - ColumnName: RadiopharmaceuticalInformation_Radiopharmaceutical
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformationSequence_RadiopharmaceuticalVolume
+  - ColumnName: RadiopharmaceuticalInformation_RadiopharmaceuticalVolume
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeValue
+  - ColumnName: RadiopharmaceuticalInformation_RadionuclideCode_CodeValue
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeMeaning
+  - ColumnName: RadiopharmaceuticalInformation_RadionuclideCode_CodeMeaning
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformationSequence_RadionuclideTotalDose
+  - ColumnName: RadiopharmaceuticalInformation_RadionuclideTotalDose
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
   - ColumnName: NumberOfDetectors
     AllowNulls: true
-  - ColumnName: DetectorInformationSequence_CollimatorGridName
+  - ColumnName: DetectorInformation_CollimatorGridName
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: DetectorInformationSequence_CollimatorType
+  - ColumnName: DetectorInformation_CollimatorType
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: DetectorInformationSequence_FieldOfViewShape
+  - ColumnName: DetectorInformation_FieldOfViewShape
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: DetectorInformationSequence_FieldOfViewDimensions
+  - ColumnName: DetectorInformation_FieldOfViewDimensions
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: DetectorInformationSequence_ZoomFactor
+  - ColumnName: DetectorInformation_ZoomFactor
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: DetectorInformationSequence_RadialPosition
+  - ColumnName: DetectorInformation_RadialPosition
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RotationInformationSequence_ScanArc
+  - ColumnName: RotationInformation_ScanArc
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
 
-  - ColumnName: RotationInformationSequence_AngularStep
+  - ColumnName: RotationInformation_AngularStep
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RotationInformationSequence_NumberOfFramesInRotation
+  - ColumnName: RotationInformation_NumberOfFramesInRotation
     AllowNulls: true
     Type:
        CSharpType: System.String

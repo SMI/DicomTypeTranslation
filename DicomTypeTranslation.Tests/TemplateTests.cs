@@ -37,6 +37,12 @@ namespace DicomTypeTranslation.Tests
         [TestCase("MR", FAnsi.DatabaseType.MicrosoftSQLServer)]
         [TestCase("MR", FAnsi.DatabaseType.MySql)]
         [TestCase("MR", FAnsi.DatabaseType.Oracle)]
+        [TestCase("PT", FAnsi.DatabaseType.MicrosoftSQLServer)]
+        [TestCase("PT", FAnsi.DatabaseType.MySql)]
+        [TestCase("PT", FAnsi.DatabaseType.Oracle)]
+        [TestCase("NM", FAnsi.DatabaseType.MicrosoftSQLServer)]
+        [TestCase("NM", FAnsi.DatabaseType.MySql)]
+        [TestCase("NM", FAnsi.DatabaseType.Oracle)]
         [TestCase("OTHER",FAnsi.DatabaseType.MicrosoftSQLServer)]
         [TestCase("OTHER",FAnsi.DatabaseType.MySql)]
         [TestCase("OTHER",FAnsi.DatabaseType.Oracle)]
@@ -45,6 +51,9 @@ namespace DicomTypeTranslation.Tests
             string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates",template + ".it");
 
             ImageTableTemplateCollection collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(templateFile));
+
+            foreach (var tableTemplate in collection.Tables) 
+                Validate(tableTemplate);
             
             var db = GetTestDatabase(dbType);
             
@@ -56,6 +65,14 @@ namespace DicomTypeTranslation.Tests
                 creator.CreateTable(tbl,table);
 
                 Assert.IsTrue(tbl.Exists());
+            }
+        }
+
+        private void Validate(ImageTableTemplate tableTemplate)
+        {
+            foreach (var col in tableTemplate.Columns)
+            {
+                Assert.LessOrEqual(col.ColumnName.Length,64, $"Column name '{col.ColumnName}' is too long");
             }
         }
 
