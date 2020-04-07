@@ -6,8 +6,10 @@ using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TypeGuesser;
 
 namespace DicomTypeTranslation.Tests
@@ -53,7 +55,7 @@ namespace DicomTypeTranslation.Tests
             ImageTableTemplateCollection collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(templateFile));
 
             foreach (var tableTemplate in collection.Tables) 
-                Validate(tableTemplate);
+                Validate(tableTemplate,templateFile);
             
             var db = GetTestDatabase(dbType);
             
@@ -68,12 +70,44 @@ namespace DicomTypeTranslation.Tests
             }
         }
 
-        private void Validate(ImageTableTemplate tableTemplate)
+        private void Validate(ImageTableTemplate tableTemplate, string templateFile)
         {
+            List<Exception> errors = new List<Exception>();
+
             foreach (var col in tableTemplate.Columns)
             {
-                Assert.LessOrEqual(col.ColumnName.Length,64, $"Column name '{col.ColumnName}' is too long");
+                try
+                {
+                    Assert.LessOrEqual(col.ColumnName.Length,64, $"Column name '{col.ColumnName}' is too long");
+
+                    Regex rSeq = new Regex(@"_(\w+)$");
+                    var seqMatch = rSeq.Match(col.ColumnName);
+
+                    if (seqMatch.Success)
+                    {
+                        var leafTag = seqMatch.Groups[1].Value;
+
+                        var tag = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == leafTag);
+
+                        if (tag == null)
+                            throw new NotSupportedException($"Leaf tag {leafTag} of sequence column {col.ColumnName} was not a valid dicom tag name");
+
+                        var type = DicomTypeTranslater.GetNaturalTypeForVr(tag.ValueRepresentations, tag.ValueMultiplicity);
+
+                        Assert.AreEqual(type.CSharpType , col.Type.CSharpType,$"Listed Type for column {col.ColumnName} did not match expected Type");
+                        Assert.AreEqual(type.Width , col.Type.Width,$"Listed Width for column {col.ColumnName} did not match expected Width");
+                        Assert.AreEqual(type.Size , col.Type.Size,$"Listed Size for column {col.ColumnName} did not match expected Size");
+                    
+                    }
+                }
+                catch (Exception e)
+                {
+                    errors.Add(e);
+                }
             }
+
+            if(errors.Any())
+                throw new AggregateException($"Errors in file '{templateFile}'",errors.ToArray());
         }
 
         [TestCase("SmiTagElevation")]

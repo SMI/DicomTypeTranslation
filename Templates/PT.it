@@ -39,7 +39,7 @@ Tables:
       CSharpType: System.String
       Size:
         IsEmpty: true
-      Width: 100
+      Width: 16
     AllowNulls: true
   - ColumnName: PerformedProcedureStepDescription
     AllowNulls: true
@@ -81,7 +81,7 @@ Tables:
     AllowNulls: true
     Type:
        CSharpType: System.String
-       Width: 100
+       Width: 16
   - ColumnName: Radiopharmaceutical_RadionuclideCode_CodeMeaning
     AllowNulls: true
     Type:
