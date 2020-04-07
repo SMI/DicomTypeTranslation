@@ -60,23 +60,29 @@ Tables:
   - ColumnName: EnergyWindowRange_EnergyWindowLowerLimit
     AllowNulls: true
     Type:
-       CSharpType: System.String
-       Width: 100
+       CSharpType: System.Decimal
+       Size:
+         NumbersBeforeDecimalPlace: 19
+         NumbersAfterDecimalPlace: 19
   - ColumnName: EnergyWindowRange_EnergyWindowUpperLimit
     AllowNulls: true
     Type:
-       CSharpType: System.String
-       Width: 100
+       CSharpType: System.Decimal
+       Size:
+         NumbersBeforeDecimalPlace: 19
+         NumbersAfterDecimalPlace: 19
   - ColumnName: Radiopharmaceutical_Radiopharmaceutical
     AllowNulls: true
     Type:
        CSharpType: System.String
-       Width: 100
+       Width: 64
   - ColumnName: Radiopharmaceutical_RadiopharmaceuticalVolume
     AllowNulls: true
     Type:
-       CSharpType: System.String
-       Width: 100
+       CSharpType: System.Decimal
+       Size:
+         NumbersBeforeDecimalPlace: 19
+         NumbersAfterDecimalPlace: 19
   - ColumnName: Radiopharmaceutical_RadionuclideCode_CodeValue
     AllowNulls: true
     Type:
@@ -86,12 +92,14 @@ Tables:
     AllowNulls: true
     Type:
        CSharpType: System.String
-       Width: 100
+       Width: 64
   - ColumnName: Radiopharmaceutical_RadionuclideTotalDose
     AllowNulls: true
     Type:
-       CSharpType: System.String
-       Width: 100
+       CSharpType: System.Decimal
+       Size:
+         NumbersBeforeDecimalPlace: 19
+         NumbersAfterDecimalPlace: 19
     AllowNulls: true
   - ColumnName: RandomsCorrectionMethod
     AllowNulls: true

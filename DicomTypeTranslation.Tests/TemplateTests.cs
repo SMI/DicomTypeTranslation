@@ -80,7 +80,7 @@ namespace DicomTypeTranslation.Tests
                 {
                     Assert.LessOrEqual(col.ColumnName.Length,64, $"Column name '{col.ColumnName}' is too long");
 
-                    Regex rSeq = new Regex(@"_(\w+)$");
+                    Regex rSeq = new Regex(@"_([A-Za-z]+)$");
                     var seqMatch = rSeq.Match(col.ColumnName);
 
                     if (seqMatch.Success)
@@ -95,8 +95,13 @@ namespace DicomTypeTranslation.Tests
                         var type = DicomTypeTranslater.GetNaturalTypeForVr(tag.ValueRepresentations, tag.ValueMultiplicity);
 
                         Assert.AreEqual(type.CSharpType , col.Type.CSharpType,$"Listed Type for column {col.ColumnName} did not match expected Type");
-                        Assert.AreEqual(type.Width , col.Type.Width,$"Listed Width for column {col.ColumnName} did not match expected Width");
-                        Assert.AreEqual(type.Size , col.Type.Size,$"Listed Size for column {col.ColumnName} did not match expected Size");
+                        
+                        if(type.Width == int.MaxValue)
+                            Assert.GreaterOrEqual(col.Type.Width,100,$"Listed Width for column {col.ColumnName} did not match expected Width");
+                        else
+                            Assert.AreEqual(type.Width , col.Type.Width,$"Listed Width for column {col.ColumnName} did not match expected Width");
+                        
+                        Assert.AreEqual(type.Size , col.Type.Size,$"Listed Size for column {col.ColumnName} ({DescribeSize(col.Type.Size)}) did not match expected Size ({DescribeSize(type.Size)})");
                     
                     }
                 }
@@ -108,6 +113,11 @@ namespace DicomTypeTranslation.Tests
 
             if(errors.Any())
                 throw new AggregateException($"Errors in file '{templateFile}'",errors.ToArray());
+        }
+
+        private string DescribeSize(DecimalSize typeSize)
+        {
+            return "NumbersBeforeDecimalPlace:" + typeSize.NumbersBeforeDecimalPlace + " NumbersAfterDecimalPlace:" + typeSize.NumbersAfterDecimalPlace;
         }
 
         [TestCase("SmiTagElevation")]

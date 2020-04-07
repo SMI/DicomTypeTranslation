@@ -60,23 +60,29 @@ Tables:
   - ColumnName: EnergyWindowRange_EnergyWindowLowerLimit
     AllowNulls: true
     Type:
-       CSharpType: System.String
-       Width: 100
+       CSharpType: System.Decimal
+       Size:
+         NumbersBeforeDecimalPlace: 19
+         NumbersAfterDecimalPlace: 19
   - ColumnName: EnergyWindowRange_EnergyWindowUpperLimit
     AllowNulls: true
     Type:
-       CSharpType: System.String
-       Width: 100
+       CSharpType: System.Decimal
+       Size:
+         NumbersBeforeDecimalPlace: 19
+         NumbersAfterDecimalPlace: 19
   - ColumnName: Radiopharmaceutical_Radiopharmaceutical
     AllowNulls: true
     Type:
        CSharpType: System.String
-       Width: 100
+       Width: 64
   - ColumnName: Radiopharmaceutical_RadiopharmaceuticalVolume
     AllowNulls: true
     Type:
-       CSharpType: System.String
-       Width: 100
+       CSharpType: System.Decimal
+       Size:
+         NumbersBeforeDecimalPlace: 19
+         NumbersAfterDecimalPlace: 19
   - ColumnName: Radiopharmaceutical_RadionuclideCode_CodeValue
     AllowNulls: true
     Type:
@@ -86,29 +92,31 @@ Tables:
     AllowNulls: true
     Type:
        CSharpType: System.String
-       Width: 100
+       Width: 64
   - ColumnName: Radiopharmaceutical_RadionuclideTotalDose
     AllowNulls: true
     Type:
-       CSharpType: System.String
-       Width: 100
+       CSharpType: System.Decimal
+       Size:
+         NumbersBeforeDecimalPlace: 19
+         NumbersAfterDecimalPlace: 19
   - ColumnName: NumberOfDetectors
     AllowNulls: true
   - ColumnName: DetectorInformation_CollimatorGridName
     AllowNulls: true
     Type:
        CSharpType: System.String
-       Width: 100
+       Width: 16
   - ColumnName: DetectorInformation_CollimatorType
     AllowNulls: true
     Type:
        CSharpType: System.String
-       Width: 100
+       Width: 16
   - ColumnName: DetectorInformation_FieldOfViewShape
     AllowNulls: true
     Type:
        CSharpType: System.String
-       Width: 100
+       Width: 16
   - ColumnName: DetectorInformation_FieldOfViewDimensions
     AllowNulls: true
     Type:
@@ -127,19 +135,21 @@ Tables:
   - ColumnName: RotationInformation_ScanArc
     AllowNulls: true
     Type:
-       CSharpType: System.String
-       Width: 100
-
+       CSharpType: System.Decimal
+       Size:
+         NumbersBeforeDecimalPlace: 19
+         NumbersAfterDecimalPlace: 19
   - ColumnName: RotationInformation_AngularStep
     AllowNulls: true
     Type:
-       CSharpType: System.String
-       Width: 100
+       CSharpType: System.Decimal
+       Size:
+         NumbersBeforeDecimalPlace: 19
+         NumbersAfterDecimalPlace: 19
   - ColumnName: RotationInformation_NumberOfFramesInRotation
     AllowNulls: true
     Type:
-       CSharpType: System.String
-       Width: 100
+       CSharpType: System.UInt16
   - ColumnName: TypeOfDetectorMotion
     AllowNulls: true
   - ColumnName: RandomsCorrectionMethod
