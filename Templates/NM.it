@@ -67,27 +67,27 @@ Tables:
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformation_Radiopharmaceutical
+  - ColumnName: Radiopharmaceutical_Radiopharmaceutical
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformation_RadiopharmaceuticalVolume
+  - ColumnName: Radiopharmaceutical_RadiopharmaceuticalVolume
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformation_RadionuclideCode_CodeValue
+  - ColumnName: Radiopharmaceutical_RadionuclideCode_CodeValue
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformation_RadionuclideCode_CodeMeaning
+  - ColumnName: Radiopharmaceutical_RadionuclideCode_CodeMeaning
     AllowNulls: true
     Type:
        CSharpType: System.String
        Width: 100
-  - ColumnName: RadiopharmaceuticalInformation_RadionuclideTotalDose
+  - ColumnName: Radiopharmaceutical_RadionuclideTotalDose
     AllowNulls: true
     Type:
        CSharpType: System.String

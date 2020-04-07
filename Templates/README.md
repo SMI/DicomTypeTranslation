@@ -214,13 +214,13 @@ Observations
 | DeviceSerialNumber |  |
 | SeriesNumber |  |
 | NumberOfSlices |  |
-| EnergyWindowRangeSequence_EnergyWindowLowerLimit |  |
-| EnergyWindowRangeSequence_EnergyWindowUpperLimit |  |
-| RadiopharmaceuticalInformationSequence_Radiopharmaceutical |  |
-| RadiopharmaceuticalInformationSequence_RadiopharmaceuticalVolume |  |
-| RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeValue |  |
-| RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeMeaning |  |
-| RadiopharmaceuticalInformationSequence_RadionuclideTotalDose |  |
+| EnergyWindowRange_EnergyWindowLowerLimit |  |
+| EnergyWindowRange_EnergyWindowUpperLimit |  |
+| Radiopharmaceutical_Radiopharmaceutical |  |
+| Radiopharmaceutical_RadiopharmaceuticalVolume |  |
+| Radiopharmaceutical_RadionuclideCode_CodeValue |  |
+| Radiopharmaceutical_RadionuclideCode_CodeMeaning |  |
+| Radiopharmaceutical_RadionuclideTotalDose |  |
 | RandomsCorrectionMethod |  |
 | AttenuationCorrectionMethod |  |
 | DecayCorrection |  |
@@ -300,23 +300,23 @@ This modality contains both SPECT and other forms of nuclear medicine.
 | DeviceSerialNumber |  |
 | SeriesNumber |  |
 | NumberOfSlices |  |
-| EnergyWindowRangeSequence_EnergyWindowLowerLimit |  |
-| EnergyWindowRangeSequence_EnergyWindowUpperLimit |  |
-| RadiopharmaceuticalInformationSequence_Radiopharmaceutical |  |
-| RadiopharmaceuticalInformationSequence_RadiopharmaceuticalVolume |  |
-| RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeValue |  |
-| RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeMeaning |  |
-| RadiopharmaceuticalInformationSequence_RadionuclideTotalDose |  |
+| EnergyWindowRange_EnergyWindowLowerLimit |  |
+| EnergyWindowRange_EnergyWindowUpperLimit |  |
+| Radiopharmaceutical_Radiopharmaceutical |  |
+| Radiopharmaceutical_RadiopharmaceuticalVolume |  |
+| Radiopharmaceutical_RadionuclideCode_CodeValue |  |
+| Radiopharmaceutical_RadionuclideCode_CodeMeaning |  |
+| Radiopharmaceutical_RadionuclideTotalDose |  |
 |NumberOfDetectors                                         | |
-|DetectorInformationSequence_CollimatorGridName            | |
-|DetectorInformationSequence_CollimatorType                | |
-|DetectorInformationSequence_FieldOfViewShape              | |
-|DetectorInformationSequence_FieldOfViewDimensions         | |
-|DetectorInformationSequence_ZoomFactor                    | |
-|DetectorInformationSequence_RadialPosition                | |
-|RotationInformationSequence_ScanArc                       | |
-|RotationInformationSequence_AngularStep                   | |
-|RotationInformationSequence_NumberOfFramesInRotation      | |
+|DetectorInformation_CollimatorGridName            | |
+|DetectorInformation_CollimatorType                | |
+|DetectorInformation_FieldOfViewShape              | |
+|DetectorInformation_FieldOfViewDimensions         | |
+|DetectorInformation_ZoomFactor                    | |
+|DetectorInformation_RadialPosition                | |
+|RotationInformation_ScanArc                       | |
+|RotationInformation_AngularStep                   | |
+|RotationInformation_NumberOfFramesInRotation      | |
 |TypeOfDetectorMotion                                      | |
 | RandomsCorrectionMethod |  |
 | AttenuationCorrectionMethod |  |
