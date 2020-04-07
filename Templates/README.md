@@ -3,6 +3,7 @@
 - [CT](#ct-computerised-tomography)
 - [MR](#mr-magnetic-resonance)
 - [PT](#pt-positron-emission-tomography-PET)
+- [NM](#nm-nuclear-medicine)
 - [OTHER](#other)
 
 ## CT (Computerised Tomography)
@@ -220,6 +221,103 @@ Observations
 | RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeValue |  |
 | RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeMeaning |  |
 | RadiopharmaceuticalInformationSequence_RadionuclideTotalDose |  |
+| RandomsCorrectionMethod |  |
+| AttenuationCorrectionMethod |  |
+| DecayCorrection |  |
+| ReconstructionMethod |  |
+| ScatterCorrectionMethod |  |
+| DateOfLastCalibration |  |
+|TimeOfLastCalibration | |
+
+### ImageTable
+
+| Field | Description |
+| ------------- | ------------- |
+| SeriesInstanceUID |  |
+| SOPInstanceUID |  |
+| BurnedInAnnotation |  |
+| RelativeFileArchiveURI |  |
+| MessageGuid |  |
+| SliceLocation |  |
+| SliceThickness |  |
+| SpacingBetweenSlices |  |
+| ImageType |  |
+| ManufacturerModelName |  |
+| Manufacturer |  |
+| SoftwareVersions |  |
+| PhotometricInterpretation |  |
+| AcquisitionNumber |  |
+| AcquisitionDate |  |
+| AcquisitionTime |  |
+| ImagePositionPatient |  |
+| PixelSpacing |  |
+| FieldOfViewDimensions |  |
+| FieldOfViewDimensionsInFloat |  |
+| DerivationDescription |  |
+| LossyImageCompression |  |
+| LossyImageCompressionMethod |  |
+| LossyImageCompressionRatio |  |
+| LossyImageCompressionRetired |  |
+| ScanOptions |  |
+| ActualFrameDuration | |
+
+
+## NM (Nuclear Medicine)
+
+This modality contains both SPECT and other forms of nuclear medicine.
+
+### StudyTable
+
+| Field | Description |
+| ------------- | ------------- |
+| PatientID |  |
+| StudyInstanceUID |  |
+| StudyDate |  |
+| StudyTime |  |
+| ModalitiesInStudy |  |
+| StudyDescription |  |
+| AccessionNumber |  |
+| PatientSex |  |
+| PatientAge |  |
+| NumberOfStudyRelatedInstances |  |
+| PatientBirthDate |  |
+
+### SeriesTable
+
+| Field | Description |
+| ------------- | ------------- |
+| StudyInstanceUID |  |
+| SeriesInstanceUID |  |
+| Modality |  |
+| InstitutionName |  |
+| ProtocolName |  |
+| ProcedureCodeSequence_CodeValue |  |
+| PerformedProcedureStepDescription |  |
+| SeriesDescription |  |
+| SeriesDate |  |
+| SeriesTime |  |
+| BodyPartExamined |  |
+| DeviceSerialNumber |  |
+| SeriesNumber |  |
+| NumberOfSlices |  |
+| EnergyWindowRangeSequence_EnergyWindowLowerLimit |  |
+| EnergyWindowRangeSequence_EnergyWindowUpperLimit |  |
+| RadiopharmaceuticalInformationSequence_Radiopharmaceutical |  |
+| RadiopharmaceuticalInformationSequence_RadiopharmaceuticalVolume |  |
+| RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeValue |  |
+| RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeMeaning |  |
+| RadiopharmaceuticalInformationSequence_RadionuclideTotalDose |  |
+|NumberOfDetectors                                         | |
+|DetectorInformationSequence_CollimatorGridName            | |
+|DetectorInformationSequence_CollimatorType                | |
+|DetectorInformationSequence_FieldOfViewShape              | |
+|DetectorInformationSequence_FieldOfViewDimensions         | |
+|DetectorInformationSequence_ZoomFactor                    | |
+|DetectorInformationSequence_RadialPosition                | |
+|RotationInformationSequence_ScanArc                       | |
+|RotationInformationSequence_AngularStep                   | |
+|RotationInformationSequence_NumberOfFramesInRotation      | |
+|TypeOfDetectorMotion                                      | |
 | RandomsCorrectionMethod |  |
 | AttenuationCorrectionMethod |  |
 | DecayCorrection |  |

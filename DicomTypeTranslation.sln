@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.757
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DicomTypeTranslation", "DicomTypeTranslation\DicomTypeTranslation.csproj", "{292CA5EB-3A0C-4AF5-890A-D796389BA856}"
 EndProject
@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 	ProjectSection(SolutionItems) = preProject
 		Templates\CT.it = Templates\CT.it
 		Templates\MR.it = Templates\MR.it
+		Templates\NM.it = Templates\NM.it
 		Templates\OTHER.it = Templates\OTHER.it
 		Templates\PT.it = Templates\PT.it
 		Templates\README.md = Templates\README.md
