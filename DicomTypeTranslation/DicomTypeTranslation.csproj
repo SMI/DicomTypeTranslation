@@ -3,10 +3,23 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyTitle>DicomTypeTranslation</AssemblyTitle>
     <Product>DicomTypeTranslation</Product>
-    <Copyright>Copyright ©  2018</Copyright>
+    <Copyright>Copyright ©  2018-2020</Copyright>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackOnBuild>true</PackOnBuild>
+    <PackageId>HIC.DicomTypeTranslation</PackageId>
+    <PackageVersion>$(version)</PackageVersion>
+    <Authors>Health Informatics Centre - University of Dundee</Authors>
+    <Owners>Health Informatics Centre - University of Dundee</Owners>
+    <PackageProjectUrl>https://github.com/HicServices/DicomTypeTranslation</PackageProjectUrl>
+    <PackageTags>Dicom,ETL,SQL</PackageTags>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+    <Title>HIC.DicomTypeTranslation</Title>
+    <Description>Extension library for FoDicom supporting flexible relational database schemas for storing large Dicom imaging datasets.  Also supports persisting Dicom tag data to MongoDb</Description>
     </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType></DebugType>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
   </ItemGroup>
