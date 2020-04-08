@@ -100,6 +100,57 @@ Tables:
        Size:
          NumbersBeforeDecimalPlace: 19
          NumbersAfterDecimalPlace: 19
+  - ColumnName: NumberOfDetectors
+    AllowNulls: true
+  - ColumnName: DetectorInformation_CollimatorGridName
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 16
+  - ColumnName: DetectorInformation_CollimatorType
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 16
+  - ColumnName: DetectorInformation_FieldOfViewShape
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 16
+  - ColumnName: DetectorInformation_FieldOfViewDimensions
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 100
+  - ColumnName: DetectorInformation_ZoomFactor
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 100
+  - ColumnName: DetectorInformation_RadialPosition
+    AllowNulls: true
+    Type:
+       CSharpType: System.String
+       Width: 100
+  - ColumnName: RotationInformation_ScanArc
+    AllowNulls: true
+    Type:
+       CSharpType: System.Decimal
+       Size:
+         NumbersBeforeDecimalPlace: 19
+         NumbersAfterDecimalPlace: 19
+  - ColumnName: RotationInformation_AngularStep
+    AllowNulls: true
+    Type:
+       CSharpType: System.Decimal
+       Size:
+         NumbersBeforeDecimalPlace: 19
+         NumbersAfterDecimalPlace: 19
+  - ColumnName: RotationInformation_NumberOfFramesInRotation
+    AllowNulls: true
+    Type:
+       CSharpType: System.UInt16
+  - ColumnName: TypeOfDetectorMotion
     AllowNulls: true
   - ColumnName: RandomsCorrectionMethod
     AllowNulls: true

@@ -6,8 +6,10 @@ using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TypeGuesser;
 
 namespace DicomTypeTranslation.Tests
@@ -37,6 +39,12 @@ namespace DicomTypeTranslation.Tests
         [TestCase("MR", FAnsi.DatabaseType.MicrosoftSQLServer)]
         [TestCase("MR", FAnsi.DatabaseType.MySql)]
         [TestCase("MR", FAnsi.DatabaseType.Oracle)]
+        [TestCase("PT", FAnsi.DatabaseType.MicrosoftSQLServer)]
+        [TestCase("PT", FAnsi.DatabaseType.MySql)]
+        [TestCase("PT", FAnsi.DatabaseType.Oracle)]
+        [TestCase("NM", FAnsi.DatabaseType.MicrosoftSQLServer)]
+        [TestCase("NM", FAnsi.DatabaseType.MySql)]
+        [TestCase("NM", FAnsi.DatabaseType.Oracle)]
         [TestCase("OTHER",FAnsi.DatabaseType.MicrosoftSQLServer)]
         [TestCase("OTHER",FAnsi.DatabaseType.MySql)]
         [TestCase("OTHER",FAnsi.DatabaseType.Oracle)]
@@ -45,6 +53,9 @@ namespace DicomTypeTranslation.Tests
             string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates",template + ".it");
 
             ImageTableTemplateCollection collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(templateFile));
+
+            foreach (var tableTemplate in collection.Tables) 
+                Validate(tableTemplate,templateFile);
             
             var db = GetTestDatabase(dbType);
             
@@ -57,6 +68,56 @@ namespace DicomTypeTranslation.Tests
 
                 Assert.IsTrue(tbl.Exists());
             }
+        }
+
+        private void Validate(ImageTableTemplate tableTemplate, string templateFile)
+        {
+            List<Exception> errors = new List<Exception>();
+
+            foreach (var col in tableTemplate.Columns)
+            {
+                try
+                {
+                    Assert.LessOrEqual(col.ColumnName.Length,64, $"Column name '{col.ColumnName}' is too long");
+
+                    Regex rSeq = new Regex(@"_([A-Za-z]+)$");
+                    var seqMatch = rSeq.Match(col.ColumnName);
+
+                    if (seqMatch.Success)
+                    {
+                        var leafTag = seqMatch.Groups[1].Value;
+
+                        var tag = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == leafTag);
+
+                        if (tag == null)
+                            throw new NotSupportedException($"Leaf tag {leafTag} of sequence column {col.ColumnName} was not a valid dicom tag name");
+
+                        var type = DicomTypeTranslater.GetNaturalTypeForVr(tag.ValueRepresentations, tag.ValueMultiplicity);
+
+                        Assert.AreEqual(type.CSharpType , col.Type.CSharpType,$"Listed Type for column {col.ColumnName} did not match expected Type");
+                        
+                        if(type.Width == int.MaxValue)
+                            Assert.GreaterOrEqual(col.Type.Width,100,$"Listed Width for column {col.ColumnName} did not match expected Width");
+                        else
+                            Assert.AreEqual(type.Width , col.Type.Width,$"Listed Width for column {col.ColumnName} did not match expected Width");
+                        
+                        Assert.AreEqual(type.Size , col.Type.Size,$"Listed Size for column {col.ColumnName} ({DescribeSize(col.Type.Size)}) did not match expected Size ({DescribeSize(type.Size)})");
+                    
+                    }
+                }
+                catch (Exception e)
+                {
+                    errors.Add(e);
+                }
+            }
+
+            if(errors.Any())
+                throw new AggregateException($"Errors in file '{templateFile}'",errors.ToArray());
+        }
+
+        private string DescribeSize(DecimalSize typeSize)
+        {
+            return "NumbersBeforeDecimalPlace:" + typeSize.NumbersBeforeDecimalPlace + " NumbersAfterDecimalPlace:" + typeSize.NumbersAfterDecimalPlace;
         }
 
         [TestCase("SmiTagElevation")]

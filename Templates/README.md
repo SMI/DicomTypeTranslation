@@ -3,6 +3,7 @@
 - [CT](#ct-computerised-tomography)
 - [MR](#mr-magnetic-resonance)
 - [PT](#pt-positron-emission-tomography-PET)
+- [NM](#nm-nuclear-medicine)
 - [OTHER](#other)
 
 ## CT (Computerised Tomography)
@@ -213,13 +214,110 @@ Observations
 | DeviceSerialNumber |  |
 | SeriesNumber |  |
 | NumberOfSlices |  |
-| EnergyWindowRangeSequence_EnergyWindowLowerLimit |  |
-| EnergyWindowRangeSequence_EnergyWindowUpperLimit |  |
-| RadiopharmaceuticalInformationSequence_Radiopharmaceutical |  |
-| RadiopharmaceuticalInformationSequence_RadiopharmaceuticalVolume |  |
-| RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeValue |  |
-| RadiopharmaceuticalInformationSequence_RadionuclideCodeSequence_CodeMeaning |  |
-| RadiopharmaceuticalInformationSequence_RadionuclideTotalDose |  |
+| EnergyWindowRange_EnergyWindowLowerLimit |  |
+| EnergyWindowRange_EnergyWindowUpperLimit |  |
+| Radiopharmaceutical_Radiopharmaceutical |  |
+| Radiopharmaceutical_RadiopharmaceuticalVolume |  |
+| Radiopharmaceutical_RadionuclideCode_CodeValue |  |
+| Radiopharmaceutical_RadionuclideCode_CodeMeaning |  |
+| Radiopharmaceutical_RadionuclideTotalDose |  |
+| RandomsCorrectionMethod |  |
+| AttenuationCorrectionMethod |  |
+| DecayCorrection |  |
+| ReconstructionMethod |  |
+| ScatterCorrectionMethod |  |
+| DateOfLastCalibration |  |
+|TimeOfLastCalibration | |
+
+### ImageTable
+
+| Field | Description |
+| ------------- | ------------- |
+| SeriesInstanceUID |  |
+| SOPInstanceUID |  |
+| BurnedInAnnotation |  |
+| RelativeFileArchiveURI |  |
+| MessageGuid |  |
+| SliceLocation |  |
+| SliceThickness |  |
+| SpacingBetweenSlices |  |
+| ImageType |  |
+| ManufacturerModelName |  |
+| Manufacturer |  |
+| SoftwareVersions |  |
+| PhotometricInterpretation |  |
+| AcquisitionNumber |  |
+| AcquisitionDate |  |
+| AcquisitionTime |  |
+| ImagePositionPatient |  |
+| PixelSpacing |  |
+| FieldOfViewDimensions |  |
+| FieldOfViewDimensionsInFloat |  |
+| DerivationDescription |  |
+| LossyImageCompression |  |
+| LossyImageCompressionMethod |  |
+| LossyImageCompressionRatio |  |
+| LossyImageCompressionRetired |  |
+| ScanOptions |  |
+| ActualFrameDuration | |
+
+
+## NM (Nuclear Medicine)
+
+This modality contains both SPECT and other forms of nuclear medicine.
+
+### StudyTable
+
+| Field | Description |
+| ------------- | ------------- |
+| PatientID |  |
+| StudyInstanceUID |  |
+| StudyDate |  |
+| StudyTime |  |
+| ModalitiesInStudy |  |
+| StudyDescription |  |
+| AccessionNumber |  |
+| PatientSex |  |
+| PatientAge |  |
+| NumberOfStudyRelatedInstances |  |
+| PatientBirthDate |  |
+
+### SeriesTable
+
+| Field | Description |
+| ------------- | ------------- |
+| StudyInstanceUID |  |
+| SeriesInstanceUID |  |
+| Modality |  |
+| InstitutionName |  |
+| ProtocolName |  |
+| ProcedureCodeSequence_CodeValue |  |
+| PerformedProcedureStepDescription |  |
+| SeriesDescription |  |
+| SeriesDate |  |
+| SeriesTime |  |
+| BodyPartExamined |  |
+| DeviceSerialNumber |  |
+| SeriesNumber |  |
+| NumberOfSlices |  |
+| EnergyWindowRange_EnergyWindowLowerLimit |  |
+| EnergyWindowRange_EnergyWindowUpperLimit |  |
+| Radiopharmaceutical_Radiopharmaceutical |  |
+| Radiopharmaceutical_RadiopharmaceuticalVolume |  |
+| Radiopharmaceutical_RadionuclideCode_CodeValue |  |
+| Radiopharmaceutical_RadionuclideCode_CodeMeaning |  |
+| Radiopharmaceutical_RadionuclideTotalDose |  |
+|NumberOfDetectors                                         | |
+|DetectorInformation_CollimatorGridName            | |
+|DetectorInformation_CollimatorType                | |
+|DetectorInformation_FieldOfViewShape              | |
+|DetectorInformation_FieldOfViewDimensions         | |
+|DetectorInformation_ZoomFactor                    | |
+|DetectorInformation_RadialPosition                | |
+|RotationInformation_ScanArc                       | |
+|RotationInformation_AngularStep                   | |
+|RotationInformation_NumberOfFramesInRotation      | |
+|TypeOfDetectorMotion                                      | |
 | RandomsCorrectionMethod |  |
 | AttenuationCorrectionMethod |  |
 | DecayCorrection |  |

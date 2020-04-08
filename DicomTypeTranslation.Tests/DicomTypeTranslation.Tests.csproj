@@ -55,6 +55,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Templates\NM.it" Link="Templates\NM.it">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="fo-dicom.Json" Version="[4.0.4]" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
