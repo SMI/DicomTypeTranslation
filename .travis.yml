@@ -36,5 +36,5 @@ script:
  - dotnet build
  - dotnet test
  - cd DicomTypeTranslation && dotnet pack -p:Version=$(fgrep Version ../SharedAssemblyInfo.cs|cut -d'"' -f2|head -n1) -c Release --include-symbols --include-source
- - # TODO: Switch from Jenkins, sign nupkg first: if [ ! -z "$TRAVIS_TAG"]; then nuget push HIC.DicomTypeTranslation.$TRAVIS_TAG.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${NUGET_KEY}
+ - if [ ! -z "$TRAVIS_TAG"]; then nuget push HIC.DicomTypeTranslation.$TRAVIS_TAG.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${NUGET_KEY}
  
