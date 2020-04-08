@@ -20,7 +20,7 @@ namespace DicomTypeTranslation.Tests
     {
         static string[] Analyzers = new string[] { "SecurityCodeScan" };
 
-        [TestCase("../../../../DicomTypeTranslation/DicomTypeTranslation.csproj", "../../../../DicomTypeTranslation/HIC.DicomTypeTranslation.nuspec", "../../../../Packages.md")]
+        [TestCase("../../../../DicomTypeTranslation/DicomTypeTranslation.csproj", "../../../../DicomTypeTranslation/HIC.DicomTypeTranslation.nuspec", "../../../../PACKAGES.md")]
         public void TestDependencyCorrect(string csproj, string nuspec, string packagesMarkdown)
         {
             if(csproj != null && !Path.IsPathRooted(csproj))
