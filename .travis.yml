@@ -7,8 +7,6 @@ addons:
   postgresql: "10"
   apt:
     packages:
-    - postgresql-10
-    - postgresql-client-10
     sources:
     - sourceline: 'deb [arch=amd64] https://packages.microsoft.com/ubuntu/18.04/prod bionic main'
       key_url: 'https://packages.microsoft.com/keys/microsoft.asc'
