@@ -7,6 +7,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+- 
+
+## [2.3.0] - 2020-05-21
+
+### Changed
+
+- Bump YamlDotNet from 8.1.0 to 8.1.1
+- Bump Microsoft.NET.Test.Sdk from 16.5.0 to 16.6.1
+- Bump MongoDB.Driver from 2.10.3 to 2.10.4
+- Bump NunitXml.TestLogger from 2.1.41 to 2.1.62
+- Bump NLog from 4.7.0 to 4.7.2
+- Bump fo-dicom.NetCore from 4.0.4 to 4.0.5 and unpin
+
 ## [2.2.2] - 2020-04-08
 
 - Update MongoDB.Driver to 2.10.3
@@ -145,7 +158,10 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.0...develop
+[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.0...develop
+[2.3.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.2..2.3.0
+[2.2.2]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.1..2.2.2
+[2.2.1]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.0..2.2.1
 [2.2.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.1.2..2.2.0
 [2.1.2]: https://github.com/HicServices/DicomTypeTranslation/compare/2.1.1..2.1.2
 [2.1.1]: https://github.com/HicServices/DicomTypeTranslation/compare/2.1.0..2.1.1
