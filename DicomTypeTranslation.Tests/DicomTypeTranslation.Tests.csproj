@@ -60,13 +60,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="fo-dicom.Json" Version="[4.0.4]" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="fo-dicom.Json" Version="4.0.5" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
-    <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
+    <PackageReference Include="NunitXml.TestLogger" Version="2.1.62" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DicomTypeTranslation\DicomTypeTranslation.csproj" />

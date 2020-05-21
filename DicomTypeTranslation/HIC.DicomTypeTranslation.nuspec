@@ -13,12 +13,12 @@
     <copyright>Copyright 2019</copyright>
     <tags>Dicom,ETL,SQL</tags>
     <dependencies>
-      <dependency id="fo-dicom.NetCore" version="4.0.4" />
+      <dependency id="fo-dicom.NetCore" version="4.0.5" />
       <dependency id="HIC.FAnsiSql" version="0.11.1" />
-      <dependency id="MongoDB.Driver" version="2.10.3" />
+      <dependency id="MongoDB.Driver" version="2.10.4" />
       <dependency id="Newtonsoft.Json" version="12.0.3" />
-      <dependency id="NLog" version="4.7.0" />
-      <dependency id="YamlDotNet" version="8.1.0" />
+      <dependency id="NLog" version="4.7.2" />
+      <dependency id="YamlDotNet" version="8.1.1" />
     </dependencies>
   </metadata>
   <files>
