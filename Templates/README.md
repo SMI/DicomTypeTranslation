@@ -410,10 +410,6 @@ https://www.youtube.com/watch?v=cTwbSDcCN4E
 |BurnedInAnnotation| |
 |RelativeFileArchiveURI| |
 |MessageGuid| |
-|SliceLocation| |
-|SliceThickness| |
-|SpacingBetweenSlices| |
-|SpiralPitchFactor| |
 |KVP| |
 |ExposureTime| |
 |Exposure| |
@@ -428,8 +424,6 @@ https://www.youtube.com/watch?v=cTwbSDcCN4E
 |AcquisitionTime| |
 |ImagePositionPatient| |
 |PixelSpacing| |
-|FieldOfViewDimensions| |
-|FieldOfViewDimensionsInFloat| |
 |DerivationDescription| |
 |LossyImageCompression| |
 |LossyImageCompressionMethod| |
