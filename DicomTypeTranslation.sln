@@ -28,6 +28,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{6A04501E-26BE-41E1-9C3E-8A1C1DC90F6D}"
 	ProjectSection(SolutionItems) = preProject
 		Templates\CT.it = Templates\CT.it
+		Templates\DX.it = Templates\DX.it
 		Templates\MR.it = Templates\MR.it
 		Templates\NM.it = Templates\NM.it
 		Templates\OTHER.it = Templates\OTHER.it

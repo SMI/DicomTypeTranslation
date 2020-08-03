@@ -48,6 +48,9 @@ namespace DicomTypeTranslation.Tests
         [TestCase("OTHER",FAnsi.DatabaseType.MicrosoftSQLServer)]
         [TestCase("OTHER",FAnsi.DatabaseType.MySql)]
         [TestCase("OTHER",FAnsi.DatabaseType.Oracle)]
+        [TestCase("DX",FAnsi.DatabaseType.MicrosoftSQLServer)]
+        [TestCase("DX",FAnsi.DatabaseType.MySql)]
+        [TestCase("DX",FAnsi.DatabaseType.Oracle)]
         public void TestTemplate(string template, FAnsi.DatabaseType dbType)
         {
             string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates",template + ".it");

@@ -1,0 +1,177 @@
+Tables:
+- TableName: StudyTable
+  Columns:
+  - ColumnName: PatientID
+  - ColumnName: StudyInstanceUID
+    IsPrimaryKey: true
+  - ColumnName: StudyDate
+    AllowNulls: true
+  - ColumnName: StudyTime
+    AllowNulls: true
+  - ColumnName: ModalitiesInStudy
+    AllowNulls: true
+  - ColumnName: StudyDescription
+    AllowNulls: true
+  - ColumnName: AccessionNumber
+    AllowNulls: true
+  - ColumnName: PatientSex
+    AllowNulls: true
+  - ColumnName: PatientAge
+    AllowNulls: true
+  - ColumnName: NumberOfStudyRelatedInstances
+    AllowNulls: true
+  - ColumnName: PatientBirthDate
+    AllowNulls: true
+- TableName: SeriesTable
+  Columns:
+  - ColumnName: StudyInstanceUID
+  - ColumnName: SeriesInstanceUID
+    IsPrimaryKey: true
+  - ColumnName: Modality
+    AllowNulls: true
+  - ColumnName: InstitutionName
+    AllowNulls: true
+  - ColumnName: ProtocolName
+    AllowNulls: true
+  - ColumnName: ProcedureCodeSequence_CodeValue
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 16
+    AllowNulls: true
+  - ColumnName: PerformedProcedureStepDescription
+    AllowNulls: true
+  - ColumnName: SeriesDescription
+    AllowNulls: true
+  - ColumnName: SeriesDate
+    AllowNulls: true
+  - ColumnName: SeriesTime
+    AllowNulls: true
+  - ColumnName: BodyPartExamined
+    AllowNulls: true
+  - ColumnName: DeviceSerialNumber
+    AllowNulls: true
+  - ColumnName: SeriesNumber
+    AllowNulls: true
+- TableName: ImageTable
+  Columns:
+  - ColumnName: SeriesInstanceUID
+  - ColumnName: SOPInstanceUID
+    IsPrimaryKey: true
+  - ColumnName: BurnedInAnnotation
+    AllowNulls: true
+  - ColumnName: RelativeFileArchiveURI
+    AllowNulls: true
+  - ColumnName: MessageGuid
+    AllowNulls: true
+  - ColumnName: SliceLocation
+    AllowNulls: true
+  - ColumnName: SliceThickness
+    AllowNulls: true
+  - ColumnName: SpacingBetweenSlices
+    AllowNulls: true
+  - ColumnName: SpiralPitchFactor
+    AllowNulls: true
+  - ColumnName: KVP
+    AllowNulls: true
+  - ColumnName: ExposureTime
+    AllowNulls: true
+  - ColumnName: Exposure
+    AllowNulls: true
+  - ColumnName: ImageType
+    AllowNulls: true
+  - ColumnName: ManufacturerModelName
+    AllowNulls: true
+  - ColumnName: Manufacturer
+    AllowNulls: true
+  - ColumnName: SoftwareVersions
+    AllowNulls: true
+  - ColumnName: XRayTubeCurrent
+    AllowNulls: true
+  - ColumnName: PhotometricInterpretation
+    AllowNulls: true
+  - ColumnName: AcquisitionNumber
+    AllowNulls: true
+  - ColumnName: AcquisitionDate
+    AllowNulls: true
+  - ColumnName: AcquisitionTime
+    AllowNulls: true
+  - ColumnName: ImagePositionPatient
+    AllowNulls: true
+  - ColumnName: PixelSpacing
+    AllowNulls: true
+  - ColumnName: FieldOfViewDimensions
+    AllowNulls: true
+  - ColumnName: FieldOfViewDimensionsInFloat
+    AllowNulls: true
+  - ColumnName: DerivationDescription
+    AllowNulls: true
+  - ColumnName: LossyImageCompression
+    AllowNulls: true
+  - ColumnName: LossyImageCompressionMethod
+    AllowNulls: true
+  - ColumnName: LossyImageCompressionRatio
+    AllowNulls: true
+  - ColumnName: LossyImageCompressionRetired
+    AllowNulls: true
+  - ColumnName: ScanOptions
+    AllowNulls: true
+  - ColumnName: SpatialResolution
+    AllowNulls: true
+  - ColumnName: DistanceSourceToDetector
+    AllowNulls: true
+  - ColumnName: ExposureInuAs
+    AllowNulls: true
+  - ColumnName: DistanceSourceToPatient
+    AllowNulls: true
+  - ColumnName: EstimatedRadiographicMagnificationFactor
+    AllowNulls: true
+  - ColumnName: ImageAndFluoroscopyAreaDoseProduct
+    AllowNulls: true
+  - ColumnName: Grid
+    AllowNulls: true
+  - ColumnName: Rows
+    AllowNulls: true
+  - ColumnName: Columns
+    AllowNulls: true
+  - ColumnName: LongitudinalTemporalInformationModified
+    AllowNulls: true
+  - ColumnName: PixelIntensityRelationshipSign
+    AllowNulls: true
+  - ColumnName: WindowCenter
+    AllowNulls: true
+  - ColumnName: WindowWidth
+    AllowNulls: true
+  - ColumnName: RescaleIntercept
+    AllowNulls: true
+  - ColumnName: RescaleSlope
+    AllowNulls: true
+  - ColumnName: RescaleType
+    AllowNulls: true
+  - ColumnName: CollimatorShape
+    AllowNulls: true
+  - ColumnName: CollimatorLeftVerticalEdge
+    AllowNulls: true
+  - ColumnName: CollimatorRightVerticalEdge
+    AllowNulls: true
+  - ColumnName: CollimatorUpperHorizontalEdge
+    AllowNulls: true
+  - ColumnName: CollimatorLowerHorizontalEdge
+    AllowNulls: true
+  - ColumnName: ViewPosition
+    AllowNulls: true
+  - ColumnName: DetectorTemperature
+    AllowNulls: true
+  - ColumnName: DetectorType
+    AllowNulls: true
+  - ColumnName: DetectorMode
+    AllowNulls: true
+  - ColumnName: DetectorID
+    AllowNulls: true
+  - ColumnName: PositionerType
+    AllowNulls: true
+  - ColumnName: RelativeXRayExposure
+    AllowNulls: true
+  - ColumnName: AcquisitionDeviceProcessingDescription
+    AllowNulls: true
