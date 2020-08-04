@@ -4,6 +4,7 @@
 - [MR](#mr-magnetic-resonance)
 - [PT](#pt-positron-emission-tomography-PET)
 - [NM](#nm-nuclear-medicine)
+- [DX](#dx-digital-radiography)
 - [OTHER](#other)
 
 ## CT (Computerised Tomography)
@@ -358,6 +359,106 @@ This modality contains both SPECT and other forms of nuclear medicine.
 | ScanOptions |  |
 | ActualFrameDuration | |
 
+## DX Digital Radiography
+
+For a great introduction to medical imaging and specifically X-Rays check out:
+
+https://www.youtube.com/watch?v=cTwbSDcCN4E
+
+### StudyTable
+
+
+| Field | Description |
+| ------------- | ------------- |
+|PatientID| |
+|StudyInstanceUID| |
+|StudyDate| |
+|StudyTime| |
+|ModalitiesInStudy| |
+|StudyDescription| |
+|AccessionNumber| |
+|PatientSex| |
+|PatientAge| |
+|NumberOfStudyRelatedInstances| |
+|PatientBirthDate| |
+
+### SeriesTable
+
+
+| Field | Description |
+| ------------- | ------------- |
+|StudyInstanceUID| |
+|SeriesInstanceUID| |
+|Modality| |
+|InstitutionName| |
+|ProtocolName| |
+|ProcedureCodeSequence_CodeValue| |
+|PerformedProcedureStepDescription| |
+|SeriesDescription| |
+|SeriesDate| |
+|SeriesTime| |
+|BodyPartExamined| |
+|DeviceSerialNumber| |
+|SeriesNumber| |
+
+### ImageTable
+
+| Field | Description |
+| ------------- | ------------- |
+|SeriesInstanceUID| |
+|SOPInstanceUID| |
+|BurnedInAnnotation| |
+|RelativeFileArchiveURI| |
+|MessageGuid| |
+|KVP| |
+|ExposureTime| |
+|Exposure| |
+|ImageType| |
+|ManufacturerModelName| |
+|Manufacturer| |
+|SoftwareVersions| |
+|XRayTubeCurrent| |
+|PhotometricInterpretation| |
+|AcquisitionNumber| |
+|AcquisitionDate| |
+|AcquisitionTime| |
+|ImagePositionPatient| |
+|PixelSpacing| |
+|DerivationDescription| |
+|LossyImageCompression| |
+|LossyImageCompressionMethod| |
+|LossyImageCompressionRatio| |
+|LossyImageCompressionRetired| |
+|ScanOptions| |
+|SpatialResolution| |
+|DistanceSourceToDetector| |
+|ExposureInuAs| |
+|DistanceSourceToPatient| |
+|EstimatedRadiographicMagnificationFactor| |
+|ImageAndFluoroscopyAreaDoseProduct| |
+|Grid| |
+|Rows| |
+|Columns| |
+|LongitudinalTemporalInformationModified| |
+|PixelIntensityRelationshipSign| |
+|WindowCenter| |
+|WindowWidth| |
+|RescaleIntercept| |
+|RescaleSlope| |
+|RescaleType| |
+|CollimatorShape| |
+|CollimatorLeftVerticalEdge| |
+|CollimatorRightVerticalEdge| |
+|CollimatorUpperHorizontalEdge| |
+|CollimatorLowerHorizontalEdge| |
+|ViewPosition| |
+|DetectorTemperature| |
+|DetectorType| |
+|DetectorMode| |
+|DetectorID| |
+|PositionerType| |
+|RelativeXRayExposure| |
+|AcquisitionDeviceProcessingDescription| |
 
 ## OTHER
 
