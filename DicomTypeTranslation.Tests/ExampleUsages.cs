@@ -1,17 +1,10 @@
 ﻿using Dicom;
-using DicomTypeTranslation.TableCreation;
-using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
-using FAnsi.Implementation;
 using FAnsi.Implementations.MicrosoftSQL;
-using FAnsi.Implementations.MySql;
 using FAnsi.Implementations.Oracle;
-using MySql.Data.MySqlClient;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using TypeGuesser;
 
 namespace DicomTypeTranslation.Tests
