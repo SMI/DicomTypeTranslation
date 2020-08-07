@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Obsolete method CorrectFoDicomVersion removed, previously deprecated
 
+### Dependencies
+
+-	Bump fo-dicom from 4.0.5 to 4.0.6
+
 ## [2.3.0] - 2020-05-21
 
 ### Changed
