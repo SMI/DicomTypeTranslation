@@ -7,11 +7,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.3.1] - 2020-08-17
+
+- Add support for DX (Digital Radiography) modality
 - Obsolete method CorrectFoDicomVersion removed, previously deprecated
 
 ### Dependencies
 
--	Bump fo-dicom from 4.0.5 to 4.0.6
+- Bump fo-dicom from 4.0.5 to 4.0.6
+- Bump HIC.FAnsiSql from 0.11.1 to 1.0.5
+- Bump MongoDB.Driver from 2.10.4 to 2.11.0
+- Bump NLog from 4.7.2 to 4.7.3
 
 ## [2.3.0] - 2020-05-21
 
