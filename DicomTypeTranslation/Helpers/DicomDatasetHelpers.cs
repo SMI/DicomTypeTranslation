@@ -15,25 +15,6 @@ namespace DicomTypeTranslation.Helpers
     public static class DicomDatasetHelpers
     {
         /// <summary>
-        /// Checks  the correct fo-dicom library is present for the platform at runtime
-        /// </summary>
-        /// <returns></returns>
-        [Obsolete("This is likely no longer needed since we explicitly build (and fo-dicom provides) packages for both Windows & Linux")]
-        [UsedImplicitly]
-        public static bool CorrectFoDicomVersion()
-        {
-            try
-            {
-                Encoding _ = Dicom.IO.IOManager.BaseEncoding;
-                return true;
-            }
-            catch (NullReferenceException)
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
         /// Returns true if the elements in <paramref name="a"/> are the same set of tags and values as <paramref name="b"/>
         /// </summary>
         /// <param name="a"></param>

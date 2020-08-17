@@ -25,6 +25,12 @@ namespace DicomTypeTranslation.Tests
             TestLogger.Setup();
         }
 
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+            TestLogger.ShutDown();
+        }
+
         #endregion
 
         #region Tests
