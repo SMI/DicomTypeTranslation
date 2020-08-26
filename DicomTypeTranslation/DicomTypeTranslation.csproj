@@ -31,7 +31,7 @@
   <ItemGroup>
     <PackageReference Include="fo-dicom.NetCore" Version="4.0.6" />
     <PackageReference Include="HIC.FAnsiSql" Version="1.0.5" />
-    <PackageReference Include="MongoDB.Driver" Version="2.11.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.11.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NLog" Version="4.7.4" />
     <PackageReference Include="YamlDotNet" Version="8.1.2" />
