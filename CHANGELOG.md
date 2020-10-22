@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Added SR (Structured Report) template
+
 ## [2.3.1] - 2020-08-17
 
 - Add support for DX (Digital Radiography) modality

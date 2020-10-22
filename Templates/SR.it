@@ -1,0 +1,58 @@
+Tables:
+- TableName: ImageTable
+  Columns:
+  - ColumnName: PatientID
+  - ColumnName: StudyDate
+    AllowNulls: true
+  - ColumnName: StudyTime
+    AllowNulls: true
+  - ColumnName: ModalitiesInStudy
+    AllowNulls: true
+  - ColumnName: StudyDescription
+    AllowNulls: true
+  - ColumnName: AccessionNumber
+    AllowNulls: true
+  - ColumnName: PatientSex
+    AllowNulls: true
+  - ColumnName: PatientAge
+    AllowNulls: true
+  - ColumnName: NumberOfStudyRelatedInstances
+    AllowNulls: true
+  - ColumnName: PatientBirthDate
+    AllowNulls: true
+  - ColumnName: StudyInstanceUID
+  - ColumnName: SeriesInstanceUID
+  - ColumnName: SOPInstanceUID
+    IsPrimaryKey: true
+  - ColumnName: Modality
+    AllowNulls: true
+  - ColumnName: InstitutionName
+    AllowNulls: true
+  - ColumnName: SeriesDescription
+    AllowNulls: true
+  - ColumnName: SeriesDate
+    AllowNulls: true
+  - ColumnName: SeriesTime
+    AllowNulls: true
+  - ColumnName: DeviceSerialNumber
+    AllowNulls: true
+  - ColumnName: SeriesNumber
+    AllowNulls: true
+  - ColumnName: BurnedInAnnotation
+    AllowNulls: true
+  - ColumnName: ImageType
+    AllowNulls: true
+  - ColumnName: ManufacturerModelName
+    AllowNulls: true
+  - ColumnName: Manufacturer
+    AllowNulls: true
+  - ColumnName: SoftwareVersions
+    AllowNulls: true
+  - ColumnName: CompletionFlag
+    AllowNulls: true
+  - ColumnName: VerificationFlag
+    AllowNulls: true
+  - ColumnName: StrainNomenclature
+    AllowNulls: true
+  - ColumnName: StrainDescription
+    AllowNulls: true
