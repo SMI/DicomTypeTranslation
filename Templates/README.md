@@ -501,7 +501,7 @@ Since structured reports are almost exclusively single file entities only an Ima
 |VerificationFlag                 |  |
 |StrainNomenclature               |  |
 |StrainDescription                |  |
-
+|SOPClassUID                  |  |
 ## OTHER
 
 ### ImageTable

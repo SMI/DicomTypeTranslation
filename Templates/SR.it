@@ -56,3 +56,5 @@ Tables:
     AllowNulls: true
   - ColumnName: StrainDescription
     AllowNulls: true
+  - ColumnName: SOPClassUID
+    AllowNulls: true
