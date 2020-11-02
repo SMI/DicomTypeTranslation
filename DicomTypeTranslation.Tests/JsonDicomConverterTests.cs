@@ -1,8 +1,4 @@
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Dicom;
 using Dicom.Serialization;
 using DicomTypeTranslation.Converters;
@@ -12,6 +8,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 using NUnit.Framework;
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace DicomTypeTranslation.Tests
 {
@@ -54,6 +54,11 @@ namespace DicomTypeTranslation.Tests
         public void SetUp()
         {
             TestLogger.Setup();
+
+            // NOTE(rkm 2020-11-02) Disable so we can create DicomDatasets with specific test values
+#pragma warning disable 618
+            DicomValidation.AutoValidation = false;
+#pragma warning restore 618
         }
 
         [OneTimeTearDown]
@@ -157,7 +162,7 @@ namespace DicomTypeTranslation.Tests
                     break;
 
                 case "JsonDicomConverter":
-                    Assert.Throws<FormatException>(() => VerifyJsonTripleTrip(ds), $"[{convType}] Expected FormatException parsing 2.500000 as an IntegerString");
+                    Assert.Throws<OverflowException>(() => VerifyJsonTripleTrip(ds), $"[{convType}] Expected OverflowException parsing 2.500000 as an IntegerString");
                     break;
 
                 default:
@@ -300,13 +305,8 @@ namespace DicomTypeTranslation.Tests
                         break;
 
                     case "JsonDicomConverter":
-                        if (i == 2 || i == 3)
-                            Assert.Throws<ArgumentException>(() => DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter));
-                        else
-                        {
-                            json = DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter);
-                            Assert.True(json.Equals("{\"00101030\":{\"vr\":\"DS\",\"Value\":[" + expectedValues[i] + "]}}"));
-                        }
+                        json = DicomTypeTranslater.SerializeDatasetToJson(ds, _jsonDicomConverter);
+                        Assert.True(json.Equals("{\"00101030\":{\"vr\":\"DS\",\"Value\":[" + expectedValues[i] + "]}}"));
                         break;
 
                     default:
