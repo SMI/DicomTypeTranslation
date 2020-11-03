@@ -104,9 +104,9 @@ namespace DicomTypeTranslation.Tests
                         
                         // The declared widths must be sufficient to hold the basic leaf node
                         if(type.Width == int.MaxValue)
-                            Assert.GreaterOrEqual(col.Type.Width,100,$"Listed Width for column {col.ColumnName} did not match expected minimum Width");
+                            Assert.GreaterOrEqual(col.Type.Width ??0,100,$"Listed Width for column {col.ColumnName} did not match expected minimum Width");
                         else
-                            Assert.GreaterOrEqual(col.Type.Width,type.Width ,$"Listed Width for column {col.ColumnName} did not match expected minimum Width");
+                            Assert.GreaterOrEqual(col.Type.Width ??0,type.Width ??0 ,$"Listed Width for column {col.ColumnName} did not match expected minimum Width");
                         
                         Assert.AreEqual(type.Size , col.Type.Size,$"Listed Size for column {col.ColumnName} ({DescribeSize(col.Type.Size)}) did not match expected Size ({DescribeSize(type.Size)})");
                     
