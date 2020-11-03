@@ -502,6 +502,19 @@ Since structured reports are almost exclusively single file entities only an Ima
 |StrainNomenclature               |  |
 |StrainDescription                |  |
 |SOPClassUID                  |  |
+| Study_ReferencedSOPClassUID |  |
+| Study_ReferencedSOPInstanceUID |  |
+| RefImageSeq_ReferencedSOPClassUID |  |
+| RefImageSeq_ReferencedSOPInstanceUID |  |
+| SourceImageSeq_ReferencedSOPClassUID |  |
+| SourceImageSeq_ReferencedSOPInstanceUID |  |
+| RefProcStep_ReferencedSOPClassUID |  |
+| RefProcStep_ReferencedSOPInstanceUID |  |
+| CurrentReqEvidence_StudyInstanceUID |  |
+| CurrentReqEvidence_SeriesInstanceUID |  |
+| CurrentReqEvidence_SOPClassUID |  |
+| CurrentReqEvidence_SOPInstanceUID |  |
+
 ## OTHER
 
 ### ImageTable

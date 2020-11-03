@@ -58,3 +58,88 @@ Tables:
     AllowNulls: true
   - ColumnName: SOPClassUID
     AllowNulls: true
+  - ColumnName: Study_ReferencedSOPClassUID
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 500
+  - ColumnName: Study_ReferencedSOPInstanceUID
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 500
+  - ColumnName: RefImageSeq_ReferencedSOPClassUID
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 500
+  - ColumnName: RefImageSeq_ReferencedSOPInstanceUID
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 500
+  - ColumnName: SourceImageSeq_ReferencedSOPClassUID
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 500
+  - ColumnName: SourceImageSeq_ReferencedSOPInstanceUID
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 500
+  - ColumnName: RefProcStep_ReferencedSOPClassUID
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 500
+  - ColumnName: RefProcStep_ReferencedSOPInstanceUID
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 500
+  - ColumnName: CurrentReqEvidence_StudyInstanceUID
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 500
+  - ColumnName: CurrentReqEvidence_SeriesInstanceUID
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 500
+  - ColumnName: CurrentReqEvidence_SOPClassUID
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 500
+  - ColumnName: CurrentReqEvidence_SOPInstanceUID
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 500
+ 
