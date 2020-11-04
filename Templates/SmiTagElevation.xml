@@ -14,4 +14,66 @@
     <ColumnName>ProcedureCodeSequence_CodeValue</ColumnName>
     <ElevationPathway>ProcedureCodeSequence->CodeValue+</ElevationPathway>
   </TagElevationRequest>
+
+  <!-- Structured Reports (SR)-->
+  
+  <!-- SR: ReferencedStudySequence-->
+  <TagElevationRequest>
+    <ColumnName>Study_ReferencedSOPClassUID</ColumnName>
+    <ElevationPathway>ReferencedStudySequence->ReferencedSOPClassUID+</ElevationPathway>
+  </TagElevationRequest>
+  <TagElevationRequest>
+    <ColumnName>Study_ReferencedSOPInstanceUID</ColumnName>
+    <ElevationPathway>ReferencedStudySequence->ReferencedSOPInstanceUID+</ElevationPathway>
+  </TagElevationRequest>
+  
+  <!-- ReferencedImageSequence -->
+  <TagElevationRequest>
+    <ColumnName>RefImageSeq_ReferencedSOPClassUID</ColumnName>
+    <ElevationPathway>ReferencedImageSequence->ReferencedSOPClassUID+</ElevationPathway>
+  </TagElevationRequest>
+  <TagElevationRequest>
+    <ColumnName>RefImageSeq_ReferencedSOPInstanceUID</ColumnName>
+    <ElevationPathway>ReferencedImageSequence->ReferencedSOPInstanceUID+</ElevationPathway>
+  </TagElevationRequest>
+
+  <!--SR: SourceImageSequence-->
+  <TagElevationRequest>
+    <ColumnName>SourceImageSeq_ReferencedSOPClassUID</ColumnName>
+    <ElevationPathway>SourceImageSequence->ReferencedSOPClassUID+</ElevationPathway>
+  </TagElevationRequest>
+  <TagElevationRequest>
+    <ColumnName>SourceImageSeq_ReferencedSOPInstanceUID</ColumnName>
+    <ElevationPathway>SourceImageSequence->ReferencedSOPInstanceUID+</ElevationPathway>
+  </TagElevationRequest>
+  
+  <!--SR: ReferencedPerformedProcedureStepSequence-->
+  <TagElevationRequest>
+    <ColumnName>RefProcStep_ReferencedSOPClassUID</ColumnName>
+    <ElevationPathway>ReferencedPerformedProcedureStepSequence->ReferencedSOPClassUID+</ElevationPathway>
+  </TagElevationRequest>
+  <TagElevationRequest>
+    <ColumnName>RefProcStep_ReferencedSOPInstanceUID</ColumnName>
+    <ElevationPathway>ReferencedPerformedProcedureStepSequence->ReferencedSOPInstanceUID+</ElevationPathway>
+  </TagElevationRequest>
+
+  <!--SR: CurrentRequestedProcedureEvidenceSequence-->
+
+  <TagElevationRequest>
+    <ColumnName>CurrentReqEvidence_StudyInstanceUID</ColumnName>
+    <ElevationPathway>CurrentRequestedProcedureEvidenceSequence->StudyInstanceUID+</ElevationPathway>
+  </TagElevationRequest>
+  <TagElevationRequest>
+    <ColumnName>CurrentReqEvidence_SeriesInstanceUID</ColumnName>
+    <ElevationPathway>CurrentRequestedProcedureEvidenceSequence->ReferencedSeriesSequence->SeriesInstanceUID+</ElevationPathway>
+  </TagElevationRequest>
+  <TagElevationRequest>
+    <ColumnName>CurrentReqEvidence_SOPClassUID</ColumnName>
+    <ElevationPathway>CurrentRequestedProcedureEvidenceSequence->ReferencedSeriesSequence->ReferencedSOPSequence->ReferencedSOPClassUID+</ElevationPathway>
+  </TagElevationRequest>
+  <TagElevationRequest>
+    <ColumnName>CurrentReqEvidence_SOPInstanceUID</ColumnName>
+    <ElevationPathway>CurrentRequestedProcedureEvidenceSequence->ReferencedSeriesSequence->ReferencedSOPSequence->ReferencedSOPInstanceUID+</ElevationPathway>
+  </TagElevationRequest>
+
 </TagElevationRequestCollection>

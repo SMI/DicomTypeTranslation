@@ -7,7 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
--   Bump fo-dicom from 4.0.6 to 4.0.7
+### Added
+
+- Added SR (Structured Report) template
+- Bump fo-dicom from 4.0.6 to 4.0.7
+
 
 ## [2.3.1] - 2020-08-17
 

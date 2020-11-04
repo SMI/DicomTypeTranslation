@@ -5,6 +5,7 @@
 - [PT](#pt-positron-emission-tomography-PET)
 - [NM](#nm-nuclear-medicine)
 - [DX](#dx-digital-radiography)
+- [SR](#sr-structured-report)
 - [OTHER](#other)
 
 ## CT (Computerised Tomography)
@@ -459,6 +460,60 @@ https://www.youtube.com/watch?v=cTwbSDcCN4E
 |PositionerType| |
 |RelativeXRayExposure| |
 |AcquisitionDeviceProcessingDescription| |
+
+## SR (Structured Report)
+
+Structured Report dicom files contain information about a study or series.  It can include radiologists notes, diagnoses etc.
+
+Since structured reports are almost exclusively single file entities only an ImageTable schema is defined (No study/series/image division of tags).
+
+### ImageTable
+
+
+| Field | Description |
+| ------------- | ------------- |
+|PatientID                        |  |
+|StudyDate                        |  |
+|StudyTime                        |  |
+|ModalitiesInStudy                |  |
+|StudyDescription                 |  |
+|AccessionNumber                  |  |
+|PatientSex                       |  |
+|PatientAge                       |  |
+|NumberOfStudyRelatedInstances    |  |
+|PatientBirthDate                 |  |
+|StudyInstanceUID                 |  |
+|SeriesInstanceUID                |  |
+|SOPInstanceUID                   |  |
+|Modality                         |  |
+|InstitutionName                  |  |
+|SeriesDescription                |  |
+|SeriesDate                       |  |
+|SeriesTime                       |  |
+|DeviceSerialNumber               |  |
+|SeriesNumber                     |  |
+|BurnedInAnnotation               |  |
+|ImageType                        |  |
+|ManufacturerModelName            |  |
+|Manufacturer                     |  |
+|SoftwareVersions                 |  |
+|CompletionFlag                   |  |
+|VerificationFlag                 |  |
+|StrainNomenclature               |  |
+|StrainDescription                |  |
+|SOPClassUID                  |  |
+| Study_ReferencedSOPClassUID |  |
+| Study_ReferencedSOPInstanceUID |  |
+| RefImageSeq_ReferencedSOPClassUID |  |
+| RefImageSeq_ReferencedSOPInstanceUID |  |
+| SourceImageSeq_ReferencedSOPClassUID |  |
+| SourceImageSeq_ReferencedSOPInstanceUID |  |
+| RefProcStep_ReferencedSOPClassUID |  |
+| RefProcStep_ReferencedSOPInstanceUID |  |
+| CurrentReqEvidence_StudyInstanceUID |  |
+| CurrentReqEvidence_SeriesInstanceUID |  |
+| CurrentReqEvidence_SOPClassUID |  |
+| CurrentReqEvidence_SOPInstanceUID |  |
 
 ## OTHER
 

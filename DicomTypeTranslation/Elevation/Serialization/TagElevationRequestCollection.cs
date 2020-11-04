@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 using DicomTypeTranslation.Elevation.Exceptions;
 
 namespace DicomTypeTranslation.Elevation.Serialization
@@ -32,8 +33,11 @@ namespace DicomTypeTranslation.Elevation.Serialization
             if (root == null)
                 throw new MalformedTagElevationRequestCollectionXmlException("No root tag TagElevationRequestCollection");
 
-            foreach (XmlElement requestXml in root.ChildNodes)
+            foreach (var n in root.ChildNodes)
             {
+                if(n is XmlComment)
+                    continue;
+                XmlElement requestXml = (XmlElement)n;
                 var toAdd = new TagElevationRequest(requestXml);
                 Requests.Add(toAdd);
             }
