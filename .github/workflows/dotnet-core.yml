@@ -24,7 +24,7 @@ jobs:
     - name: Add MSFT package repo
       run: sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/18.04/mssql-server-2019.list)"
     - name: Install Sql Server
-      run: sudo apt-get install -y --no-install-recommends mssql-tools mssql-server
+      run: sudo apt-get install -y --no-install-recommends mysql-server postgresql mssql-tools mssql-server
     - name: Configure Sql Server
       run: sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
     - name: Install dependencies
