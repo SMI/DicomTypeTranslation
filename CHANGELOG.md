@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Dependencies
 
 - Bump YamlDotNet from 9.1.1 to 9.1.4
-- Bump NLog from 4.7.6 to 4.7.7
+- Bump NLog from 4.7.6 to 4.7.8
 - Bump MongoDB.Driver from 2.11.5 to 2.11.6
 
 ### Added
