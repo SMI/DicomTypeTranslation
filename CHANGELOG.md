@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+
+## [2.3.2] - 2020-03-02
+
 ### Dependencies
 
 - Bump YamlDotNet from 9.1.1 to 9.1.4
@@ -180,7 +183,9 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.0...develop
+[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.2...develop
+[2.3.2]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.1..2.3.2
+[2.3.1]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.0..2.3.1
 [2.3.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.2..2.3.0
 [2.2.2]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.1..2.2.2
 [2.2.1]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.0..2.2.1
