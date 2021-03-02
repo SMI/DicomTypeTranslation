@@ -51,6 +51,9 @@ namespace DicomTypeTranslation.Tests
         [TestCase("DX",FAnsi.DatabaseType.MicrosoftSQLServer)]
         [TestCase("DX",FAnsi.DatabaseType.MySql)]
         [TestCase("DX",FAnsi.DatabaseType.Oracle)]
+        [TestCase("SR",FAnsi.DatabaseType.MicrosoftSQLServer)]
+        [TestCase("SR",FAnsi.DatabaseType.MySql)]
+        [TestCase("SR",FAnsi.DatabaseType.Oracle)]
         public void TestTemplate(string template, FAnsi.DatabaseType dbType)
         {
             string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates",template + ".it");
@@ -99,10 +102,11 @@ namespace DicomTypeTranslation.Tests
 
                         Assert.AreEqual(type.CSharpType , col.Type.CSharpType,$"Listed Type for column {col.ColumnName} did not match expected Type");
                         
+                        // The declared widths must be sufficient to hold the basic leaf node
                         if(type.Width == int.MaxValue)
-                            Assert.GreaterOrEqual(col.Type.Width,100,$"Listed Width for column {col.ColumnName} did not match expected Width");
+                            Assert.GreaterOrEqual(col.Type.Width ??0,100,$"Listed Width for column {col.ColumnName} did not match expected minimum Width");
                         else
-                            Assert.AreEqual(type.Width , col.Type.Width,$"Listed Width for column {col.ColumnName} did not match expected Width");
+                            Assert.GreaterOrEqual(col.Type.Width ??0,type.Width ??0 ,$"Listed Width for column {col.ColumnName} did not match expected minimum Width");
                         
                         Assert.AreEqual(type.Size , col.Type.Size,$"Listed Size for column {col.ColumnName} ({DescribeSize(col.Type.Size)}) did not match expected Size ({DescribeSize(type.Size)})");
                     

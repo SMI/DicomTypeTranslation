@@ -1,4 +1,4 @@
-﻿// Copyright (c) The University of Dundee 2018-2019
+// Copyright (c) The University of Dundee 2018-2019
 // This file is part of the Research Data Management Platform (RDMP).
 // RDMP is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // RDMP is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -65,11 +65,10 @@ namespace DicomTypeTranslation.Tests
                         string packageDependency = d.Groups[1].Value;
                         string versionDependency = d.Groups[2].Value;
 
-                        if (packageDependency.Equals(package))
-                        {
-                            Assert.AreEqual(version, versionDependency, "Package {0} is version {1} in {2} but version {3} in {4}", package, version, csproj, versionDependency, nuspec);
-                            found = true;
-                        }
+                        if (!packageDependency.Equals(package)) continue;
+
+                        Assert.AreEqual(version, versionDependency, "Package {0} is version {1} in {2} but version {3} in {4}", package, version, csproj, versionDependency, nuspec);
+                        found = true;
                     }
 
                     if (!found)
@@ -79,24 +78,19 @@ namespace DicomTypeTranslation.Tests
 
 
                 //And make sure it appears in the packages.md file
-                if (packagesMarkdown != null)
+                if (packagesMarkdown == null) continue;
+
+                found = false;
+
+                foreach (string line in File.ReadAllLines(packagesMarkdown))
                 {
-                    found = false;
-                    foreach (string line in File.ReadAllLines(packagesMarkdown))
-                    {
-                        if (Regex.IsMatch(line, @"[\s[]" + Regex.Escape(package) + @"[\s\]]", RegexOptions.IgnoreCase))
-                        {
-                            int count = new Regex(Regex.Escape(version)).Matches(line).Count;
-
-                            Assert.AreEqual(2, count, "Markdown file {0} did not contain 2 instances of the version {1} for package {2} in {3}", packagesMarkdown, version, package, csproj);
-                            found = true;
-                        }
-                    }
-
-                    if (!found)
-                        Assert.Fail("Package {0} in {1} is not documented in {2}. Recommended line is:\r\n{3}", package, csproj, packagesMarkdown,
-                            BuildRecommendedMarkdownLine(package, version));
+                    if (Regex.IsMatch(line, @"[\s[]" + Regex.Escape(package) + @"[\s\]]", RegexOptions.IgnoreCase))
+                        found = true;
                 }
+
+                if (!found)
+                    Assert.Fail("Package {0} in {1} is not documented in {2}. Recommended line is:\r\n{3}", package, csproj, packagesMarkdown,
+                        BuildRecommendedMarkdownLine(package, version));
             }
         }
 

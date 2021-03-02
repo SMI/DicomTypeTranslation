@@ -65,13 +65,18 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="fo-dicom.Json" Version="4.0.6" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.0" />
-    <PackageReference Include="NUnit" Version="3.12.0" />
+    <Content Include="..\Templates\SR.it" Link="Templates\SR.it">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="fo-dicom.Json" Version="4.0.7" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+    <PackageReference Include="NUnit" Version="3.13.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
-    <PackageReference Include="NunitXml.TestLogger" Version="2.1.62" />
+    <PackageReference Include="NunitXml.TestLogger" Version="3.0.91" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DicomTypeTranslation\DicomTypeTranslation.csproj" />
