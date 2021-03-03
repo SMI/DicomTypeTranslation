@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Dependencies
+
+- Bump MongoDB.Driver from 2.11.6 to 2.12.0
 
 ## [2.3.2] - 2020-03-02
 
