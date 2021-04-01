@@ -18,7 +18,7 @@
       <dependency id="MongoDB.Driver" version="2.12.1" />
       <dependency id="Newtonsoft.Json" version="13.0.1" />
       <dependency id="NLog" version="4.7.9" />
-      <dependency id="YamlDotNet" version="10.0.0" />
+      <dependency id="YamlDotNet" version="10.1.0" />
     </dependencies>
   </metadata>
   <files>
