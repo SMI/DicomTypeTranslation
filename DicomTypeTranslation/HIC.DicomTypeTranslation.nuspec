@@ -14,7 +14,7 @@
     <tags>Dicom,ETL,SQL</tags>
     <dependencies>
       <dependency id="fo-dicom.NetCore" version="4.0.7" />
-      <dependency id="HIC.FAnsiSql" version="1.0.6" />
+      <dependency id="HIC.FAnsiSql" version="1.0.7" />
       <dependency id="MongoDB.Driver" version="2.12.3" />
       <dependency id="Newtonsoft.Json" version="13.0.1" />
       <dependency id="NLog" version="4.7.10" />
