@@ -76,7 +76,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
-    <PackageReference Include="NunitXml.TestLogger" Version="3.0.97" />
+    <PackageReference Include="NunitXml.TestLogger" Version="3.0.107" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DicomTypeTranslation\DicomTypeTranslation.csproj" />
