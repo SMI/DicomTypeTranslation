@@ -44,6 +44,11 @@ Tables:
    - ColumnName: PerformedProcedureStepDescription
      AllowNulls: true
    - ColumnName: ProcedureCodeSequence_CodeValue
+     Type:
+       CSharpType: System.String
+       Size:
+         IsEmpty: true
+       Width: 16
      AllowNulls: true
    - ColumnName: ProtocolName
      AllowNulls: true
