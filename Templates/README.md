@@ -5,6 +5,7 @@
 - [PT](#pt-positron-emission-tomography-PET)
 - [NM](#nm-nuclear-medicine)
 - [DX](#dx-digital-radiography)
+- [XA](#xa-x-ray-angiography)
 - [SR](#sr-structured-report)
 - [OTHER](#other)
 
@@ -460,6 +461,120 @@ https://www.youtube.com/watch?v=cTwbSDcCN4E
 |PositionerType| |
 |RelativeXRayExposure| |
 |AcquisitionDeviceProcessingDescription| |
+
+
+## XA (X-ray Angiography)
+
+### StudyTable
+
+
+| Field | Description |
+| ------------- | ------------- |
+|StudyInstanceUID| |
+|AccessionNumber| |
+|ModalitiesInStudy| |
+|NumberOfStudyRelatedInstances| |
+|PatientAge| |
+|PatientBirthDate| |
+|PatientID| |
+|PatientSex| |
+|StudyDate| |
+|StudyDescription| |
+|StudyTime || 
+
+### SeriesTable
+
+| Field | Description |
+| ------------- | ------------- |
+|StudyInstanceUID| |
+|SeriesInstanceUID| |
+|BodyPartExamined| |
+|DeviceSerialNumber| |
+|InstitutionName| |
+|Modality| |
+|PerformedProcedureStepDescription| |
+|ProcedureCodeSequence_CodeValue| |
+|ProtocolName| |
+|SeriesDate| |
+|SeriesDescription| |
+|SeriesNumber| |
+|SeriesTime| |
+
+### ImageTable
+
+| Field | Description |
+| ------------- | ------------- |
+|SeriesInstanceUID| |
+|SOPInstanceUID| |
+|RelativeFileArchiveURI| |
+|MessageGuid| |
+|AcquisitionDate| |
+|AcquisitionDeviceProcessingDescription| |
+|AcquisitionNumber| |
+|AcquisitionTime| |
+|AveragePulseWidth| |
+|BurnedInAnnotation| |
+|CollimatorLeftVerticalEdge| |
+|CollimatorLowerHorizontalEdge| |
+|CollimatorRightVerticalEdge| |
+|CollimatorShape| |
+|CollimatorUpperHorizontalEdge| |
+|ColorSpace| |
+|Columns| |
+|DerivationDescription| |
+|DetectorConfiguration| |
+|DetectorDescription| |
+|DetectorID| |
+|DetectorMode| |
+|DetectorPrimaryAngle| |
+|DetectorSecondaryAngle| |
+|DetectorTemperature| |
+|DetectorType| |
+|DistanceSourceToDetector| |
+|DistanceSourceToPatient| |
+|EstimatedRadiographicMagnificationFactor| |
+|Exposure| |
+|ExposureInuAs| |
+|ExposureTime| |
+|FocalSpots| |
+|Grid| |
+|ImageAndFluoroscopyAreaDoseProduct| |
+|ImagePositionPatient| |
+|ImageType| |
+|ImagerPixelSpacing| |
+|IntensifierSize| |
+|KVP| |
+|LongitudinalTemporalInformationModified| |
+|LossyImageCompression| |
+|LossyImageCompressionMethod| |
+|LossyImageCompressionRatio| |
+|Manufacturer| |
+|ManufacturerModelName| |
+|PhotometricInterpretation| |
+|PixelAspectRatio| |
+|PixelIntensityRelationshipSign| |
+|PixelSpacing| |
+|PixelSpacingCalibrationDescription| |
+|PixelSpacingCalibrationType| |
+|PlanarConfiguration| |
+|PositionerMotion| |
+|PositionerType| |
+|RadiationMode| |
+|RadiationSetting| |
+|RelativeXRayExposure| |
+|RescaleIntercept| |
+|RescaleSlope| |
+|RescaleType| |
+|Rows| |
+|SamplesPerPixel| |
+|ScanOptions| |
+|SoftwareVersions| |
+|SpatialResolution| |
+|TypeOfFilters| |
+|WindowCenter| |
+|WindowWidth| |
+|XRayTubeCurrent| |
+|XRayTubeCurrentInuA| |
 
 ## SR (Structured Report)
 
