@@ -65,6 +65,16 @@ Tables:
     AllowNulls: true
   - ColumnName: PatientPosition
     AllowNulls: true
+  - ColumnName: MRAcquisitionType
+    AllowNulls: true
+  - ColumnName: AngioFlag
+    AllowNulls: true
+  - ColumnName: MagneticFieldStrength
+    AllowNulls: true
+  - ColumnName: TransmitCoilName
+    AllowNulls: true
+  - ColumnName: PatientPosition
+    AllowNulls: true
 - TableName: ImageTable
   Columns:
   - ColumnName: SeriesInstanceUID
