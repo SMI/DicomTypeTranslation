@@ -69,10 +69,6 @@ Tables:
      AllowNulls: true
    - ColumnName: RelativeFileArchiveURI
      AllowNulls: true
-   - ColumnName: RelativeFileArchiveURI
-     AllowNulls: true
-   - ColumnName: RelativeFileArchiveURI
-     AllowNulls: true
    - ColumnName: MessageGuid
      AllowNulls: true
    - ColumnName: AcquisitionDate
