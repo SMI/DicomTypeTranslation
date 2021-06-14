@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Bump MongoDB.Driver from 2.11.6 to 2.12.3
 - Bump Newtonsoft.Json from 12.0.3 to 13.0.1
 - Bump NLog from 4.7.8 to 4.7.10
-- Bump YamlDotNet from 10.0.0 to 11.1.1
+- Bump YamlDotNet from 10.0.0 to 11.2.0
 - Bump HIC.FAnsiSql from 1.0.6 to 1.0.7
 - Bump MongoDB.Driver from 2.12.3 to 2.12.4
 
