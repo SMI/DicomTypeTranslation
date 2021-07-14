@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Bump NLog from 4.7.8 to 4.7.10
 - Bump YamlDotNet from 10.0.0 to 11.2.1
 - Bump HIC.FAnsiSql from 1.0.6 to 1.0.7
-- Bump MongoDB.Driver from 2.12.3 to 2.12.4
+- Bump MongoDB.Driver from 2.12.3 to 2.13.0
 
 ## [2.3.2] - 2020-03-02
 
