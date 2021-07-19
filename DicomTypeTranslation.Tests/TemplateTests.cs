@@ -72,11 +72,28 @@ namespace DicomTypeTranslation.Tests
 
             foreach(var table in collection.Tables)
             {
+                if(string.Equals(table.TableName, "ImageTable",StringComparison.CurrentCultureIgnoreCase))
+                {
+                    EnforceExpectedImageColumns(template,table);
+                }
+
                 var tbl = db.ExpectTable(table.TableName);
                 creator.CreateTable(tbl,table);
 
                 Assert.IsTrue(tbl.Exists());
             }
+        }
+
+        private void EnforceExpectedImageColumns(string template, ImageTableTemplate table)
+        {
+            foreach(var req in new[] { "PatientID","DicomFileSize","StudyInstanceUID"})
+            {
+                if (!table.Columns.Any(c => c.ColumnName.Equals(req)))
+                {
+                    Assert.Fail($"Template {Path.GetFileName(template)} is missing expected field {req} in section {table.TableName}");
+                }
+            }
+            
         }
 
         private void Validate(ImageTableTemplate tableTemplate, string templateFile)
