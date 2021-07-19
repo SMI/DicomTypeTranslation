@@ -1,4 +1,4 @@
-# Last Modified: 2021-06-08
+# Last Modified: 2021-07-19
 
 Tables:
 
@@ -30,9 +30,9 @@ Tables:
 -  TableName: SeriesTable
    Columns:
    - ColumnName: StudyInstanceUID
-     IsPrimaryKey: true
+     AllowNulls: false
    - ColumnName: SeriesInstanceUID
-     AllowNulls: true
+     IsPrimaryKey: true
    - ColumnName: BodyPartExamined
      AllowNulls: true
    - ColumnName: DeviceSerialNumber
@@ -48,7 +48,7 @@ Tables:
        CSharpType: System.String
        Size:
          IsEmpty: true
-       Width: 16
+       Width: 100
      AllowNulls: true
    - ColumnName: ProtocolName
      AllowNulls: true
@@ -63,10 +63,14 @@ Tables:
 
 -  TableName: ImageTable
    Columns:
+   - ColumnName: PatientID
+     AllowNulls: false
+   - ColumnName: StudyInstanceUID
+     AllowNulls: false
    - ColumnName: SeriesInstanceUID
-     IsPrimaryKey: true
+     AllowNulls: false
    - ColumnName: SOPInstanceUID
-     AllowNulls: true
+     IsPrimaryKey: true
    - ColumnName: RelativeFileArchiveURI
      AllowNulls: true
    - ColumnName: MessageGuid
@@ -204,4 +208,8 @@ Tables:
    - ColumnName: XRayTubeCurrent
      AllowNulls: true
    - ColumnName: XRayTubeCurrentInuA
+     AllowNulls: true
+   - ColumnName: DicomFileSize
+     Type:
+       CSharpType: System.Int64
      AllowNulls: true
