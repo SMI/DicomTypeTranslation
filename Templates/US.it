@@ -297,3 +297,43 @@ Tables:
     Type: 
     AllowNulls: true
     IsPrimaryKey: false
+  - ColumnName: UltrasoundColorDataPresent
+    Type: 
+    AllowNulls: true
+    IsPrimaryKey: false
+  - ColumnName: Laterality
+    Type: 
+    AllowNulls: true
+    IsPrimaryKey: false
+  - ColumnName: SecondaryCaptureDeviceID
+    Type: 
+    AllowNulls: true
+    IsPrimaryKey: false
+  - ColumnName: DateOfSecondaryCapture
+    Type: 
+    AllowNulls: true
+    IsPrimaryKey: false
+  - ColumnName: TimeOfSecondaryCapture
+    Type: 
+    AllowNulls: true
+    IsPrimaryKey: false
+  - ColumnName: SecondaryCaptureDeviceManufacturer
+    Type: 
+    AllowNulls: true
+    IsPrimaryKey: false
+  - ColumnName: SecondaryCaptureDeviceManufacturerModelName
+    Type: 
+    AllowNulls: true
+    IsPrimaryKey: false
+  - ColumnName: SecondaryCaptureDeviceSoftwareVersions
+    Type: 
+    AllowNulls: true
+    IsPrimaryKey: false
+  - ColumnName: PlanarConfiguration
+    Type: 
+    AllowNulls: true
+    IsPrimaryKey: false
+  - ColumnName: SamplesPerPixel
+    Type: 
+    AllowNulls: true
+    IsPrimaryKey: false
