@@ -84,6 +84,10 @@ Schema with
 | LossyImageCompressionRatio |  |
 | LossyImageCompressionRetired |  |
 | ScanOptions |  |
+| StudyInstanceUID | |
+| PatientID | |
+| DicomFileSize | |
+
 ## MR (Magnetic Resonance)
 
 ### StudyTable
@@ -167,6 +171,10 @@ Schema with
 | FlipAngle |  |
 | VariableFlipAngleFlag |  |
 | SequenceName |  |
+| StudyInstanceUID | |
+| PatientID | |
+| DicomFileSize | |
+
 
 ## PT (Positron emission tomography (PET))
 
@@ -263,6 +271,10 @@ Observations
 | LossyImageCompressionRetired |  |
 | ScanOptions |  |
 | ActualFrameDuration | |
+| StudyInstanceUID | |
+| PatientID | |
+| DicomFileSize | |
+
 
 
 ## NM (Nuclear Medicine)
@@ -360,6 +372,10 @@ This modality contains both SPECT and other forms of nuclear medicine.
 | LossyImageCompressionRetired |  |
 | ScanOptions |  |
 | ActualFrameDuration | |
+| StudyInstanceUID | |
+| PatientID | |
+| DicomFileSize | |
+
 
 ## DX Digital Radiography
 
@@ -461,6 +477,10 @@ https://www.youtube.com/watch?v=cTwbSDcCN4E
 |PositionerType| |
 |RelativeXRayExposure| |
 |AcquisitionDeviceProcessingDescription| |
+| StudyInstanceUID | |
+| PatientID | |
+| DicomFileSize | |
+
 
 
 ## XA (X-ray Angiography)
@@ -575,6 +595,10 @@ https://www.youtube.com/watch?v=cTwbSDcCN4E
 |WindowWidth| |
 |XRayTubeCurrent| |
 |XRayTubeCurrentInuA| |
+| StudyInstanceUID | |
+| PatientID | |
+| DicomFileSize | |
+
 
 ## SR (Structured Report)
 
@@ -629,6 +653,8 @@ Since structured reports are almost exclusively single file entities only an Ima
 | CurrentReqEvidence_SeriesInstanceUID |  |
 | CurrentReqEvidence_SOPClassUID |  |
 | CurrentReqEvidence_SOPInstanceUID |  |
+| DicomFileSize | |
+
 
 ## OTHER
 
@@ -673,3 +699,5 @@ Since structured reports are almost exclusively single file entities only an Ima
 | ManufacturerModelName |  |
 | Manufacturer |  |
 | PhotometricInterpretation |  |
+| DicomFileSize | |
+
