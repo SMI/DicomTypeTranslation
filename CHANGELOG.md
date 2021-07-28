@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [3.0.0] - 2021-07-28
+
 ### Dependencies
 
 - Bump MongoDB.Driver from 2.11.6 to 2.12.3
@@ -15,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Bump YamlDotNet from 10.0.0 to 11.2.1
 - Bump HIC.FAnsiSql from 1.0.6 to 2.0.1
 - Bump MongoDB.Driver from 2.12.3 to 2.13.0
+
+### Added
+
+- Added XA and US templates
 
 ## [2.3.2] - 2020-03-02
 
@@ -191,7 +197,8 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.2...develop
+[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/3.0.0...develop
+[3.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.2..3.0.0
 [2.3.2]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.1..2.3.2
 [2.3.1]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.0..2.3.1
 [2.3.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.2..2.3.0
