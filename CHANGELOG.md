@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Dependencies
 
 - Bump MongoDB.Driver from 2.12.3 to 2.13.1
+- Bump NLog from 4.7.10 to 4.7.11
 
 ## [3.0.0] - 2021-07-28
 
