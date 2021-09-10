@@ -29,7 +29,7 @@
     <None Include="Elevation\TagElevation.cd" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="fo-dicom.NetCore" Version="4.0.7" />
+    <PackageReference Include="fo-dicom.NetCore" Version="4.0.8" />
     <PackageReference Include="HIC.FAnsiSql" Version="2.0.1" />
     <PackageReference Include="MongoDB.Driver" Version="2.13.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
