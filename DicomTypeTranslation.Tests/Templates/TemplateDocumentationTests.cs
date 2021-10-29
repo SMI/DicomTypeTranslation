@@ -25,19 +25,19 @@ namespace DicomTypeTranslation.Tests.Templates
                 var collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(file));
 
 
-                sb.AppendLine("## " + Path.GetFileNameWithoutExtension(file));
+                sb.AppendLine($"## {Path.GetFileNameWithoutExtension(file)}");
                 sb.AppendLine();
 
                 foreach (ImageTableTemplate table in collection.Tables)
                 {
-                    sb.AppendLine("### " + table.TableName);
+                    sb.AppendLine($"### {table.TableName}");
                     sb.AppendLine();
                     sb.AppendLine("| Field | Description |");
                     sb.AppendLine("| ------------- | ------------- |");
 
                     foreach (ImageColumnTemplate col in table.Columns)
                     {
-                        sb.AppendLine("| " + col.ColumnName + " |  |");
+                        sb.AppendLine($"| {col.ColumnName} |  |");
                     }
 
                     sb.AppendLine();

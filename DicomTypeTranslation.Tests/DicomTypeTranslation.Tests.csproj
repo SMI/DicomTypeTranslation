@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
     <AssemblyTitle>DicomTypeTranslation.Tests</AssemblyTitle>
     <Product>DicomTypeTranslation.Tests</Product>
     <Copyright>Copyright ©  2018</Copyright>
@@ -83,7 +84,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="fo-dicom.Json" Version="4.0.7" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.0.0"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Dicom;
+using FellowOakDicom;
 using DicomTypeTranslation.Elevation;
 using DicomTypeTranslation.Elevation.Exceptions;
 using DicomTypeTranslation.Helpers;
@@ -20,6 +20,12 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         private readonly string _srDcmPath = Path.Combine(_dcmDir, "report01.dcm");
         private readonly string _imDcmPath = Path.Combine(_dcmDir, "image11.dcm");
 
+
+        [OneTimeSetUp]
+        public void DisableDicomValidation()
+        {
+            DicomValidationBuilderExtension.SkipValidation(null);
+        }
 
         /// <summary>
         /// Tests that it is illegal to elevate a top level tag
@@ -64,7 +70,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
             }
 
             foreach (var kvp in dodgy)
-                Console.WriteLine(kvp.Key + "|" + kvp.Value);
+                Console.WriteLine($"{kvp.Key}|{kvp.Value}");
 
             //no we don't
             Assert.AreEqual(0, dodgy.Count);
@@ -744,7 +750,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         private void ShowContentSequence(DicomDataset dataset, DicomTag tag = null)
         {
             tag = tag ?? DicomTag.ContentSequence;
-            Console.WriteLine(tag.DictionaryEntry.Keyword + " Contains the following:");
+            Console.WriteLine($"{tag.DictionaryEntry.Keyword} Contains the following:");
             Console.WriteLine("-------------------------------------------------------------");
 
             var array = (Dictionary<DicomTag, object>[])DicomTypeTranslaterReader.GetCSharpValue(dataset, tag);

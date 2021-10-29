@@ -40,16 +40,16 @@ namespace DicomTypeTranslation.Helpers
 
             for (var i = 0; i < a.Length; i++)
             {
-                sb.Append(prefix + " [" + i + "] - ");
+                sb.Append($"{prefix} [{i}] - ");
 
                 //if run out of values in dictionary 1
                 object val = a.GetValue(i) ?? "Null";
 
                 if (DictionaryHelperMethods.IsDictionary(val))
                     sb.AppendLine(string.Format("\r\n {0}",
-                        DictionaryHelperMethods.AsciiArt((IDictionary)val, prefix + "\t")));
+                        DictionaryHelperMethods.AsciiArt((IDictionary)val, $"{prefix}\t")));
                 else if (val is Array)
-                    sb.AppendLine(string.Format("\r\n {0}", AsciiArt((Array)val, prefix + "\t")));
+                    sb.AppendLine(string.Format("\r\n {0}", AsciiArt((Array)val, $"{prefix}\t")));
                 else
                     sb.AppendLine(val.ToString());
             }
@@ -70,7 +70,7 @@ namespace DicomTypeTranslation.Helpers
 
             for (var i = 0; i < Math.Max(a.Length, b.Length); i++)
             {
-                sb.Append(prefix + " [" + i + "] - ");
+                sb.Append($"{prefix} [{i}] - ");
 
                 //if run out of values in dictionary 1
                 if (i > a.Length)
@@ -86,12 +86,12 @@ namespace DicomTypeTranslation.Helpers
                     if (DictionaryHelperMethods.IsDictionary(val1) && DictionaryHelperMethods.IsDictionary(val2))
                         sb.Append(string.Format("\r\n {0}",
                             DictionaryHelperMethods.AsciiArt((IDictionary)val1,
-                            (IDictionary)val2, prefix + "\t")));
+                            (IDictionary)val2, $"{prefix}\t")));
                     else
                     if (val1 is Array && val2 is Array)
                         sb.Append(string.Format("\r\n {0}",
                             AsciiArt((Array)val1,
-                            (Array)val2, prefix + "\t")));
+                            (Array)val2, $"{prefix}\t")));
                     else
                         //if we haven't outrun of either array
                         sb.AppendLine(string.Format(" \t {0} \t {1} {2}",

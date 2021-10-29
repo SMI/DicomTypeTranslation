@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Dicom;
+using FellowOakDicom;
 using DicomTypeTranslation.Helpers;
 using DicomTypeTranslation.Tests.Helpers;
 using NLog;
@@ -191,16 +191,16 @@ namespace DicomTypeTranslation.Tests
                 if (vr == DicomVR.SQ)
                     continue;
 
-                _logger.Info("VR: " + vr.Code + "\t Type: " + vr.ValueType.Name + "\t IsString: " + vr.IsString);
+                _logger.Info($"VR: {vr.Code}\t Type: {vr.ValueType.Name}\t IsString: {vr.IsString}");
                 uniqueTypes.Add(vr.ValueType.Name.TrimEnd(']', '['));
             }
 
             var sb = new StringBuilder();
             foreach (string str in uniqueTypes)
-                sb.Append(str + ", ");
+                sb.Append($"{str}, ");
 
             sb.Length -= 2;
-            _logger.Info("Unique underlying types: " + sb);
+            _logger.Info($"Unique underlying types: {sb}");
         }
 
         [Test]

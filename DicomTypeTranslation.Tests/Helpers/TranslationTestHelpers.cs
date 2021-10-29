@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Dicom;
+using FellowOakDicom;
 using MongoDB.Bson;
 using Newtonsoft.Json;
 
@@ -227,12 +227,12 @@ namespace DicomTypeTranslation.Tests.Helpers
 
             foreach (BsonElement item in document)
             {
-                sb.Append("" + item.Name);
+                sb.Append($"{item.Name}");
 
                 if (item.Value is BsonDocument)
                     sb.AppendLine(PrettyPrintBsonDocument((BsonDocument)item.Value));
                 else if (item.Value is BsonArray)
-                    sb.AppendLine(":\t" + item.Value);
+                    sb.AppendLine($":\t{item.Value}");
                 else
                 {
                     object value;
@@ -242,7 +242,7 @@ namespace DicomTypeTranslation.Tests.Helpers
                     else
                         value = item.Value;
 
-                    sb.AppendLine(":\t\"" + value + "\"");
+                    sb.AppendLine($":\t\"{value}\"");
                 }
             }
 

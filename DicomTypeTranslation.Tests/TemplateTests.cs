@@ -1,9 +1,7 @@
-﻿using Dicom;
-using DicomTypeTranslation.Elevation;
+﻿using FellowOakDicom;
 using DicomTypeTranslation.Elevation.Serialization;
 using DicomTypeTranslation.TableCreation;
 using FAnsi.Discovery;
-using FAnsi.Discovery.TypeTranslation;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -16,6 +14,12 @@ namespace DicomTypeTranslation.Tests
 {
     class TemplateTests:DatabaseTests
     {
+        [OneTimeSetUp]
+        public void DisableDicomValidation()
+        {
+            DicomValidationBuilderExtension.SkipValidation(null);
+        }
+
         [Test]
         public void Template_ExampleYaml()
         {
@@ -62,7 +66,7 @@ namespace DicomTypeTranslation.Tests
         [TestCase("US", FAnsi.DatabaseType.Oracle)]
         public void TestTemplate(string template, FAnsi.DatabaseType dbType)
         {
-            string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates",template + ".it");
+            string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.it");
 
             ImageTableTemplateCollection collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(templateFile));
 
@@ -147,13 +151,14 @@ namespace DicomTypeTranslation.Tests
 
         private string DescribeSize(DecimalSize typeSize)
         {
-            return "NumbersBeforeDecimalPlace:" + typeSize.NumbersBeforeDecimalPlace + " NumbersAfterDecimalPlace:" + typeSize.NumbersAfterDecimalPlace;
+            return
+                $"NumbersBeforeDecimalPlace:{typeSize.NumbersBeforeDecimalPlace} NumbersAfterDecimalPlace:{typeSize.NumbersAfterDecimalPlace}";
         }
 
         [TestCase("SmiTagElevation")]
         public void TestElevationTemplate(string template)
         {
-            string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates",template + ".xml");
+            string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.xml");
             
             TagElevationRequestCollection elevation = new TagElevationRequestCollection(File.ReadAllText(templateFile));
             

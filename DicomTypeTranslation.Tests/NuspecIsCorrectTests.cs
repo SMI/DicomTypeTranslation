@@ -84,7 +84,7 @@ namespace DicomTypeTranslation.Tests
 
                 foreach (string line in File.ReadAllLines(packagesMarkdown))
                 {
-                    if (Regex.IsMatch(line, @"[\s[]" + Regex.Escape(package) + @"[\s\]]", RegexOptions.IgnoreCase))
+                    if (Regex.IsMatch(line, $@"[\s[]{Regex.Escape(package)}[\s\]]", RegexOptions.IgnoreCase))
                         found = true;
                 }
 
