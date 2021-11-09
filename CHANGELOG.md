@@ -9,8 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Dependencies
 
-- Bump MongoDB.Driver from 2.12.3 to 2.13.1
-- Bump NLog from 4.7.10 to 4.7.11
+- Bump MongoDB.Driver from 2.12.3 to 2.13.2
+- Bump NLog from 4.7.10 to 4.7.12
 - Bump fo-dicom.json from 4.0.7 to 4.0.8
 - Bump fo-dicom.NetCore from 4.0.7 to 4.0.8
 
