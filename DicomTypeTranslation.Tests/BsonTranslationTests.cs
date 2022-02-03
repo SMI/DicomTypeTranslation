@@ -405,7 +405,7 @@ namespace DicomTypeTranslation.Tests
         {
             var ds = new DicomDataset
             {
-                { DicomTag.SOPInstanceUID, "SOPInstanceUID-Test" }
+                { DicomTag.SOPInstanceUID, "1.3.6.1.4.1.9328.50.51.26748523322000548" }
             };
 
             VerifyBsonTripleTrip(ds);
