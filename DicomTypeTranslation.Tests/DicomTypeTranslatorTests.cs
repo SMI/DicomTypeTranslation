@@ -68,7 +68,7 @@ namespace DicomTypeTranslation.Tests
             Assert.AreEqual(2, asArray[0].Count);
 
             Assert.AreEqual("short desc", asArray[0][DicomTag.SpecimenShortDescription]);
-            Assert.AreEqual("99Y", asArray[0][DicomTag.PatientAge]);
+            Assert.AreEqual("099Y", asArray[0][DicomTag.PatientAge]);
         }
 
         [Test]
@@ -97,7 +97,7 @@ namespace DicomTypeTranslation.Tests
                     // Hemodynamic Waveform Storage class UID, plus counter
                     {DicomTag.ReferencedSOPClassUID, $"1.2.840.10008.5.1.4.1.1.9.2.1.{(i + 1)}" },
                     // Truncated example instance UID from dicom.innolytics.com, plus counter
-                    {DicomTag.ReferencedSOPInstanceUID, $"1.3.6.1.4.1.14519.5.2.1.7695.2311.916784049-{(i + 1)}" }
+                    {DicomTag.ReferencedSOPInstanceUID, $"1.3.6.1.4.1.14519.5.2.1.7695.2311.916784049.{(i + 1)}" }
                 });
             }
 
@@ -209,12 +209,12 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestGetCSharpValueThrowsException()
         {
-            var ds = new DicomDataset
-            {
-                new DicomDecimalString(DicomTag.SelectorDSValue, "aaahhhhh")
-            };
-
-            Assert.Throws<FellowOakDicom.DicomValidationException>(() => DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.SelectorDSValue));
+            Assert.Throws<FellowOakDicom.DicomValidationException>(() => DicomTypeTranslaterReader.GetCSharpValue(
+                new DicomDataset
+                {
+                    new DicomDecimalString(DicomTag.SelectorDSValue, "aaahhhhh")
+                },
+                DicomTag.SelectorDSValue));
         }
 
 

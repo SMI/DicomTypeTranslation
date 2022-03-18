@@ -26,7 +26,7 @@ namespace DicomTypeTranslation.Tests.Helpers
             var ds = new DicomDataset
             {
                 new DicomApplicationEntity(DicomTag.RetrieveAETitle, "AppEntity-1", "AppEntity-2"),
-                new DicomAgeString(DicomTag.PatientAge, "34y", "32y"),
+                new DicomAgeString(DicomTag.PatientAge, "034y", "032y"),
                 new DicomAttributeTag(DicomTag.SelectorATValue, DicomTag.SOPInstanceUID, DicomTag.SeriesInstanceUID),
                 new DicomCodeString(DicomTag.QualityControlImage, "FOOBAR", "OOFRAB"),
                 new DicomDate(DicomTag.AcquisitionDate, "20000229", "20180401"),
@@ -54,7 +54,7 @@ namespace DicomTypeTranslation.Tests.Helpers
                 }),
                 new DicomSignedShort(DicomTag.SelectorSSValue, 0, short.MinValue, short.MaxValue),
                 new DicomShortText(DicomTag.SelectorSTValue, "Short\\Text\\Backslashes should be ok: \\\\\\"),
-                new DicomSignedVeryLong(DicomTag.SelectorSVValue,0), // NOTE(rkm 2020-03-25) No tags actually have this VR yet! JS 2022-03-18 there are now...
+                new DicomSignedVeryLong(DicomTag.SelectorSVValue,1,7), // NOTE(rkm 2020-03-25) No tags actually have this VR yet! JS 2022-03-18 there are now...
                 new DicomTime(DicomTag.SelectorTMValue, "123456", "235959"),
                 new DicomUnlimitedCharacters(DicomTag.SelectorUCValue, "UnlimitedCharacters-1"),
                 new DicomUniqueIdentifier(DicomTag.SelectorUIValue, "1.2.3.4", "5.6.7.8"),
@@ -63,7 +63,7 @@ namespace DicomTypeTranslation.Tests.Helpers
                 new DicomUniversalResource(DicomTag.URNCodeValue, "http://example.com?q=1"),
                 new DicomUnsignedShort(DicomTag.SelectorUSValue, 0, 1, ushort.MaxValue),
                 new DicomUnlimitedText(DicomTag.SelectorUTValue, "unlimited!"),
-                new DicomUnsignedVeryLong(DicomTag.SelectorUVValue,0), // NOTE(rkm 2020-03-25) No tags actually have this VR yet! JS 2022-03-18 there are now...
+                new DicomUnsignedVeryLong(DicomTag.SelectorUVValue,new UInt64[]{1}), // NOTE(rkm 2020-03-25) No tags actually have this VR yet! JS 2022-03-18 there are now...
             };
 
             if (singleVr != null)

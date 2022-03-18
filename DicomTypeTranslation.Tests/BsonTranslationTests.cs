@@ -42,8 +42,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void DicomToBson_TranslateNormalDataset_DoesNotThrow()
         {
-            DicomDataset ds = TranslationTestHelpers.BuildVrDataset();
-            Assert.DoesNotThrow(() => DicomTypeTranslaterReader.BuildBsonDocument(ds));
+            Assert.DoesNotThrow(() => DicomTypeTranslaterReader.BuildBsonDocument(TranslationTestHelpers.BuildVrDataset()));
         }
 
         [Test]
