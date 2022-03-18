@@ -26,7 +26,7 @@ namespace DicomTypeTranslation.Tests.Helpers
             var ds = new DicomDataset
             {
                 new DicomApplicationEntity(DicomTag.RetrieveAETitle, "AppEntity-1", "AppEntity-2"),
-                new DicomAgeString(DicomTag.PatientAge, "034Y", "032Y"),
+                new DicomAgeString(DicomTag.PatientAge, "034Y"),
                 new DicomAttributeTag(DicomTag.SelectorATValue, DicomTag.SOPInstanceUID, DicomTag.SeriesInstanceUID),
                 new DicomCodeString(DicomTag.QualityControlImage, "FOOBAR", "OOFRAB"),
                 new DicomDate(DicomTag.AcquisitionDate, "20000229", "20180401"),
