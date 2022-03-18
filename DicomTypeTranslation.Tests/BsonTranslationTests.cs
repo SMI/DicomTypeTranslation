@@ -228,7 +228,7 @@ namespace DicomTypeTranslation.Tests
         {
             var ds = new DicomDataset
             {
-                new DicomCodeString(new DicomTag(123,0), "abc")
+                new DicomCodeString(new DicomTag(123,0), "ABC")
             };
 
             Assert.IsEmpty(DicomTypeTranslaterReader.BuildBsonDocument(ds));

@@ -7,8 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+- Now using fo-dicom 5, some API changes
+
 ### Dependencies
 
+- Bump fo-dicom to 5.0.0
 - Bump MongoDB.Driver from 2.12.3 to 2.14.0
 - Bump NLog from 4.7.10 to 4.7.12
 

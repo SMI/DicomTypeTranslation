@@ -15,7 +15,7 @@ This document describes how fo-dicom `DicomDataset`s are (de)serialized into Mon
 	"_id": ObjectId("1234567890"),  // Auto-generated ID, can be deserialized to DateTime of document creation
 	"AcquisitionDate":	"20000229\20180401",
 	"AcquisitionDateTime":	"20141231194212\20180401235959",
-	"RetrieveAETitle":	"ApplicationEntity-1\ApplicationEntity-2",
+	"RetrieveAETitle":	"AppEntity-1\AppEntity-2",
 	"URNCodeValue":	"http://example.com?q=1",
 	"AdmittingDiagnosesCodeSequence": [
 		{

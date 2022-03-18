@@ -50,7 +50,8 @@ namespace DicomTypeTranslation.Tests
             var subDataset = new DicomDataset
             {
                 new DicomShortString(DicomTag.SpecimenShortDescription, "short desc"),
-                new DicomAgeString(DicomTag.PatientAge, "99Y")
+                // Note JS 2022-03-18: 3 digit ages only
+                new DicomAgeString(DicomTag.PatientAge, "099Y")
             };
 
             var ds = new DicomDataset
@@ -93,8 +94,10 @@ namespace DicomTypeTranslation.Tests
             {
                 subDatasets.Add(new DicomDataset
                 {
-                    {DicomTag.ReferencedSOPClassUID, "ReferencedSOPClassUID-" + (i + 1)},
-                    {DicomTag.ReferencedSOPInstanceUID, "ReferencedSOPInstanceUID-" + (i + 1)}
+                    // Hemodynamic Waveform Storage class UID, plus counter
+                    {DicomTag.ReferencedSOPClassUID, $"1.2.840.10008.5.1.4.1.1.9.2.1.{(i + 1)}" },
+                    // Truncated example instance UID from dicom.innolytics.com, plus counter
+                    {DicomTag.ReferencedSOPInstanceUID, $"1.3.6.1.4.1.14519.5.2.1.7695.2311.916784049-{(i + 1)}" }
                 });
             }
 
@@ -211,7 +214,7 @@ namespace DicomTypeTranslation.Tests
                 new DicomDecimalString(DicomTag.SelectorDSValue, "aaahhhhh")
             };
 
-            Assert.Throws<FormatException>(() => DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.SelectorDSValue));
+            Assert.Throws<FellowOakDicom.DicomValidationException>(() => DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.SelectorDSValue));
         }
 
 

@@ -246,7 +246,7 @@ namespace DicomTypeTranslation.Tests
             DicomDataset maskDataset = DicomTypeTranslater.DeserializeJsonToDataset(rawJson,_useOwnConverter);
 
             foreach (DicomItem item in maskDataset.Where(x => x.Tag.DictionaryEntry.Keyword == DicomTag.OverlayRows.DictionaryEntry.Keyword))
-                _logger.Debug("{0} {1} - Val: {2}", item.Tag, item.Tag.DictionaryEntry.Keyword, maskDataset.GetString(item.Tag));
+                _logger.Debug("{0} {1} - Val: {2}", item.Tag, item.Tag.DictionaryEntry.Keyword, maskDataset.TryGetString(item.Tag,out var s)?s:"(unknown)");
 
             VerifyJsonTripleTrip(maskDataset);
         }
@@ -255,7 +255,7 @@ namespace DicomTypeTranslation.Tests
         public void TestDecimalStringSerialization()
         {
             string[] testValues = { ".123", ".0", "5\0", " 0000012.", "00", "00.0", "-.123" };
-            string[] expectedValues = { "0.123", "0.0", "5", "12.0", "0", "0.0", "-0.123" };
+            string[] expectedValues = { "0.123", "0.0", "5", "12", "0", "0.0", "-0.123" };
 
             var ds = new DicomDataset
             {
