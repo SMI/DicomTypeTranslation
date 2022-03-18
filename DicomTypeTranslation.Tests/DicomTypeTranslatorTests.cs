@@ -268,14 +268,12 @@ namespace DicomTypeTranslation.Tests
             Assert.AreEqual(34, TranslationTestHelpers.AllVrCodes.Length);
         }
 
-        [Test]
-        [TestCase("SV")]
-        [TestCase("UV")]
         public void TestVrsWithNoTags(string vrName)
         {
             DicomVR vr = DicomVR.Parse(vrName);
 
             // NOTE(rkm 2020-03-25) When this fails, add an entry for the new VR to the datasets TranslationTestHelpers
+            // NOTE(jas 2022-03-18) No VRs seem to fall in this category now with fo-dicom 5?
             List<DicomTag> vrTags = typeof(DicomTag)
                 .GetFields(BindingFlags.Static | BindingFlags.Public)
                 .Where(field => field.FieldType == typeof(DicomTag))
