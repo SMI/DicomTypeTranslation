@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Dicom;
+using FellowOakDicom;
 using DicomTypeTranslation;
 using FAnsi.Discovery;
 using FAnsi.Discovery.QuerySyntax;
@@ -121,7 +121,8 @@ namespace DicomTypeTranslation.TableCreation
             var tag = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == keyword);
 
             if (tag == null)
-                throw new NotSupportedException("Keyword '" + keyword + "' is not a valid Dicom Tag and no DatabaseTypeRequest was provided");
+                throw new NotSupportedException(
+                    $"Keyword '{keyword}' is not a valid Dicom Tag and no DatabaseTypeRequest was provided");
 
             var type = DicomTypeTranslater.GetNaturalTypeForVr(tag.ValueRepresentations, tag.ValueMultiplicity);
             return tt.GetSQLDBTypeForCSharpType(type);

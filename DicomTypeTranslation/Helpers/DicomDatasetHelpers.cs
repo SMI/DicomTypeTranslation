@@ -1,11 +1,10 @@
 
-using Dicom;
-using Dicom.IO.Buffer;
+using FellowOakDicom;
+using FellowOakDicom.IO.Buffer;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DicomTypeTranslation.Helpers
 {
@@ -135,7 +134,7 @@ namespace DicomTypeTranslation.Helpers
         public static IEnumerable<string> Compare(DicomDataset a, DicomDataset b, bool ignoreTrailingNull = false)
         {
             if (a == null || b == null)
-                throw new ArgumentException("Dataset " + (a == null ? "A" : "B") + " was null");
+                throw new ArgumentException($"Dataset {(a == null ? "A" : "B")} was null");
 
             var differences = new List<string>();
 
@@ -216,7 +215,7 @@ namespace DicomTypeTranslation.Helpers
                     if (!diffs.Any())
                         continue;
 
-                    differences.Add("\tDifferent values were: " + string.Join(", ", diffs));
+                    differences.Add($"\tDifferent values were: {string.Join(", ", diffs)}");
                 }
             }
 

@@ -119,13 +119,13 @@ namespace DicomTypeTranslation.Helpers
                 if (val is Array)
                     sb.Append(string.Format(" {0} : \r\n {1}",
                         keys1[i],
-                        ArrayHelperMethods.AsciiArt((Array)val, prefix + "\t")));
+                        ArrayHelperMethods.AsciiArt((Array)val, $"{prefix}\t")));
                 else
                     //if both are dictionaries
                     if (IsDictionary(val))
                     sb.Append(string.Format(" {0} : \r\n {1}",
                         keys1[i],
-                        AsciiArt((IDictionary)val, prefix + "\t")));
+                        AsciiArt((IDictionary)val, $"{prefix}\t")));
                 else
                     //if we haven't outrun of either array
                     sb.AppendLine(string.Format(" {0} - \t {1}",
@@ -153,7 +153,7 @@ namespace DicomTypeTranslation.Helpers
 
             for (var i = 0; i < Math.Max(keys1.Count, keys2.Count); i++)
             {
-                sb.Append(prefix + "[" + i + "] - ");
+                sb.Append($"{prefix}[{i}] - ");
 
                 //if run out of values in dictionary 1
                 if (i > keys1.Count)
@@ -170,14 +170,14 @@ namespace DicomTypeTranslation.Helpers
                         sb.Append(string.Format(" {0} : \r\n {1}",
                             keys1[i],
                             ArrayHelperMethods.AsciiArt((Array)val1,
-                                (Array)val2, prefix + "\t")));
+                                (Array)val2, $"{prefix}\t")));
                     else
                         //if both are dictionaries
                         if (IsDictionary(val1) && IsDictionary(val2))
                         sb.Append(string.Format(" {0} : \r\n {1}",
                             keys1[i],
                             AsciiArt((IDictionary)val1,
-                                (IDictionary)val2, prefix + "\t")));
+                                (IDictionary)val2, $"{prefix}\t")));
                     else
                         //if we haven't outrun of either array
                         sb.AppendLine(string.Format(" {0} - \t {1} \t {2} {3}",

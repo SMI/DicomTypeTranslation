@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using Dicom;
-using Dicom.IO.Buffer;
+using FellowOakDicom;
+using FellowOakDicom.IO.Buffer;
 using DicomTypeTranslation.Helpers;
 using DicomTypeTranslation.Tests.Helpers;
 
@@ -42,8 +42,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void DicomToBson_TranslateNormalDataset_DoesNotThrow()
         {
-            DicomDataset ds = TranslationTestHelpers.BuildVrDataset();
-            Assert.DoesNotThrow(() => DicomTypeTranslaterReader.BuildBsonDocument(ds));
+            Assert.DoesNotThrow(() => DicomTypeTranslaterReader.BuildBsonDocument(TranslationTestHelpers.BuildVrDataset()));
         }
 
         [Test]
@@ -228,7 +227,7 @@ namespace DicomTypeTranslation.Tests
         {
             var ds = new DicomDataset
             {
-                new DicomCodeString(new DicomTag(123,0), "abc")
+                new DicomCodeString(new DicomTag(123,0), "ABC")
             };
 
             Assert.IsEmpty(DicomTypeTranslaterReader.BuildBsonDocument(ds));
@@ -405,7 +404,7 @@ namespace DicomTypeTranslation.Tests
         {
             var ds = new DicomDataset
             {
-                { DicomTag.SOPInstanceUID, "SOPInstanceUID-Test" }
+                { DicomTag.SOPInstanceUID, "1.3.6.1.4.1.9328.50.51.26748523322000548" }
             };
 
             VerifyBsonTripleTrip(ds);
@@ -525,7 +524,7 @@ namespace DicomTypeTranslation.Tests
                                    "\"60020040\":{\"vr\":\"CS\",\"val\":\"H\"},\"60020050\":{\"vr\":\"SS\",\"val\":[1,2]},\"60020100\":{\"vr\":\"US\",\"val\":[3]}," +
                                    "\"60020102\":{\"vr\":\"US\",\"val\":[4]}}";
 
-            DicomDataset maskDataset = DicomTypeTranslater.DeserializeJsonToDataset(rawJson);
+            DicomDataset maskDataset = DicomTypeTranslater.DeserializeJsonToDataset(rawJson,true);
 
             Assert.AreEqual(12, maskDataset.Count());
 
@@ -540,7 +539,7 @@ namespace DicomTypeTranslation.Tests
         {
             var ds = new DicomDataset
             {
-                new DicomUnlimitedText(DicomTag.TextValue, Encoding.UTF8, "¥£€$¢₡₢₣₤₥₦₧₨₩₪₫₭₮₯₹")
+                new DicomUnlimitedText(DicomTag.TextValue, "¥£€$¢₡₢₣₤₥₦₧₨₩₪₫₭₮₯₹")
             };
 
             VerifyBsonTripleTrip(ds);
@@ -593,7 +592,7 @@ namespace DicomTypeTranslation.Tests
             {
                 new DicomAttributeTag(DicomTag.SelectorATValue),    // DicomAttributeTag
                 new DicomCodeString(DicomTag.SelectorCSValue),      // DicomMultiStringElement
-                new DicomLongText(DicomTag.SelectorLTValue, DicomEncoding.Default, EmptyBuffer.Value),  // DicomStringElement
+                new DicomLongText(DicomTag.SelectorLTValue, EmptyBuffer.Value.ToString()),  // DicomStringElement
                 new DicomOtherLong(DicomTag.SelectorOLValue),       // DicomValueElement<uint>
                 new DicomOtherWord(DicomTag.SelectorOWValue),       // DicomValueElement<ushort>
                 new DicomSequence(DicomTag.SelectorCodeSequenceValue) // DicomSequence
@@ -614,8 +613,8 @@ namespace DicomTypeTranslation.Tests
         {
             var ds = new DicomDataset
             {
-                new DicomShortString(DicomTag.SelectorSHValue, Encoding.ASCII, "simples"),
-                new DicomLongString(DicomTag.SelectorLOValue, Encoding.UTF8, "(╯°□°）╯︵ ┻━┻")
+                new DicomShortString(DicomTag.SelectorSHValue, "simples"),
+                new DicomLongString(DicomTag.SelectorLOValue, "(╯°□°）╯︵ ┻━┻")
             };
 
             DicomDataset recoDs = DicomTypeTranslaterWriter.BuildDicomDataset(DicomTypeTranslaterReader.BuildBsonDocument(ds));
@@ -623,7 +622,6 @@ namespace DicomTypeTranslation.Tests
             foreach (DicomStringElement stringElement in recoDs.Select(x => x as DicomStringElement))
             {
                 Assert.NotNull(stringElement);
-                Assert.AreEqual(Encoding.UTF8, stringElement.Encoding);
             }
         }
 

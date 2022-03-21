@@ -1,6 +1,6 @@
 ﻿using System.Xml;
-using Dicom;
 using DicomTypeTranslation.Elevation.Exceptions;
+using FellowOakDicom;
 
 namespace DicomTypeTranslation.Elevation.Serialization
 {

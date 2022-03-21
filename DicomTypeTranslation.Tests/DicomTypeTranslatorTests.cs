@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Dicom;
+using FellowOakDicom;
 using DicomTypeTranslation.Helpers;
 using DicomTypeTranslation.Tests.Helpers;
 using NLog;
@@ -50,7 +50,8 @@ namespace DicomTypeTranslation.Tests
             var subDataset = new DicomDataset
             {
                 new DicomShortString(DicomTag.SpecimenShortDescription, "short desc"),
-                new DicomAgeString(DicomTag.PatientAge, "99Y")
+                // Note JS 2022-03-18: 3 digit ages only
+                new DicomAgeString(DicomTag.PatientAge, "099Y")
             };
 
             var ds = new DicomDataset
@@ -67,7 +68,7 @@ namespace DicomTypeTranslation.Tests
             Assert.AreEqual(2, asArray[0].Count);
 
             Assert.AreEqual("short desc", asArray[0][DicomTag.SpecimenShortDescription]);
-            Assert.AreEqual("99Y", asArray[0][DicomTag.PatientAge]);
+            Assert.AreEqual("099Y", asArray[0][DicomTag.PatientAge]);
         }
 
         [Test]
@@ -93,8 +94,10 @@ namespace DicomTypeTranslation.Tests
             {
                 subDatasets.Add(new DicomDataset
                 {
-                    {DicomTag.ReferencedSOPClassUID, "ReferencedSOPClassUID-" + (i + 1)},
-                    {DicomTag.ReferencedSOPInstanceUID, "ReferencedSOPInstanceUID-" + (i + 1)}
+                    // Hemodynamic Waveform Storage class UID, plus counter
+                    {DicomTag.ReferencedSOPClassUID, $"1.2.840.10008.5.1.4.1.1.9.2.1.{(i + 1)}" },
+                    // Truncated example instance UID from dicom.innolytics.com, plus counter
+                    {DicomTag.ReferencedSOPInstanceUID, $"1.3.6.1.4.1.14519.5.2.1.7695.2311.916784049.{(i + 1)}" }
                 });
             }
 
@@ -191,27 +194,27 @@ namespace DicomTypeTranslation.Tests
                 if (vr == DicomVR.SQ)
                     continue;
 
-                _logger.Info("VR: " + vr.Code + "\t Type: " + vr.ValueType.Name + "\t IsString: " + vr.IsString);
+                _logger.Info($"VR: {vr.Code}\t Type: {vr.ValueType.Name}\t IsString: {vr.IsString}");
                 uniqueTypes.Add(vr.ValueType.Name.TrimEnd(']', '['));
             }
 
             var sb = new StringBuilder();
             foreach (string str in uniqueTypes)
-                sb.Append(str + ", ");
+                sb.Append($"{str}, ");
 
             sb.Length -= 2;
-            _logger.Info("Unique underlying types: " + sb);
+            _logger.Info($"Unique underlying types: {sb}");
         }
 
         [Test]
         public void TestGetCSharpValueThrowsException()
         {
-            var ds = new DicomDataset
-            {
-                new DicomDecimalString(DicomTag.SelectorDSValue, "aaahhhhh")
-            };
-
-            Assert.Throws<FormatException>(() => DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.SelectorDSValue));
+            Assert.Throws<FellowOakDicom.DicomValidationException>(() => DicomTypeTranslaterReader.GetCSharpValue(
+                new DicomDataset
+                {
+                    new DicomDecimalString(DicomTag.SelectorDSValue, "aaahhhhh")
+                },
+                DicomTag.SelectorDSValue));
         }
 
 
@@ -265,14 +268,12 @@ namespace DicomTypeTranslation.Tests
             Assert.AreEqual(34, TranslationTestHelpers.AllVrCodes.Length);
         }
 
-        [Test]
-        [TestCase("SV")]
-        [TestCase("UV")]
         public void TestVrsWithNoTags(string vrName)
         {
             DicomVR vr = DicomVR.Parse(vrName);
 
             // NOTE(rkm 2020-03-25) When this fails, add an entry for the new VR to the datasets TranslationTestHelpers
+            // NOTE(jas 2022-03-18) No VRs seem to fall in this category now with fo-dicom 5?
             List<DicomTag> vrTags = typeof(DicomTag)
                 .GetFields(BindingFlags.Static | BindingFlags.Public)
                 .Where(field => field.FieldType == typeof(DicomTag))

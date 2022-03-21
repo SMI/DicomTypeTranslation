@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Dicom;
+using FellowOakDicom;
 using MongoDB.Bson;
 
 
@@ -23,8 +23,8 @@ namespace DicomTypeTranslation
         /// <returns></returns>
         public static string GetColumnNameForTag(DicomTag tag, bool includeTagCodeAsPrefix)
         {
-            return includeTagCodeAsPrefix ?
-                tag + "-" + tag.DictionaryEntry.Keyword :
+            return includeTagCodeAsPrefix ? $"{tag}-{tag.DictionaryEntry.Keyword}"
+                :
                 tag.DictionaryEntry.Keyword;
         }
 
@@ -51,7 +51,8 @@ namespace DicomTypeTranslation
                 throw new ArgumentException("The DicomDataset is invalid as it is null or has no elements.");
 
             if (item == null || item.Tag == null || item.ValueRepresentation == null)
-                throw new ArgumentException("The DicomItem is invalid as it is either null, has a null Tag, or null ValueRepresentation: " + item);
+                throw new ArgumentException(
+                    $"The DicomItem is invalid as it is either null, has a null Tag, or null ValueRepresentation: {item}");
 
             if (!dataset.Contains(item))
                 throw new ArgumentException("The DicomDataset does not contain the item");
@@ -209,9 +210,8 @@ namespace DicomTypeTranslation
 
                 default:
                     //return GetValueFromDatasetWithMultiplicity<object>(dataset, item.Tag);
-                    throw new Exception("Unknown VR code: " +
-                                        item.ValueRepresentation.Code +
-                                        "(" + item.ValueRepresentation.Name + ")");
+                    throw new Exception(
+                        $"Unknown VR code: {item.ValueRepresentation.Code}({item.ValueRepresentation.Name})");
             }
         }
 

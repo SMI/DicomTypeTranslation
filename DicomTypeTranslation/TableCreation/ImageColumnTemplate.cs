@@ -1,4 +1,4 @@
-﻿using Dicom;
+﻿using FellowOakDicom;
 using FAnsi.Discovery;
 using FAnsi.Discovery.TypeTranslation;
 using TypeGuesser;

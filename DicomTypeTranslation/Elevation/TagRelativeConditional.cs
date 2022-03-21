@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Dicom;
+using FellowOakDicom;
 using DicomTypeTranslation.Elevation.Exceptions;
 
 namespace DicomTypeTranslation.Elevation
@@ -35,10 +35,12 @@ namespace DicomTypeTranslation.Elevation
             var path = conditional.Split(new []{TagElevator.Splitter}, StringSplitOptions.RemoveEmptyEntries);
 
             if (!validStartersTokens.Contains(path[0]))
-                throw new InvalidTagElevatorPathException("Invalid starter token in TagRelativeConditional '" + conditional + "'.  Valid starter tokens are '" + string.Join("','", validStartersTokens) + "'");
+                throw new InvalidTagElevatorPathException(
+                    $"Invalid starter token in TagRelativeConditional '{conditional}'.  Valid starter tokens are '{string.Join("','", validStartersTokens)}'");
 
             if(path.Length == 1)
-                throw new InvalidTagElevatorPathException("TagRelativeConditional must have a valid terminating non Sequence Tag e.g. '..->ConceptNameCodeSequence->CodeMeaning'.  Your path was '" + conditional + "'");
+                throw new InvalidTagElevatorPathException(
+                    $"TagRelativeConditional must have a valid terminating non Sequence Tag e.g. '..->ConceptNameCodeSequence->CodeMeaning'.  Your path was '{conditional}'");
 
             _navigations = new List<TagNavigation>();
             
@@ -51,7 +53,8 @@ namespace DicomTypeTranslation.Elevation
                 if (path[i] == ".." || path[i] == "[..]")
                 {
                     if (_navigations.Any())
-                        throw new InvalidTagElevatorPathException("TagRelativeConditional pathways cannot have '" + path[i] + "' after the first dicom tag");
+                        throw new InvalidTagElevatorPathException(
+                            $"TagRelativeConditional pathways cannot have '{path[i]}' after the first dicom tag");
 
                     //go up
                     _relativeOperators.Add(path[i]);
@@ -60,7 +63,8 @@ namespace DicomTypeTranslation.Elevation
                 {
                     //only valid at the start of the path
                     if (i != 0)
-                        throw new InvalidTagElevatorPathException("'" + path[i] + "' is only valid at the start of a TagRelativeConditional");
+                        throw new InvalidTagElevatorPathException(
+                            $"'{path[i]}' is only valid at the start of a TagRelativeConditional");
                 }
                 else
                     _navigations.Add(new TagNavigation(path[i], i + 1 == path.Length)); //navigational (no more positionals please!)
@@ -131,7 +135,7 @@ namespace DicomTypeTranslation.Elevation
                 {
                     //return ((Array) value).Cast<object>().Any(o => o != null && Regex.IsMatch(o.ToString(), _conditionalShouldMatch));
 
-                    throw new TagNavigationException("Conditional matched a leaf node with Multiplicity of " + a.Length);
+                    throw new TagNavigationException($"Conditional matched a leaf node with Multiplicity of {a.Length}");
                 }
                 
 

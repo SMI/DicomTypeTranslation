@@ -1,6 +1,5 @@
-﻿using Dicom;
+﻿using FellowOakDicom;
 using DicomTypeTranslation.TableCreation;
-using FAnsi.Discovery.TypeTranslation;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
