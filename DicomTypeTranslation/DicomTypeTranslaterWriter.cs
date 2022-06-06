@@ -94,27 +94,23 @@ namespace DicomTypeTranslation
         /// <param name="value"></param>
         public static void SetDicomTag(DicomDataset dataset, DicomTag tag, object value)
         {
-            dataset.AutoValidate = false;
-            if (value == null)
+            new DicomSetupBuilder().SkipValidation();
+            switch (value)
             {
-                // Need to specify a type for the generic, even though it is ignored
-                dataset.Add<string>(tag);
-                return;
-            }
-
-            //input is a dictionary of DicomTag=>Objects then it is a Sequence
-            if (value is Dictionary<DicomTag, object>[] sequenceArray)
-            {
-                SetSequenceFromObject(dataset, tag, sequenceArray);
-                return;
+                case null:
+                    // Need to specify a type for the generic, even though it is ignored
+                    dataset.Add<string>(tag);
+                    return;
+                //input is a dictionary of DicomTag=>Objects then it is a Sequence
+                case Dictionary<DicomTag, object>[] sequenceArray:
+                    SetSequenceFromObject(dataset, tag, sequenceArray);
+                    return;
             }
 
             // Otherwise do generic add
-            Type key;
-            if (_dicomAddMethodDictionary.ContainsKey(value.GetType()))
-                key = value.GetType();
-            else
-                key = _dicomAddMethodDictionary.Keys.FirstOrDefault(k => k.IsInstanceOfType(value));
+            var key = _dicomAddMethodDictionary.ContainsKey(value.GetType())
+                ? value.GetType()
+                : _dicomAddMethodDictionary.Keys.FirstOrDefault(k => k.IsInstanceOfType(value));
 
             if (key == null)
                 throw new Exception($"No method to call for value type {value.GetType()}");
