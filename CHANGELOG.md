@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### [4.0.1] - 2022-06-06
 
+### Changed
+
+- Updated fo-dicom validation suppression to use DicomSetupBuilder not .AutoValidate
+- Switch JSON to prefer numerical encoding but fall back to string, rather than throwing
+
 ### Dependencies
 
 - Bump fo-dicom from 5.0.0 to 5.0.3
