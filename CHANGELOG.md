@@ -9,6 +9,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ...
 
+### [4.0.1] - 2022-06-06
+
+### Dependencies
+
+- Bump fo-dicom from 5.0.0 to 5.0.3
+- Bump HIC.FAnsiSql from 2.0.3 to 2.0.4
+- Bump MongoDB.Driver from 2.15.0 to 2.15.1
+- Bump NLog from 4.7.14 to 5.0.0
+- Bump NUnit from 3.13.2 to 3.13.3
+- Bump Microsoft.NET.Test.Sdk from 17.1.0 to 17.2.0
+
+
 ### [4.0.0] - 2022-03-21
 
 - Now using fo-dicom 5, some API changes
@@ -209,7 +221,8 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.0...develop
+[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.1...develop
+[4.0.1]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.0..4.0.1
 [4.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/3.0.0..4.0.0
 [3.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.2..3.0.0
 [2.3.2]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.1..2.3.2
