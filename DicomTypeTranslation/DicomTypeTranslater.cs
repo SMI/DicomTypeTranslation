@@ -8,6 +8,7 @@ using FellowOakDicom;
 
 using DicomTypeTranslation.Converters;
 using DicomTypeTranslation.Helpers;
+using FellowOakDicom.Serialization;
 using Newtonsoft.Json;
 using TypeGuesser;
 
@@ -53,7 +54,7 @@ namespace DicomTypeTranslation
 
             if (useOwn)
                 return JsonConvert.SerializeObject(dataset, Formatting.None, new SmiJsonDicomConverter());
-            return FellowOakDicom.Serialization.DicomJson.ConvertDicomToJson(dataset);
+            return FellowOakDicom.Serialization.DicomJson.ConvertDicomToJson(dataset,false,false,NumberSerializationMode.PreferablyAsNumber);
         }
 
         /// <summary>
