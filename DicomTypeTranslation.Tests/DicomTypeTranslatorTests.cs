@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -266,6 +266,23 @@ namespace DicomTypeTranslation.Tests
         public void CheckForNewVrs()
         {
             Assert.AreEqual(34, TranslationTestHelpers.AllVrCodes.Length);
+        }
+
+        [Test]
+        public void GetCSharpValue_ExceptionIncludesTag()
+        {
+            // Arrange
+            var tag = DicomTag.NumericValue;
+            var ds = new DicomDataset
+            {
+                new DicomDecimalString(tag, new[] { "3.40282347e+038", "3.0e+038" }),
+            };
+
+            // Act
+            var exc = Assert.Throws<ArgumentException>(() => DicomTypeTranslaterReader.GetCSharpValue(ds, tag));
+
+            // Assert
+            Assert.AreEqual(@"Tag NumericValue (0040,a30a) has invalid value(s): '3.40282347e+038\3.0e+038'", exc.Message);
         }
 
         #endregion
