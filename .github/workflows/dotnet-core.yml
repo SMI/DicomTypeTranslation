@@ -11,39 +11,30 @@ env:
 jobs:
   build:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 5.x
-    - uses: actions/cache@v3
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget
+        dotnet-version: 6.0.x
     - name: Add MSFT code signing key
-      run: wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
     - name: Add MSFT package repo
-      run: sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/18.04/mssql-server-2019.list)"
     - name: MySQL
       run: |
-        sudo mkdir -p /var/run/mysqld
-        sudo chown mysql:mysql /var/run/mysqld
-        sudo mysqld_safe --port=3306 --skip-grant-tables &
+        sudo systemctl start mysql.service
+        sed -i'' -e 's/Pwd=;SslMode=None/Pwd=root;AllowPublicKeyRetrieval=true/' DicomTypeTranslation.Tests/TestDatabases.xml
     - name: Install Sql Server
-      run: sudo apt-get install -y --no-install-recommends postgresql mssql-tools mssql-server
-    - name: Configure Sql Server
-      run: sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
-    - name: Install dependencies
-      run: dotnet restore
+      run: |
+        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+        sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list)"
+        sudo apt-get install -y --no-install-recommends postgresql mssql-tools mssql-server
+        sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release --nologo
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-restore --verbosity normal --nologo
     - name: Pack and push
       if: contains(github.ref,'refs/tags/')
       run: |
