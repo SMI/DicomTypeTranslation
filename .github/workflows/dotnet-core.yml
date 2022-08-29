@@ -24,7 +24,7 @@ jobs:
     - name: MySQL
       run: |
         sudo systemctl start mysql.service
-        sed -i'' -e 's/Pwd=;SslMode=None/Pwd=root;AllowPublicKeyRetrieval=true/' DicomTypeTranslation.Tests/TestDatabases.xml
+        sed -i'' -e 's/Pwd=;sslmode=None/Pwd=root;AllowPublicKeyRetrieval=true/' DicomTypeTranslation.Tests/TestDatabases.xml
     - name: Install Sql Server
       run: |
         wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
