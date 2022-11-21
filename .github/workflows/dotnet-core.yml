@@ -31,6 +31,7 @@ jobs:
       run: sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list)"
     - name: Install MS SQL Server and Postgresql, start existing MySQL
       run: |
+        sed -i -e 's/Pwd=;/Pwd=root;/' DicomTypeTranslation.Tests/TestDatabases.xml
         sudo apt-get install -y --no-install-recommends postgresql mssql-tools mssql-server
         sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
         sudo service mysql start
