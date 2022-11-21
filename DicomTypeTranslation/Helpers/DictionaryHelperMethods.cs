@@ -43,7 +43,7 @@ namespace DicomTypeTranslation.Helpers
         {
             //if either is null
             if (dict1 == null || dict2 == null)
-                return dict1 == dict2; //they are only equal if they are both null
+                return Object.ReferenceEquals(dict1,dict2); //they are only equal if they are both null
 
             var keys1 = new HashSet<object>();
 

@@ -86,40 +86,40 @@ namespace DicomTypeTranslation.Helpers
         private static bool ValueEquals(IByteBuffer a, IByteBuffer b)
         {
             if (a == null || b == null)
-                return a == b;
+                return ReferenceEquals(a,b);
 
-            if (a == b)
+            if (ReferenceEquals(a, b))
                 return true;
 
             if (a.IsMemory)
                 return b.IsMemory && a.Data.SequenceEqual(b.Data);
 
-            if (a is IBulkDataUriByteBuffer abuff)
+            switch (a)
             {
-                if (!(b is IBulkDataUriByteBuffer bbuff))
-                    return false;
+                case IBulkDataUriByteBuffer abuff:
+                {
+                    if (b is not IBulkDataUriByteBuffer bbuff)
+                        return false;
 
-                return abuff.BulkDataUri == bbuff.BulkDataUri;
+                    return abuff.BulkDataUri == bbuff.BulkDataUri;
+                }
+                case EmptyBuffer when b is EmptyBuffer:
+                    return true;
+                case StreamByteBuffer buffer when b is StreamByteBuffer:
+                {
+                    var asbb = buffer;
+                    var bsbb = (StreamByteBuffer)b;
+
+                    if (asbb.Stream == null || bsbb.Stream == null)
+                        return asbb.Stream == bsbb.Stream;
+
+                    return asbb.Position == bsbb.Position && asbb.Size == bsbb.Size && asbb.Stream.Equals(bsbb.Stream);
+                }
+                case CompositeByteBuffer buffer when b is CompositeByteBuffer:
+                    return buffer.Buffers.Zip(((CompositeByteBuffer)b).Buffers, ValueEquals).All(x => x);
+                default:
+                    return a.Equals(b);
             }
-
-            if (a is EmptyBuffer && b is EmptyBuffer)
-                return true;
-
-            if (a is StreamByteBuffer && b is StreamByteBuffer)
-            {
-                var asbb = (StreamByteBuffer)a;
-                var bsbb = (StreamByteBuffer)b;
-
-                if (asbb.Stream == null || bsbb.Stream == null)
-                    return asbb.Stream == bsbb.Stream;
-
-                return asbb.Position == bsbb.Position && asbb.Size == bsbb.Size && asbb.Stream.Equals(bsbb.Stream);
-            }
-
-            if (a is CompositeByteBuffer && b is CompositeByteBuffer)
-                return ((CompositeByteBuffer)a).Buffers.Zip(((CompositeByteBuffer)b).Buffers, ValueEquals).All(x => x);
-
-            return a.Equals(b);
         }
 
         /// <summary>

@@ -19,7 +19,7 @@ namespace DicomTypeTranslation.Helpers
         public static bool FlexibleEquals(object a, object b)
         {
             if (a == null || b == null)
-                return a == b;
+                return ReferenceEquals(a,b);
 
             //types are different so most likely we are not equipped to deal with this problem let a decide if it is equal or not
             if (a.GetType() != b.GetType())
@@ -31,8 +31,8 @@ namespace DicomTypeTranslation.Helpers
                 return DictionaryHelperMethods.DictionaryEquals((IDictionary)a, (IDictionary)b);
 
             //if they are both arrays
-            if (a is Array)
-                return ArrayHelperMethods.ArrayEquals((Array)a, (Array)b);
+            if (a is Array array)
+                return ArrayHelperMethods.ArrayEquals(array, (Array)b);
 
             //they are not dictionaries or arrays
             return Equals(a, b);
