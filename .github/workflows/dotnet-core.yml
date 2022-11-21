@@ -19,26 +19,16 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.x
-    - uses: actions/cache@v3
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget
-    - name: Add MSFT code signing key
-      run: wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-    - name: Add MSFT package repo
-      run: sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list)"
     - name: Install MS SQL Server and Postgresql, start existing MySQL
       run: |
-        sed -i -e 's/Pwd=;/Pwd=root;/' DicomTypeTranslation.Tests/TestDatabases.xml
+        sudo wget -qO/etc/apt/trusted.gpg.d/microsoft.asc https://packages.microsoft.com/keys/microsoft.asc
+        sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list)"
+        sed -i -e 's/Pwd=;/Pwd=root;AllowPublicKeyRetrieval=True;/' DicomTypeTranslation.Tests/TestDatabases.xml
         sudo apt-get install -y --no-install-recommends postgresql mssql-tools mssql-server
         sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
         sudo service mysql start
-    - name: Install dependencies
-      run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release
     - name: Test
       run: dotnet test --no-restore --verbosity normal
     - name: Pack and push
