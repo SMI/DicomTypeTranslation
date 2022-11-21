@@ -11,14 +11,14 @@ env:
 jobs:
   build:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 5.x
+        dotnet-version: 6.x
     - uses: actions/cache@v3
       with:
         path: ~/.nuget/packages
@@ -28,7 +28,7 @@ jobs:
     - name: Add MSFT code signing key
       run: wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
     - name: Add MSFT package repo
-      run: sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/18.04/mssql-server-2019.list)"
+      run: sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list)"
     - name: MySQL
       run: |
         sudo mkdir -p /var/run/mysqld
