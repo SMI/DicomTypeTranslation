@@ -14,11 +14,13 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+    - name: Disable disk flush for CI
+      run: sudo apt-get install -y libeatmydata1
     - uses: actions/checkout@v3
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.x
+        dotnet-version: 6.0.x
     - name: Install MS SQL Server and Postgresql, start existing MySQL
       run: |
         sudo wget -qO/etc/apt/trusted.gpg.d/microsoft.asc https://packages.microsoft.com/keys/microsoft.asc
@@ -28,9 +30,9 @@ jobs:
         sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
         sudo service mysql start
     - name: Build
-      run: dotnet build --configuration Release
+      run: dotnet build --configuration Release --nologo
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-restore --verbosity normal --nologo
     - name: Pack and push
       if: contains(github.ref,'refs/tags/')
       run: |

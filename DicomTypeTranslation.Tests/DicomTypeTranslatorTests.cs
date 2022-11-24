@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -268,20 +268,21 @@ namespace DicomTypeTranslation.Tests
             Assert.AreEqual(34, TranslationTestHelpers.AllVrCodes.Length);
         }
 
-        public void TestVrsWithNoTags(string vrName)
+        [Test]
+        public void GetCSharpValue_ExceptionIncludesTag()
         {
-            DicomVR vr = DicomVR.Parse(vrName);
+            // Arrange
+            var tag = DicomTag.NumericValue;
+            var ds = new DicomDataset
+            {
+                new DicomDecimalString(tag, new[] { "3.40282347e+038", "3.0e+038" }),
+            };
 
-            // NOTE(rkm 2020-03-25) When this fails, add an entry for the new VR to the datasets TranslationTestHelpers
-            // NOTE(jas 2022-03-18) No VRs seem to fall in this category now with fo-dicom 5?
-            List<DicomTag> vrTags = typeof(DicomTag)
-                .GetFields(BindingFlags.Static | BindingFlags.Public)
-                .Where(field => field.FieldType == typeof(DicomTag))
-                .Select(x => (DicomTag)x.GetValue(null))
-                .Where(tag => tag.DictionaryEntry.ValueRepresentations[0] == vr)
-                .ToList();
+            // Act
+            var exc = Assert.Throws<ArgumentException>(() => DicomTypeTranslaterReader.GetCSharpValue(ds, tag));
 
-            Assert.AreEqual(0, vrTags.Count);
+            // Assert
+            Assert.AreEqual(@"Tag NumericValue (0040,a30a) has invalid value(s): '3.40282347e+038\3.0e+038'", exc.Message);
         }
 
         #endregion
