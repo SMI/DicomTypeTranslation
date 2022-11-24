@@ -21,16 +21,14 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-    - name: MySQL
+    - name: Install MS SQL Server and Postgresql, start existing MySQL
       run: |
-        sudo systemctl start mysql.service
-        sed -i'' -e 's/Pwd=;sslmode=None/Pwd=root;AllowPublicKeyRetrieval=true/' DicomTypeTranslation.Tests/TestDatabases.xml
-    - name: Install Sql Server
-      run: |
-        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+        sudo wget -qO/etc/apt/trusted.gpg.d/microsoft.asc https://packages.microsoft.com/keys/microsoft.asc
         sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list)"
+        sed -i -e 's/Pwd=;/Pwd=root;AllowPublicKeyRetrieval=True;/' DicomTypeTranslation.Tests/TestDatabases.xml
         sudo apt-get install -y --no-install-recommends postgresql mssql-tools mssql-server
         sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
+        sudo service mysql start
     - name: Build
       run: dotnet build --configuration Release --nologo
     - name: Test
