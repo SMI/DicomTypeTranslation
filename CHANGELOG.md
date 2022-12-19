@@ -11,10 +11,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
--   Add information on problematic tag to exception in `GetValueFromDatasetWithMultiplicity`
+- Now targets .Net Standard 2.1 and 6.0 instead of Standard 2.0
+- Add information on problematic tag to exception in `GetValueFromDatasetWithMultiplicity`
 
 ### Dependencies
 
+- Bump HIC.FansiSql from 2.0.4 to 3.0.1
+- Bump MongoDB.Driver from 2.15.1 to 2.18.0
+- Bump Newtonsoft.Json from 13.0.1 to 13.0.2
 - Bump NLog from 5.0.5 to 5.1.0
 - Bump YamlDotNet from 12.0.2 to 12.3.1
 
