@@ -7,11 +7,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [4.0.2] - 2022-12-19
+
 ### Changed
 
--   Add information on problematic tag to exception in `GetValueFromDatasetWithMultiplicity`
+- Now targets .Net Standard 2.1 and 6.0 instead of Standard 2.0
+- Add information on problematic tag to exception in `GetValueFromDatasetWithMultiplicity`
 
-### [4.0.1] - 2022-06-06
+### Dependencies
+
+- Bump HIC.FansiSql from 2.0.4 to 3.0.1
+- Bump MongoDB.Driver from 2.15.1 to 2.18.0
+- Bump Newtonsoft.Json from 13.0.1 to 13.0.2
+- Bump NLog from 5.0.5 to 5.1.0
+- Bump YamlDotNet from 12.0.2 to 12.3.1
+
+
+## [4.0.1] - 2022-06-06
 
 ### Changed
 
@@ -28,7 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Bump Microsoft.NET.Test.Sdk from 17.1.0 to 17.2.0
 
 
-### [4.0.0] - 2022-03-21
+## [4.0.0] - 2022-03-21
 
 - Now using fo-dicom 5, some API changes
 
@@ -228,7 +240,8 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.1...develop
+[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.2...develop
+[4.0.2]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.1..4.0.2
 [4.0.1]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.0..4.0.1
 [4.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/3.0.0..4.0.0
 [3.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.2..3.0.0
