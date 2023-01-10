@@ -250,17 +250,15 @@ namespace DicomTypeTranslation
 
         private static object GetValueFromDatasetWithMultiplicity<TNaturalType>(DicomDataset dataset, DicomTag tag)
         {
-            Array rray = dataset.GetValues<TNaturalType>(tag);
+            Array array = dataset.GetValues<TNaturalType>(tag);
 
             if (array == null || array.Length == 0)
                 return null;
 
             //if it is a single element then although the tag supports multiplicity only 1 value is stored in it so return string
-            if (array.Length == 1)
-                return array.GetValue(0);
-
-            //tag supports multiplicity and the item has multiple values stored in it
-            return array;
+            return array.Length == 1 ? array.GetValue(0) :
+                //tag supports multiplicity and the item has multiple values stored in it
+                array;
         }
 
         #region Bson Types
