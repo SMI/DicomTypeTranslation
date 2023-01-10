@@ -279,7 +279,7 @@ namespace DicomTypeTranslation.Tests
             };
 
             // Act
-            var exc = Assert.Throws<ArgumentException>(() => DicomTypeTranslaterReader.GetCSharpValue(ds, tag));
+            var exc = Assert.Throws<OverflowException>(() => DicomTypeTranslaterReader.GetCSharpValue(ds, tag));
 
             // Assert
             Assert.AreEqual(@"Tag NumericValue (0040,a30a) has invalid value(s): '3.40282347e+038\3.0e+038'", exc.Message);
