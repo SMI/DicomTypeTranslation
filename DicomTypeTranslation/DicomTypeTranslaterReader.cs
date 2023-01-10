@@ -250,17 +250,7 @@ namespace DicomTypeTranslation
 
         private static object GetValueFromDatasetWithMultiplicity<TNaturalType>(DicomDataset dataset, DicomTag tag)
         {
-            Array array;
-
-            try
-            {
-                array = dataset.GetValues<TNaturalType>(tag);
-            }
-            catch (Exception e)
-            {
-                var vals = dataset.GetString(tag);
-                throw new ArgumentException($"Tag {tag.DictionaryEntry.Keyword} {tag} has invalid value(s): '{vals}'", e);
-            }
+            Array rray = dataset.GetValues<TNaturalType>(tag);
 
             if (array == null || array.Length == 0)
                 return null;
