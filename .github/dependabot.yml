@@ -1,5 +1,13 @@
 version: 2
 updates:
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: daily
+  target-branch: develop
+  reviewers:
+  - rkm
+  - jas88
 - package-ecosystem: nuget
   directory: "/"
   schedule:
@@ -8,5 +16,4 @@ updates:
   target-branch: develop
   reviewers:
   - rkm
-  - tznind
   - jas88

@@ -1,6 +1,4 @@
 ﻿using System.Linq;
-using Dicom;
-using FAnsi;
 using FAnsi.Discovery;
 using FAnsi.Discovery.QuerySyntax;
 

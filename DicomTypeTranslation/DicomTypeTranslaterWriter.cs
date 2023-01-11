@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Dicom;
+using FellowOakDicom;
 using JetBrains.Annotations;
 using MongoDB.Bson;
 
@@ -94,29 +94,26 @@ namespace DicomTypeTranslation
         /// <param name="value"></param>
         public static void SetDicomTag(DicomDataset dataset, DicomTag tag, object value)
         {
-            if (value == null)
+            new DicomSetupBuilder().SkipValidation();
+            switch (value)
             {
-                // Need to specify a type for the generic, even though it is ignored
-                dataset.Add<string>(tag);
-                return;
-            }
-
-            //input is a dictionary of DicomTag=>Objects then it is a Sequence
-            if (value is Dictionary<DicomTag, object>[] sequenceArray)
-            {
-                SetSequenceFromObject(dataset, tag, sequenceArray);
-                return;
+                case null:
+                    // Need to specify a type for the generic, even though it is ignored
+                    dataset.Add<string>(tag);
+                    return;
+                //input is a dictionary of DicomTag=>Objects then it is a Sequence
+                case Dictionary<DicomTag, object>[] sequenceArray:
+                    SetSequenceFromObject(dataset, tag, sequenceArray);
+                    return;
             }
 
             // Otherwise do generic add
-            Type key;
-            if (_dicomAddMethodDictionary.ContainsKey(value.GetType()))
-                key = value.GetType();
-            else
-                key = _dicomAddMethodDictionary.Keys.FirstOrDefault(k => k.IsInstanceOfType(value));
+            var key = _dicomAddMethodDictionary.ContainsKey(value.GetType())
+                ? value.GetType()
+                : _dicomAddMethodDictionary.Keys.FirstOrDefault(k => k.IsInstanceOfType(value));
 
             if (key == null)
-                throw new Exception("No method to call for value type " + value.GetType());
+                throw new Exception($"No method to call for value type {value.GetType()}");
 
             _dicomAddMethodDictionary[key](dataset, tag, value);
         }
@@ -194,7 +191,7 @@ namespace DicomTypeTranslation
             }
             catch (Exception e)
             {
-                throw new ApplicationException("Could not parse tag from string: " + tagString, e);
+                throw new ApplicationException($"Could not parse tag from string: {tagString}", e);
             }
         }
 
@@ -212,124 +209,50 @@ namespace DicomTypeTranslation
 
         private static DicomItem CreateDicomItem(DicomTag tag, BsonValue data, DicomVR vr = null)
         {
-            if (vr == null)
-                vr = GetVrForTag(tag, data);
+            vr ??= GetVrForTag(tag, data);
 
-            DicomItem item;
-
-            switch (vr.Code)
+            DicomItem item = vr.Code switch
             {
-                case "AE":
-                    item = new DicomApplicationEntity(tag, GetString(data));
-                    break;
-                case "AS":
-                    item = new DicomAgeString(tag, GetString(data));
-                    break;
-                case "AT":
-                    item = ParseAttributeTag(tag, data);
-                    break;
-                case "CS":
-                    item = new DicomCodeString(tag, GetString(data));
-                    break;
-                case "DA":
-                    item = new DicomDate(tag, GetString(data));
-                    break;
-                case "DS":
-                    item = new DicomDecimalString(tag, GetString(data));
-                    break;
-                case "DT":
-                    item = new DicomDateTime(tag, GetString(data));
-                    break;
-                case "FD":
-                    item = new DicomFloatingPointDouble(tag, (double[])GetTypedArray<double>(data));
-                    break;
-                case "FL":
-                    item = new DicomFloatingPointSingle(tag, (float[])GetTypedArray<float>(data));
-                    break;
-                case "IS":
-                    item = new DicomIntegerString(tag, GetString(data));
-                    break;
-                case "LO":
-                    item = new DicomLongString(tag, Encoding.UTF8, GetString(data));
-                    break;
-                case "LT":
-                    item = new DicomLongText(tag, Encoding.UTF8, GetString(data));
-                    break;
-                case "OB":
-                    item = data.IsBsonNull
-                        ? new DicomOtherByte(tag)
-                        : new DicomOtherByte(tag, data.AsByteArray);
-                    break;
-                case "OD":
-                    item = new DicomOtherDouble(tag, (double[])GetTypedArray<double>(data));
-                    break;
-                case "OF":
-                    item = new DicomOtherFloat(tag, (float[])GetTypedArray<float>(data));
-                    break;
-                case "OL":
-                    item = new DicomOtherLong(tag, (uint[])GetTypedArray<uint>(data));
-                    break;
-                case "OV":
-                    item = new DicomOtherVeryLong(tag, (ulong[])GetTypedArray<ulong>(data));
-                    break;
-                case "OW":
-                    item = data.IsBsonNull
-                        ? new DicomOtherWord(tag)
-                        : new DicomOtherWord(tag, (ushort[])GetTypedArray<ushort>(data));
-                    break;
-                case "PN":
-                    item = new DicomPersonName(tag, Encoding.UTF8, GetString(data));
-                    break;
-                case "SH":
-                    item = new DicomShortString(tag, Encoding.UTF8, GetString(data));
-                    break;
-                case "SL":
-                    item = new DicomSignedLong(tag, (int[])GetTypedArray<int>(data));
-                    break;
-                case "SQ":
-                    item = GetDicomSequence(tag, data);
-                    break;
-                case "SS":
-                    item = new DicomSignedShort(tag, (short[])GetTypedArray<short>(data));
-                    break;
-                case "ST":
-                    item = new DicomShortText(tag, Encoding.UTF8, GetString(data));
-                    break;
-                case "SV":
-                    item = new DicomSignedVeryLong(tag, (long[])GetTypedArray<long>(data));
-                    break;
-                case "TM":
-                    item = new DicomTime(tag, GetString(data));
-                    break;
-                case "UC":
-                    item = new DicomUnlimitedCharacters(tag, Encoding.UTF8, GetString(data));
-                    break;
-                case "UI":
-                    item = new DicomUniqueIdentifier(tag, GetString(data));
-                    break;
-                case "UL":
-                    item = new DicomUnsignedLong(tag, (uint[])GetTypedArray<uint>(data));
-                    break;
-                case "UN":
-                    item = data.IsBsonNull
-                        ? new DicomUnknown(tag)
-                        : new DicomUnknown(tag, (byte[])GetTypedArray<byte>(data));
-                    break;
-                case "UR":
-                    item = new DicomUniversalResource(tag, Encoding.UTF8, GetString(data));
-                    break;
-                case "US":
-                    item = new DicomUnsignedShort(tag, (ushort[])GetTypedArray<ushort>(data));
-                    break;
-                case "UT":
-                    item = new DicomUnlimitedText(tag, Encoding.UTF8, GetString(data));
-                    break;
-                case "UV":
-                    item = new DicomUnsignedVeryLong(tag, (ulong[])GetTypedArray<ulong>(data));
-                    break;
-                default:
-                    throw new NotSupportedException($"Unsupported value representation {vr}");
-            }
+                "AE" => new DicomApplicationEntity(tag, GetString(data)),
+                "AS" => new DicomAgeString(tag, GetString(data)),
+                "AT" => ParseAttributeTag(tag, data),
+                "CS" => new DicomCodeString(tag, GetString(data)),
+                "DA" => new DicomDate(tag, GetString(data)),
+                "DS" => new DicomDecimalString(tag, GetString(data)),
+                "DT" => new DicomDateTime(tag, GetString(data)),
+                "FD" => new DicomFloatingPointDouble(tag, (double[])GetTypedArray<double>(data)),
+                "FL" => new DicomFloatingPointSingle(tag, (float[])GetTypedArray<float>(data)),
+                "IS" => new DicomIntegerString(tag, GetString(data)),
+                "LO" => new DicomLongString(tag, GetString(data)),
+                "LT" => new DicomLongText(tag, GetString(data)),
+                "OB" => data.IsBsonNull ? new DicomOtherByte(tag) : new DicomOtherByte(tag, data.AsByteArray),
+                "OD" => new DicomOtherDouble(tag, (double[])GetTypedArray<double>(data)),
+                "OF" => new DicomOtherFloat(tag, (float[])GetTypedArray<float>(data)),
+                "OL" => new DicomOtherLong(tag, (uint[])GetTypedArray<uint>(data)),
+                "OV" => new DicomOtherVeryLong(tag, (ulong[])GetTypedArray<ulong>(data)),
+                "OW" => data.IsBsonNull
+                    ? new DicomOtherWord(tag)
+                    : new DicomOtherWord(tag, (ushort[])GetTypedArray<ushort>(data)),
+                "PN" => new DicomPersonName(tag, GetString(data)),
+                "SH" => new DicomShortString(tag, GetString(data)),
+                "SL" => new DicomSignedLong(tag, (int[])GetTypedArray<int>(data)),
+                "SQ" => GetDicomSequence(tag, data),
+                "SS" => new DicomSignedShort(tag, (short[])GetTypedArray<short>(data)),
+                "ST" => new DicomShortText(tag, GetString(data)),
+                "SV" => new DicomSignedVeryLong(tag, (long[])GetTypedArray<long>(data)),
+                "TM" => new DicomTime(tag, GetString(data)),
+                "UC" => new DicomUnlimitedCharacters(tag, GetString(data)),
+                "UI" => new DicomUniqueIdentifier(tag, GetString(data)),
+                "UL" => new DicomUnsignedLong(tag, (uint[])GetTypedArray<uint>(data)),
+                "UN" => data.IsBsonNull
+                    ? new DicomUnknown(tag)
+                    : new DicomUnknown(tag, (byte[])GetTypedArray<byte>(data)),
+                "UR" => new DicomUniversalResource(tag, GetString(data)),
+                "US" => new DicomUnsignedShort(tag, (ushort[])GetTypedArray<ushort>(data)),
+                "UT" => new DicomUnlimitedText(tag, GetString(data)),
+                "UV" => new DicomUnsignedVeryLong(tag, (ulong[])GetTypedArray<ulong>(data)),
+                _ => throw new NotSupportedException($"Unsupported value representation {vr}")
+            };
 
             return item;
         }

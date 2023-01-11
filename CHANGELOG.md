@@ -7,6 +7,78 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [4.0.3] - 2023-01-10
+
+### Changed
+
+- Revert exception handling change which broke SmiServices unit tests
+
+## [4.0.2] - 2022-12-19
+
+### Changed
+
+- Now targets .Net Standard 2.1 and 6.0 instead of Standard 2.0
+- Add information on problematic tag to exception in `GetValueFromDatasetWithMultiplicity`
+
+### Dependencies
+
+- Bump HIC.FansiSql from 2.0.4 to 3.0.1
+- Bump MongoDB.Driver from 2.15.1 to 2.18.0
+- Bump Newtonsoft.Json from 13.0.1 to 13.0.2
+- Bump NLog from 5.0.5 to 5.1.0
+- Bump YamlDotNet from 12.0.2 to 12.3.1
+
+
+## [4.0.1] - 2022-06-06
+
+### Changed
+
+- Updated fo-dicom validation suppression to use DicomSetupBuilder not .AutoValidate
+- Switch JSON to prefer numerical encoding but fall back to string, rather than throwing
+
+### Dependencies
+
+- Bump fo-dicom from 5.0.0 to 5.0.3
+- Bump HIC.FAnsiSql from 2.0.3 to 2.0.4
+- Bump MongoDB.Driver from 2.15.0 to 2.15.1
+- Bump NLog from 4.7.14 to 5.0.0
+- Bump NUnit from 3.13.2 to 3.13.3
+- Bump Microsoft.NET.Test.Sdk from 17.1.0 to 17.2.0
+
+
+## [4.0.0] - 2022-03-21
+
+- Now using fo-dicom 5, some API changes
+
+### Dependencies
+
+- Bump fo-dicom to 5.0.0
+- Bump MongoDB.Driver from 2.12.3 to 2.14.0
+- Bump NLog from 4.7.10 to 4.7.12
+
+## [3.0.0] - 2021-07-28
+
+### Dependencies
+
+- Bump MongoDB.Driver from 2.11.6 to 2.12.3
+- Bump Newtonsoft.Json from 12.0.3 to 13.0.1
+- Bump NLog from 4.7.8 to 4.7.10
+- Bump YamlDotNet from 10.0.0 to 11.2.1
+- Bump HIC.FAnsiSql from 1.0.6 to 2.0.1
+- Bump MongoDB.Driver from 2.12.3 to 2.13.0
+
+### Added
+
+- Added XA and US templates
+
+## [2.3.2] - 2020-03-02
+
+### Dependencies
+
+- Bump YamlDotNet from 9.1.1 to 9.1.4
+- Bump NLog from 4.7.6 to 4.7.8
+- Bump MongoDB.Driver from 2.11.5 to 2.11.6
+
 ### Added
 
 - Added SR (Structured Report) template
@@ -174,7 +246,14 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.0...develop
+[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.3...develop
+[4.0.3]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.2..4.0.3
+[4.0.2]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.1..4.0.2
+[4.0.1]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.0..4.0.1
+[4.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/3.0.0..4.0.0
+[3.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.2..3.0.0
+[2.3.2]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.1..2.3.2
+[2.3.1]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.0..2.3.1
 [2.3.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.2..2.3.0
 [2.2.2]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.1..2.2.2
 [2.2.1]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.0..2.2.1

@@ -1,6 +1,5 @@
-﻿using Dicom;
+﻿using FellowOakDicom;
 using DicomTypeTranslation.TableCreation;
-using FAnsi.Discovery.TypeTranslation;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -38,7 +37,7 @@ namespace DicomTypeTranslation.Tests
             tbl.AddColumn("FileLocation", new DatabaseTypeRequest(typeof(string), 500), true, 500);
 
             //Create a DataTable in memory for the data we read from disk
-            DataTable dt = new DataTable();
+            using var dt = new DataTable();
             dt.Columns.Add("SOPInstanceUID");
             dt.Columns.Add("Modality");
             dt.Columns.Add("PatientID");
@@ -102,7 +101,7 @@ namespace DicomTypeTranslation.Tests
                 new DicomDate(DicomTag.PatientBirthDate,new DateTime(2001,1,1))
             });
 
-            var dt = new DataTable();
+            using var dt = new DataTable();
             var row = ds.ToRow(dt);
 
             Assert.AreEqual("Frank", row["PatientName"]);

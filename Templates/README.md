@@ -5,6 +5,7 @@
 - [PT](#pt-positron-emission-tomography-PET)
 - [NM](#nm-nuclear-medicine)
 - [DX](#dx-digital-radiography)
+- [XA](#xa-x-ray-angiography)
 - [SR](#sr-structured-report)
 - [ECG](#ecg-electrocardiogram)
 - [OTHER](#other)
@@ -84,6 +85,10 @@ Schema with
 | LossyImageCompressionRatio |  |
 | LossyImageCompressionRetired |  |
 | ScanOptions |  |
+| StudyInstanceUID | |
+| PatientID | |
+| DicomFileSize | |
+
 ## MR (Magnetic Resonance)
 
 ### StudyTable
@@ -167,6 +172,10 @@ Schema with
 | FlipAngle |  |
 | VariableFlipAngleFlag |  |
 | SequenceName |  |
+| StudyInstanceUID | |
+| PatientID | |
+| DicomFileSize | |
+
 
 ## PT (Positron emission tomography (PET))
 
@@ -263,6 +272,10 @@ Observations
 | LossyImageCompressionRetired |  |
 | ScanOptions |  |
 | ActualFrameDuration | |
+| StudyInstanceUID | |
+| PatientID | |
+| DicomFileSize | |
+
 
 
 ## NM (Nuclear Medicine)
@@ -360,6 +373,10 @@ This modality contains both SPECT and other forms of nuclear medicine.
 | LossyImageCompressionRetired |  |
 | ScanOptions |  |
 | ActualFrameDuration | |
+| StudyInstanceUID | |
+| PatientID | |
+| DicomFileSize | |
+
 
 ## DX Digital Radiography
 
@@ -461,6 +478,128 @@ https://www.youtube.com/watch?v=cTwbSDcCN4E
 |PositionerType| |
 |RelativeXRayExposure| |
 |AcquisitionDeviceProcessingDescription| |
+| StudyInstanceUID | |
+| PatientID | |
+| DicomFileSize | |
+
+
+
+## XA (X-ray Angiography)
+
+### StudyTable
+
+
+| Field | Description |
+| ------------- | ------------- |
+|StudyInstanceUID| |
+|AccessionNumber| |
+|ModalitiesInStudy| |
+|NumberOfStudyRelatedInstances| |
+|PatientAge| |
+|PatientBirthDate| |
+|PatientID| |
+|PatientSex| |
+|StudyDate| |
+|StudyDescription| |
+|StudyTime || 
+
+### SeriesTable
+
+| Field | Description |
+| ------------- | ------------- |
+|StudyInstanceUID| |
+|SeriesInstanceUID| |
+|BodyPartExamined| |
+|DeviceSerialNumber| |
+|InstitutionName| |
+|Modality| |
+|PerformedProcedureStepDescription| |
+|ProcedureCodeSequence_CodeValue| |
+|ProtocolName| |
+|SeriesDate| |
+|SeriesDescription| |
+|SeriesNumber| |
+|SeriesTime| |
+
+### ImageTable
+
+| Field | Description |
+| ------------- | ------------- |
+|SeriesInstanceUID| |
+|SOPInstanceUID| |
+|RelativeFileArchiveURI| |
+|MessageGuid| |
+|AcquisitionDate| |
+|AcquisitionDeviceProcessingDescription| |
+|AcquisitionNumber| |
+|AcquisitionTime| |
+|AveragePulseWidth| |
+|BurnedInAnnotation| |
+|CollimatorLeftVerticalEdge| |
+|CollimatorLowerHorizontalEdge| |
+|CollimatorRightVerticalEdge| |
+|CollimatorShape| |
+|CollimatorUpperHorizontalEdge| |
+|ColorSpace| |
+|Columns| |
+|DerivationDescription| |
+|DetectorConfiguration| |
+|DetectorDescription| |
+|DetectorID| |
+|DetectorMode| |
+|DetectorPrimaryAngle| |
+|DetectorSecondaryAngle| |
+|DetectorTemperature| |
+|DetectorType| |
+|DistanceSourceToDetector| |
+|DistanceSourceToPatient| |
+|EstimatedRadiographicMagnificationFactor| |
+|Exposure| |
+|ExposureInuAs| |
+|ExposureTime| |
+|FocalSpots| |
+|Grid| |
+|ImageAndFluoroscopyAreaDoseProduct| |
+|ImagePositionPatient| |
+|ImageType| |
+|ImagerPixelSpacing| |
+|IntensifierSize| |
+|KVP| |
+|LongitudinalTemporalInformationModified| |
+|LossyImageCompression| |
+|LossyImageCompressionMethod| |
+|LossyImageCompressionRatio| |
+|Manufacturer| |
+|ManufacturerModelName| |
+|PhotometricInterpretation| |
+|PixelAspectRatio| |
+|PixelIntensityRelationshipSign| |
+|PixelSpacing| |
+|PixelSpacingCalibrationDescription| |
+|PixelSpacingCalibrationType| |
+|PlanarConfiguration| |
+|PositionerMotion| |
+|PositionerType| |
+|RadiationMode| |
+|RadiationSetting| |
+|RelativeXRayExposure| |
+|RescaleIntercept| |
+|RescaleSlope| |
+|RescaleType| |
+|Rows| |
+|SamplesPerPixel| |
+|ScanOptions| |
+|SoftwareVersions| |
+|SpatialResolution| |
+|TypeOfFilters| |
+|WindowCenter| |
+|WindowWidth| |
+|XRayTubeCurrent| |
+|XRayTubeCurrentInuA| |
+| StudyInstanceUID | |
+| PatientID | |
+| DicomFileSize | |
+
 
 ## SR (Structured Report)
 
@@ -515,6 +654,8 @@ Since structured reports are almost exclusively single file entities only an Ima
 | CurrentReqEvidence_SeriesInstanceUID |  |
 | CurrentReqEvidence_SOPClassUID |  |
 | CurrentReqEvidence_SOPInstanceUID |  |
+| DicomFileSize | |
+
 
 ## ECG (Electrocardiogram)
 
@@ -610,3 +751,5 @@ Since structured reports are almost exclusively single file entities only an Ima
 | ManufacturerModelName |  |
 | Manufacturer |  |
 | PhotometricInterpretation |  |
+| DicomFileSize | |
+

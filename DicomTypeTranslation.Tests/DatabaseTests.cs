@@ -45,22 +45,22 @@ namespace DicomTypeTranslation.Tests
 
             var root = doc.Element("TestDatabases");
             if(root == null)
-                throw new Exception("Missing element 'TestDatabases' in " + TestFilename);
+                throw new Exception($"Missing element 'TestDatabases' in {TestFilename}");
 
             var settings = root.Element("Settings");
 
             if (settings == null)
-                throw new Exception("Missing element 'Settings' in " + TestFilename);
+                throw new Exception($"Missing element 'Settings' in {TestFilename}");
 
             var e = settings.Element("AllowDatabaseCreation");
             if (e == null)
-                throw new Exception("Missing element 'AllowDatabaseCreation' in " + TestFilename);
+                throw new Exception($"Missing element 'AllowDatabaseCreation' in {TestFilename}");
 
             AllowDatabaseCreation = Convert.ToBoolean(e.Value);
 
             e = settings.Element("TestScratchDatabase");
             if (e == null)
-                throw new Exception("Missing element 'TestScratchDatabase' in " + TestFilename);
+                throw new Exception($"Missing element 'TestScratchDatabase' in {TestFilename}");
 
             _testScratchDatabase = e.Value;
             
@@ -70,7 +70,7 @@ namespace DicomTypeTranslation.Tests
                 DatabaseType databaseType;
 
                 if(!DatabaseType.TryParse(type, out databaseType))
-                    throw new Exception("Could not parse DatabaseType " + type);
+                    throw new Exception($"Could not parse DatabaseType {type}");
 
                 var constr = element.Element("ConnectionString").Value;
                 
@@ -100,7 +100,8 @@ namespace DicomTypeTranslation.Tests
                     db.Create();
                 else
                 {
-                    Assert.Inconclusive("Database " + _testScratchDatabase + " did not exist on server " + server + " and AllowDatabaseCreation was false in " + TestFilename);
+                    Assert.Inconclusive(
+                        $"Database {_testScratchDatabase} did not exist on server {server} and AllowDatabaseCreation was false in {TestFilename}");
                 }
             else
             {

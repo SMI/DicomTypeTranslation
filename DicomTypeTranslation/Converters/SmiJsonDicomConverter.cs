@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Dicom;
-using Dicom.IO.Buffer;
+using FellowOakDicom;
+using FellowOakDicom.IO.Buffer;
 using Newtonsoft.Json;
 
 namespace DicomTypeTranslation.Converters
@@ -21,13 +21,6 @@ namespace DicomTypeTranslation.Converters
         private const string BLK_URI_PROPERTY_NAME = "uri";
         private const string VR_PROPERTY_NAME = "vr";
 
-
-        static SmiJsonDicomConverter()
-        {
-#pragma warning disable CS0618 // Obsolete
-            DicomValidation.AutoValidation = false;
-#pragma warning restore CS0618
-        }
 
         /// <summary>
         /// Constructor with 1 bool argument required for compatibility testing with
@@ -218,7 +211,8 @@ namespace DicomTypeTranslation.Converters
                     break;
 
                 default:
-                    throw new ArgumentException("No case implemented to write data for VR " + item.ValueRepresentation.Code + " to JSON");
+                    throw new ArgumentException(
+                        $"No case implemented to write data for VR {item.ValueRepresentation.Code} to JSON");
             }
 
             writer.WriteEndObject();
@@ -267,7 +261,7 @@ namespace DicomTypeTranslation.Converters
                 sb.Append(((uint)val).ToString("X8"));
 
             if (sb.Length % 8 != 0)
-                throw new JsonException("AttributeTag string of length " + sb.Length + " is not divisible by 8");
+                throw new JsonException($"AttributeTag string of length {sb.Length} is not divisible by 8");
 
             writer.WriteValue(sb.ToString());
         }
@@ -427,7 +421,7 @@ namespace DicomTypeTranslation.Converters
                     break;
 
                 default:
-                    throw new ArgumentException("No case implemented to read object data for VR " + vr + " from JSON");
+                    throw new ArgumentException($"No case implemented to read object data for VR {vr} from JSON");
             }
 
             if (reader.TokenType != JsonToken.EndObject)
@@ -438,79 +432,44 @@ namespace DicomTypeTranslation.Converters
 
         private static DicomItem CreateDicomItem(DicomTag tag, string vr, object data)
         {
-            switch (vr)
+            return vr switch
             {
-                case "AE":
-                    return new DicomApplicationEntity(tag, (string)data);
-                case "AS":
-                    return new DicomAgeString(tag, (string)data);
-                case "AT":
-                    return CreateDicomAttributeTag(tag, (string)data);
-                case "CS":
-                    return new DicomCodeString(tag, (string)data);
-                case "DA":
-                    return new DicomDate(tag, (string)data);
-                case "DS":
-                    return new DicomDecimalString(tag, (string)data);
-                case "DT":
-                    return new DicomDateTime(tag, (string)data);
-                case "FD":
-                    return new DicomFloatingPointDouble(tag, (double[])data);
-                case "FL":
-                    return new DicomFloatingPointSingle(tag, (float[])data);
-                case "IS":
-                    return new DicomIntegerString(tag, (string)data);
-                case "LO":
-                    return new DicomLongString(tag, Encoding.UTF8, (string)data);
-                case "LT":
-                    return new DicomLongText(tag, Encoding.UTF8, (string)data);
-                case "OB":
-                    return new DicomOtherByte(tag, (IByteBuffer)data);
-                case "OD":
-                    return new DicomOtherDouble(tag, (IByteBuffer)data);
-                case "OF":
-                    return new DicomOtherFloat(tag, (IByteBuffer)data);
-                case "OL":
-                    return new DicomOtherLong(tag, (IByteBuffer)data);
-                case "OW":
-                    return new DicomOtherWord(tag, (IByteBuffer)data);
-                case "OV":
-                    return new DicomOtherVeryLong(tag, (IByteBuffer)data);
-                case "PN":
-                    return new DicomPersonName(tag, Encoding.UTF8, (string)data);
-                case "SH":
-                    return new DicomShortString(tag, Encoding.UTF8, (string)data);
-                case "SL":
-                    return new DicomSignedLong(tag, (int[])data);
-                case "SQ":
-                    return new DicomSequence(tag, (DicomDataset[])data);
-                case "SS":
-                    return new DicomSignedShort(tag, (short[])data);
-                case "ST":
-                    return new DicomShortText(tag, Encoding.UTF8, (string)data);
-                case "SV":
-                    return new DicomSignedVeryLong(tag, (long[])data);
-                case "TM":
-                    return new DicomTime(tag, (string)data);
-                case "UC":
-                    return new DicomUnlimitedCharacters(tag, Encoding.UTF8, (string)data);
-                case "UI":
-                    return new DicomUniqueIdentifier(tag, (string)data);
-                case "UL":
-                    return new DicomUnsignedLong(tag, (uint[])data);
-                case "UN":
-                    return new DicomUnknown(tag, (IByteBuffer)data);
-                case "UR":
-                    return new DicomUniversalResource(tag, Encoding.UTF8, (string)data);
-                case "US":
-                    return new DicomUnsignedShort(tag, (ushort[])data);
-                case "UT":
-                    return new DicomUnlimitedText(tag, Encoding.UTF8, (string)data);
-                case "UV":
-                    return new DicomUnsignedVeryLong(tag, (ulong[])data);
-                default:
-                    throw new ArgumentException("No method implemented to create a DicomItem of VR " + vr + " from JSON");
-            }
+                "AE" => new DicomApplicationEntity(tag, (string)data),
+                "AS" => new DicomAgeString(tag, (string)data),
+                "AT" => CreateDicomAttributeTag(tag, (string)data),
+                "CS" => new DicomCodeString(tag, (string)data),
+                "DA" => new DicomDate(tag, (string)data),
+                "DS" => new DicomDecimalString(tag, (string)data),
+                "DT" => new DicomDateTime(tag, (string)data),
+                "FD" => new DicomFloatingPointDouble(tag, (double[])data),
+                "FL" => new DicomFloatingPointSingle(tag, (float[])data),
+                "IS" => new DicomIntegerString(tag, (string)data),
+                "LO" => new DicomLongString(tag, (string)data),
+                "LT" => new DicomLongText(tag, (string)data),
+                "OB" => new DicomOtherByte(tag, (IByteBuffer)data),
+                "OD" => new DicomOtherDouble(tag, (IByteBuffer)data),
+                "OF" => new DicomOtherFloat(tag, (IByteBuffer)data),
+                "OL" => new DicomOtherLong(tag, (IByteBuffer)data),
+                "OW" => new DicomOtherWord(tag, (IByteBuffer)data),
+                "OV" => new DicomOtherVeryLong(tag, (IByteBuffer)data),
+                "PN" => new DicomPersonName(tag, (string)data),
+                "SH" => new DicomShortString(tag, (string)data),
+                "SL" => new DicomSignedLong(tag, (int[])data),
+                "SQ" => new DicomSequence(tag, (DicomDataset[])data),
+                "SS" => new DicomSignedShort(tag, (short[])data),
+                "ST" => new DicomShortText(tag, (string)data),
+                "SV" => new DicomSignedVeryLong(tag, (long[])data),
+                "TM" => new DicomTime(tag, (string)data),
+                "UC" => new DicomUnlimitedCharacters(tag, (string)data),
+                "UI" => new DicomUniqueIdentifier(tag, (string)data),
+                "UL" => new DicomUnsignedLong(tag, (uint[])data),
+                "UN" => new DicomUnknown(tag, (IByteBuffer)data),
+                "UR" => new DicomUniversalResource(tag, (string)data),
+                "US" => new DicomUnsignedShort(tag, (ushort[])data),
+                "UT" => new DicomUnlimitedText(tag, (string)data),
+                "UV" => new DicomUnsignedVeryLong(tag, (ulong[])data),
+                _ => throw new ArgumentException($"No method implemented to create a DicomItem of VR {vr} from JSON")
+            };
         }
 
         private static string ReadJsonString(JsonReader reader)
@@ -538,7 +497,8 @@ namespace DicomTypeTranslation.Converters
                 return new DicomAttributeTag(tag);
 
             if (str.Length % 8 != 0)
-                throw new JsonException("Can't parse string of length " + str.Length + " to an AttributeTag. (Needs to be divisible by 8)");
+                throw new JsonException(
+                    $"Can't parse string of length {str.Length} to an AttributeTag. (Needs to be divisible by 8)");
 
             var split = new List<string>();
 

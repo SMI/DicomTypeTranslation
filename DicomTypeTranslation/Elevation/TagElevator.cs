@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Dicom;
+using FellowOakDicom;
 using DicomTypeTranslation.Elevation.Exceptions;
 using DicomTypeTranslation.Elevation.Serialization;
 
@@ -75,7 +72,8 @@ namespace DicomTypeTranslation.Elevation
             if (conditional.Contains("[]"))
             {
                 if(!conditional.Equals("[]"))
-                    throw new InvalidTagElevatorPathException("Array operator conditional is only valid in isolation (i.e. '[]'), it cannot be part of a pathway (e.g. '"+conditional+"')");
+                    throw new InvalidTagElevatorPathException(
+                        $"Array operator conditional is only valid in isolation (i.e. '[]'), it cannot be part of a pathway (e.g. '{conditional}')");
 
                 _conditionalMatchesArrayElementsOfMultiplicity = true;
                 _conditionalMatchesArrayElementsOfMultiplicityPattern = conditionalShouldMatch;
@@ -145,7 +143,8 @@ namespace DicomTypeTranslation.Elevation
                 if (ConcatenateMatches)
                     return string.Join(ConcatenateMatchesSplitter, finalObjects);
                 else
-                    throw new TagNavigationException("Found " + finalObjects.Count + " matches among tree branches (ConcatenateMatches mode is off - append a '+' to turn it on)");
+                    throw new TagNavigationException(
+                        $"Found {finalObjects.Count} matches among tree branches (ConcatenateMatches mode is off - append a '+' to turn it on)");
 
             return finalObjects;
         }
@@ -172,7 +171,8 @@ namespace DicomTypeTranslation.Elevation
                         toReturn.Add(a.GetValue(0));
                     else
                     if (!ConcatenateMultiplicity)
-                        throw new TagNavigationException("Found " + a.Length + " multiplicity in leaf tag (ConcatenateMultiplicity is off - append a '&' to turn it on)");
+                        throw new TagNavigationException(
+                            $"Found {a.Length} multiplicity in leaf tag (ConcatenateMultiplicity is off - append a '&' to turn it on)");
                     else
                         toReturn.Add(string.Join(ConcatenateMultiplicitySplitter, a.Cast<object>().Select(s => s.ToString())));
                 }

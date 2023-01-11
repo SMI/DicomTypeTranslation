@@ -1,7 +1,7 @@
 name: .NET Core
 
 on:
-  pull_request
+  push
 
 env:
   MSSQL_SA_PASSWORD: "YourStrong!Passw0rd"
@@ -11,30 +11,30 @@ env:
 jobs:
   build:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Disable disk flush for CI
+      run: sudo apt-get install -y libeatmydata1
+    - uses: actions/checkout@v3
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 3.1.301
-    - name: Add MSFT code signing key
-      run: wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-    - name: Add MSFT package repo
-      run: sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/18.04/mssql-server-2019.list)"
-    - name: MySQL
+        dotnet-version: 6.0.x
+    - name: Install MS SQL Server and Postgresql, start existing MySQL
       run: |
-        sudo mkdir -p /var/run/mysqld
-        sudo chown mysql:mysql /var/run/mysqld
-        sudo mysqld_safe --port=3306 --skip-grant-tables &
-    - name: Install Sql Server
-      run: sudo apt-get install -y --no-install-recommends postgresql mssql-tools mssql-server
-    - name: Configure Sql Server
-      run: sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
-    - name: Install dependencies
-      run: dotnet restore
+        sudo wget -qO/etc/apt/trusted.gpg.d/microsoft.asc https://packages.microsoft.com/keys/microsoft.asc
+        sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list)"
+        sed -i -e 's/Pwd=;/Pwd=root;AllowPublicKeyRetrieval=True;/' DicomTypeTranslation.Tests/TestDatabases.xml
+        sudo apt-get install -y --no-install-recommends postgresql mssql-tools mssql-server
+        sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
+        sudo service mysql start
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release --nologo
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-restore --verbosity normal --nologo
+    - name: Pack and push
+      if: contains(github.ref,'refs/tags/')
+      run: |
+        version=$(fgrep AssemblyInformationalVersion SharedAssemblyInfo.cs |cut -d'"' -f2) dotnet pack -c Release --include-source --include-symbols -o dist
+        nuget push -skipDuplicate dist/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_KEY }}

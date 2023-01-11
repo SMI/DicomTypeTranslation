@@ -1,9 +1,7 @@
-﻿using Dicom;
-using DicomTypeTranslation.Elevation;
+﻿using FellowOakDicom;
 using DicomTypeTranslation.Elevation.Serialization;
 using DicomTypeTranslation.TableCreation;
 using FAnsi.Discovery;
-using FAnsi.Discovery.TypeTranslation;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -16,6 +14,12 @@ namespace DicomTypeTranslation.Tests
 {
     class TemplateTests:DatabaseTests
     {
+        [OneTimeSetUp]
+        public void DisableDicomValidation()
+        {
+            DicomValidationBuilderExtension.SkipValidation(null);
+        }
+
         [Test]
         public void Template_ExampleYaml()
         {
@@ -57,9 +61,15 @@ namespace DicomTypeTranslation.Tests
         [TestCase("ECG",FAnsi.DatabaseType.MicrosoftSQLServer)]
         [TestCase("ECG",FAnsi.DatabaseType.MySql)]
         [TestCase("ECG",FAnsi.DatabaseType.Oracle)]
+        [TestCase("XA", FAnsi.DatabaseType.MicrosoftSQLServer)]
+        [TestCase("XA", FAnsi.DatabaseType.MySql)]
+        [TestCase("XA", FAnsi.DatabaseType.Oracle)]
+        [TestCase("US", FAnsi.DatabaseType.MicrosoftSQLServer)]
+        [TestCase("US", FAnsi.DatabaseType.MySql)]
+        [TestCase("US", FAnsi.DatabaseType.Oracle)]
         public void TestTemplate(string template, FAnsi.DatabaseType dbType)
         {
-            string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates",template + ".it");
+            string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.it");
 
             ImageTableTemplateCollection collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(templateFile));
 
@@ -72,11 +82,28 @@ namespace DicomTypeTranslation.Tests
 
             foreach(var table in collection.Tables)
             {
+                if(string.Equals(table.TableName, "ImageTable",StringComparison.CurrentCultureIgnoreCase))
+                {
+                    EnforceExpectedImageColumns(template,table);
+                }
+
                 var tbl = db.ExpectTable(table.TableName);
                 creator.CreateTable(tbl,table);
 
                 Assert.IsTrue(tbl.Exists());
             }
+        }
+
+        private void EnforceExpectedImageColumns(string template, ImageTableTemplate table)
+        {
+            foreach(var req in new[] { "PatientID","DicomFileSize","StudyInstanceUID"})
+            {
+                if (!table.Columns.Any(c => c.ColumnName.Equals(req)))
+                {
+                    Assert.Fail($"Template {Path.GetFileName(template)} is missing expected field {req} in section {table.TableName}");
+                }
+            }
+            
         }
 
         private void Validate(ImageTableTemplate tableTemplate, string templateFile)
@@ -127,13 +154,14 @@ namespace DicomTypeTranslation.Tests
 
         private string DescribeSize(DecimalSize typeSize)
         {
-            return "NumbersBeforeDecimalPlace:" + typeSize.NumbersBeforeDecimalPlace + " NumbersAfterDecimalPlace:" + typeSize.NumbersAfterDecimalPlace;
+            return
+                $"NumbersBeforeDecimalPlace:{typeSize.NumbersBeforeDecimalPlace} NumbersAfterDecimalPlace:{typeSize.NumbersAfterDecimalPlace}";
         }
 
         [TestCase("SmiTagElevation")]
         public void TestElevationTemplate(string template)
         {
-            string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates",template + ".xml");
+            string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.xml");
             
             TagElevationRequestCollection elevation = new TagElevationRequestCollection(File.ReadAllText(templateFile));
             

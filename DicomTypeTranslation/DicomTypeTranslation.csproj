@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+    <LangVersion>9.0</LangVersion>
     <AssemblyTitle>DicomTypeTranslation</AssemblyTitle>
     <Product>DicomTypeTranslation</Product>
     <Copyright>Copyright ©  2018-2020</Copyright>
@@ -29,11 +30,11 @@
     <None Include="Elevation\TagElevation.cd" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="fo-dicom.NetCore" Version="4.0.7" />
-    <PackageReference Include="HIC.FAnsiSql" Version="1.0.6" />
-    <PackageReference Include="MongoDB.Driver" Version="2.11.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="NLog" Version="4.7.6" />
-    <PackageReference Include="YamlDotNet" Version="9.1.0" />
+    <PackageReference Include="fo-dicom" Version="5.0.3" />
+    <PackageReference Include="HIC.FAnsiSql" Version="3.0.1" />
+    <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="NLog" Version="5.1.1" />
+    <PackageReference Include="YamlDotNet" Version="12.3.1" />
   </ItemGroup>
 </Project>

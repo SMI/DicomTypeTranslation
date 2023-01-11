@@ -4,14 +4,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using Dicom;
+using FellowOakDicom;
 
 using DicomTypeTranslation.Converters;
 using DicomTypeTranslation.Helpers;
-
-using FAnsi.Discovery;
-using FAnsi.Discovery.TypeTranslation;
-
+using FellowOakDicom.Serialization;
 using Newtonsoft.Json;
 using TypeGuesser;
 
@@ -48,34 +45,32 @@ namespace DicomTypeTranslation
         /// Serialize a <see cref="DicomDataset"/> to a json <see cref="string"/>.
         /// </summary>
         /// <param name="dataset"></param>
-        /// <param name="converter"></param>
+        /// <param name="useOwn">Flag to use SMI DIY converter not fo-dicom</param>
         /// <returns>Json serialized string</returns>
-        public static string SerializeDatasetToJson(DicomDataset dataset, JsonConverter converter = null)
+        public static string SerializeDatasetToJson(DicomDataset dataset, bool useOwn=false)
         {
             if (dataset == null)
                 throw new ArgumentNullException(nameof(dataset));
 
-            if (converter == null)
-                converter = _defaultJsonDicomConverter;
-
-            return JsonConvert.SerializeObject(dataset, Formatting.None, converter);
+            if (useOwn)
+                return JsonConvert.SerializeObject(dataset, Formatting.None, new SmiJsonDicomConverter());
+            return FellowOakDicom.Serialization.DicomJson.ConvertDicomToJson(dataset,false,false,NumberSerializationMode.PreferablyAsNumber);
         }
 
         /// <summary>
         /// Deserialize a json <see cref="string"/> to a <see cref="DicomDataset"/>.
         /// </summary>
         /// <param name="json"></param>
-        /// <param name="converter"></param>
+        /// <param name="useOwn">Flag to force use of old SMI DIY converter</param>
         /// <returns>Dataset</returns>
-        public static DicomDataset DeserializeJsonToDataset(string json, JsonConverter converter = null)
+        public static DicomDataset DeserializeJsonToDataset(string json, bool useOwn=false)
         {
             if (string.IsNullOrWhiteSpace(json))
                 throw new ArgumentNullException(nameof(json));
 
-            if (converter == null)
-                converter = _defaultJsonDicomConverter;
-
-            return JsonConvert.DeserializeObject<DicomDataset>(json, converter);
+            if (useOwn)
+                return JsonConvert.DeserializeObject<DicomDataset>(json, new SmiJsonDicomConverter());
+            return FellowOakDicom.Serialization.DicomJson.ConvertJsonToDicom(json, false);
         }
 
         /// <summary>
@@ -130,7 +125,7 @@ namespace DicomTypeTranslation
                         && newType.CSharpType == typeof(UInt16) || newType.CSharpType == typeof(Int16))
                         t = typeof(Int32); //if they are being all creepy about it just use an int that way theres definetly enough space
                     else
-                        throw new Exception("Incompatible Types '" + toReturn.CSharpType + "' and '" + newType.CSharpType + "'");
+                        throw new Exception($"Incompatible Types '{toReturn.CSharpType}' and '{newType.CSharpType}'");
 
                 toReturn = new DatabaseTypeRequest(
                     t,
@@ -258,7 +253,7 @@ namespace DicomTypeTranslation
             if (dicomVr == DicomVR.UT)
                 return new DatabaseTypeRequest(typeof(string), 10240);
 
-            throw new ArgumentOutOfRangeException("Invalid value representation:" + dicomVr);
+            throw new ArgumentOutOfRangeException($"Invalid value representation:{dicomVr}");
         }
 
         #endregion

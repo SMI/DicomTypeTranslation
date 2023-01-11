@@ -1,4 +1,4 @@
-﻿using Dicom;
+﻿using FellowOakDicom;
 using DicomTypeTranslation.Elevation.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,17 +18,19 @@ namespace DicomTypeTranslation.Elevation
             var entry = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == navigationToken);
 
             if (entry == null)
-                throw new TagNavigationException("Unknown DICOM tag '" + navigationToken + "'");
+                throw new TagNavigationException($"Unknown DICOM tag '{navigationToken}'");
 
             if (!isLast)
             {
                 if (entry.ValueRepresentations.All(v => v != DicomVR.SQ))
-                    throw new TagNavigationException("Navigation Token " + navigationToken + " was not the final token in the pathway therefore it must support DicomVR.SQ (otherwise how can we get a subsequence)");
+                    throw new TagNavigationException(
+                        $"Navigation Token {navigationToken} was not the final token in the pathway therefore it must support DicomVR.SQ (otherwise how can we get a subsequence)");
             }
             else
             {
                 if (entry.ValueRepresentations.All(v => v == DicomVR.SQ))
-                    throw new TagNavigationException("Navigation Token " + navigationToken + " was the final token in the pathway so cannot be DicomVR.SQ");
+                    throw new TagNavigationException(
+                        $"Navigation Token {navigationToken} was the final token in the pathway so cannot be DicomVR.SQ");
             }
 
             _tag = entry.Tag;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Dicom;
+using FellowOakDicom;
 using MongoDB.Bson;
 using Newtonsoft.Json;
 
@@ -25,17 +25,17 @@ namespace DicomTypeTranslation.Tests.Helpers
         {
             var ds = new DicomDataset
             {
-                new DicomApplicationEntity(DicomTag.RetrieveAETitle, "ApplicationEntity-1", "ApplicationEntity-2"),
-                new DicomAgeString(DicomTag.PatientAge, "34y", "32y"),
+                new DicomApplicationEntity(DicomTag.RetrieveAETitle, "AppEntity-1", "AppEntity-2"),
+                new DicomAgeString(DicomTag.PatientAge, "034Y"),
                 new DicomAttributeTag(DicomTag.SelectorATValue, DicomTag.SOPInstanceUID, DicomTag.SeriesInstanceUID),
-                new DicomCodeString(DicomTag.QualityControlImage, "FOOBAR", "OOFRAB"),
-                new DicomDate(DicomTag.AcquisitionDate, "20000229", "20180401"),
-                new DicomDecimalString(DicomTag.LossyImageCompressionRatio, "0", "123.456"),
-                new DicomDateTime(DicomTag.AcquisitionDateTime, "20141231194212", "20180401235959"),
-                new DicomFloatingPointSingle(DicomTag.SelectorFLValue, 0, float.MinValue, float.MaxValue),
-                new DicomFloatingPointDouble(DicomTag.SelectorFDValue, 0, double.MinValue, double.MaxValue),
-                new DicomIntegerString(DicomTag.ImagesInAcquisition, 0, int.MinValue, int.MaxValue),
-                new DicomLongString(DicomTag.PatientState, "This is a long string part 1", "This is a long string part 2"),
+                new DicomCodeString(DicomTag.QualityControlImage, "FOOBAR"),
+                new DicomDate(DicomTag.AcquisitionDate, "20000229"),
+                new DicomDecimalString(DicomTag.LossyImageCompressionRatio, "123.456"),
+                new DicomDateTime(DicomTag.AcquisitionDateTime, "20180401235959"),
+                new DicomFloatingPointSingle(DicomTag.SelectorFLValue, 0, float.MinValue),
+                new DicomFloatingPointDouble(DicomTag.SelectorFDValue, 0, double.MinValue),
+                new DicomIntegerString(DicomTag.ImagesInAcquisition, int.MaxValue),
+                new DicomLongString(DicomTag.PatientState, "This is a long string"),
                 new DicomLongText(DicomTag.AdditionalPatientHistory, @"This is a dicom long string. Backslashes should be ok: \\\\\\"),
                 new DicomOtherByte(DicomTag.SelectorOBValue, 1, 2, 3, 0, 255),
                 new DicomOtherDouble(DicomTag.SelectorODValue, 0, double.MinValue, double.MaxValue),
@@ -48,22 +48,22 @@ namespace DicomTypeTranslation.Tests.Helpers
                 new DicomSignedLong(DicomTag.SelectorSLValue, 0, int.MinValue, int.MaxValue),
                 new DicomSequence(DicomTag.AdmittingDiagnosesCodeSequence, new DicomDataset
                 {
-                    new DicomShortText(DicomTag.SelectorSTValue, "Short\\Text"),
+                    new DicomShortText(DicomTag.SelectorSTValue, @"Short\Text"),
                     new DicomIntegerString(DicomTag.ImagesInAcquisition, "1234"),
                     new DicomOtherWord(DicomTag.SelectorOWValue, 0, ushort.MaxValue)
                 }),
                 new DicomSignedShort(DicomTag.SelectorSSValue, 0, short.MinValue, short.MaxValue),
-                new DicomShortText(DicomTag.SelectorSTValue, "Short\\Text\\Backslashes should be ok: \\\\\\"),
-                //new DicomSignedVeryLong(), // NOTE(rkm 2020-03-25) No tags actually have this VR yet!
+                new DicomShortText(DicomTag.SelectorSTValue, @"Short\\Text\\Backslashes should be ok: \\\\\\"),
+                new DicomSignedVeryLong(DicomTag.SelectorSVValue,1,7),
                 new DicomTime(DicomTag.SelectorTMValue, "123456", "235959"),
                 new DicomUnlimitedCharacters(DicomTag.SelectorUCValue, "UnlimitedCharacters-1"),
                 new DicomUniqueIdentifier(DicomTag.SelectorUIValue, "1.2.3.4", "5.6.7.8"),
                 new DicomUnsignedLong(DicomTag.SelectorULValue, 0, 1, uint.MaxValue),
                 new DicomUnknown(DicomTag.SelectorUNValue, 0, 1, 255),
-                new DicomUniversalResource(DicomTag.URNCodeValue, "http://example.com?q=1"),
+                new DicomUniversalResource(DicomTag.URNCodeValue, "https://example.com?q=1"),
                 new DicomUnsignedShort(DicomTag.SelectorUSValue, 0, 1, ushort.MaxValue),
                 new DicomUnlimitedText(DicomTag.SelectorUTValue, "unlimited!"),
-                //new DicomUnsignedVeryLong(), // NOTE(rkm 2020-03-25) No tags actually have this VR yet!
+                new DicomUnsignedVeryLong(DicomTag.SelectorUVValue,new UInt64[]{1}),
             };
 
             if (singleVr != null)
@@ -227,12 +227,12 @@ namespace DicomTypeTranslation.Tests.Helpers
 
             foreach (BsonElement item in document)
             {
-                sb.Append("" + item.Name);
+                sb.Append($"{item.Name}");
 
                 if (item.Value is BsonDocument)
                     sb.AppendLine(PrettyPrintBsonDocument((BsonDocument)item.Value));
                 else if (item.Value is BsonArray)
-                    sb.AppendLine(":\t" + item.Value);
+                    sb.AppendLine($":\t{item.Value}");
                 else
                 {
                     object value;
@@ -242,7 +242,7 @@ namespace DicomTypeTranslation.Tests.Helpers
                     else
                         value = item.Value;
 
-                    sb.AppendLine(":\t\"" + value + "\"");
+                    sb.AppendLine($":\t\"{value}\"");
                 }
             }
 
