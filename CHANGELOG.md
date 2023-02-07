@@ -7,11 +7,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [4.0.3] - 2023-01-10
+## [4.0.3] - 2023-02-07
 
 ### Changed
 
-- Revert exception handling change which broke SmiServices unit tests
+- Add ECG type template
+
+### Dependencies
+
+- Bump MongoDB.Driver from 2.18.0 to 2.19.0
+- Bump NLog from 5.1.0 to 5.1.1
+- Bump YamlDotNet from 12.3.1 to 13.0.0
 
 ## [4.0.2] - 2022-12-19
 
