@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <AssemblyTitle>DicomTypeTranslation</AssemblyTitle>
     <Product>DicomTypeTranslation</Product>
     <Copyright>Copyright ©  2018-2020</Copyright>
@@ -35,6 +35,6 @@
     <PackageReference Include="MongoDB.Driver" Version="2.19.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="NLog" Version="5.1.1" />
-    <PackageReference Include="YamlDotNet" Version="12.3.1" />
+    <PackageReference Include="YamlDotNet" Version="13.0.0" />
   </ItemGroup>
 </Project>
