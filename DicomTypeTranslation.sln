@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 	ProjectSection(SolutionItems) = preProject
 		Templates\CT.it = Templates\CT.it
 		Templates\DX.it = Templates\DX.it
+		Templates\ECG.it = Templates\ECG.it
 		Templates\MR.it = Templates\MR.it
 		Templates\NM.it = Templates\NM.it
 		Templates\OTHER.it = Templates\OTHER.it

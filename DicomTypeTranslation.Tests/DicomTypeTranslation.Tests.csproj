@@ -74,6 +74,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Templates\ECG.it" Link="Templates\ECG.it">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="..\Templates\XA.it" Link="Templates\XA.it">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -89,7 +94,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.3.1"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
-    <PackageReference Include="NunitXml.TestLogger" Version="3.0.127" />
+    <PackageReference Include="NunitXml.TestLogger" Version="3.0.131" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DicomTypeTranslation\DicomTypeTranslation.csproj" />

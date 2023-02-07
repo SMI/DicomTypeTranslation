@@ -7,6 +7,7 @@
 - [DX](#dx-digital-radiography)
 - [XA](#xa-x-ray-angiography)
 - [SR](#sr-structured-report)
+- [ECG](#ecg-electrocardiogram)
 - [OTHER](#other)
 
 ## CT (Computerised Tomography)
@@ -654,6 +655,57 @@ Since structured reports are almost exclusively single file entities only an Ima
 | CurrentReqEvidence_SOPClassUID |  |
 | CurrentReqEvidence_SOPInstanceUID |  |
 | DicomFileSize | |
+
+
+## ECG (Electrocardiogram)
+
+### ImageTable
+
+
+| Field | Description |
+| ------------- | ------------- |
+|PatientID||
+|StudyInstanceUID||
+|StudyDate||
+|StudyTime||
+|ModalitiesInStudy||
+|StudyDescription||
+|AccessionNumber||
+|PatientSex||
+|PatientAge||
+|NumberOfStudyRelatedInstances||
+|PatientBirthDate||
+|SeriesInstanceUID||
+|Modality||
+|InstitutionName||
+|ProtocolName||
+|ProcedureCodeSequence_CodeValue||
+|PerformedProcedureStepDescription||
+|SeriesDescription||
+|SeriesDate||
+|SeriesTime||
+|BodyPartExamined||
+|DeviceSerialNumber||
+|SeriesNumber||
+|SOPInstanceUID||
+|BurnedInAnnotation||
+|RelativeFileArchiveURI||
+|MessageGuid||
+|ImageType||
+|ManufacturerModelName||
+|Manufacturer||
+|SoftwareVersions||
+|PhotometricInterpretation||
+|AcquisitionNumber||
+|AcquisitionDate||
+|AcquisitionTime||
+|PixelSpacing||
+|AcquisitionDeviceProcessingDescription||
+|NumberOfWaveformChannels||
+|NumberOfWaveformSamples||
+|SamplingFrequency||
+|WaveformBitsAllocated||
+|WaveformSequence||
 
 
 ## OTHER

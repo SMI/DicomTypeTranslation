@@ -7,6 +7,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [4.0.3] - 2023-02-07
+
+### Changed
+
+- Add ECG type template
+
+### Dependencies
+
+- Bump MongoDB.Driver from 2.18.0 to 2.19.0
+- Bump NLog from 5.1.0 to 5.1.1
+- Bump YamlDotNet from 12.3.1 to 13.0.0
+
 ## [4.0.2] - 2022-12-19
 
 ### Changed
@@ -240,7 +252,8 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.2...develop
+[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.3...develop
+[4.0.3]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.2..4.0.3
 [4.0.2]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.1..4.0.2
 [4.0.1]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.0..4.0.1
 [4.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/3.0.0..4.0.0

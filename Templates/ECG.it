@@ -1,0 +1,89 @@
+Tables:
+- TableName: StudyTable
+  Columns:
+  - ColumnName: PatientID
+  - ColumnName: StudyInstanceUID
+  - ColumnName: StudyDate
+    AllowNulls: true
+  - ColumnName: StudyTime
+    AllowNulls: true
+  - ColumnName: ModalitiesInStudy
+    AllowNulls: true
+  - ColumnName: StudyDescription
+    AllowNulls: true
+  - ColumnName: AccessionNumber
+    AllowNulls: true
+  - ColumnName: PatientSex
+    AllowNulls: true
+  - ColumnName: PatientAge
+    AllowNulls: true
+  - ColumnName: NumberOfStudyRelatedInstances
+    AllowNulls: true
+  - ColumnName: PatientBirthDate
+    AllowNulls: true
+  - ColumnName: SeriesInstanceUID
+  - ColumnName: Modality
+    AllowNulls: true
+  - ColumnName: InstitutionName
+    AllowNulls: true
+  - ColumnName: ProtocolName
+    AllowNulls: true
+  - ColumnName: ProcedureCodeSequence_CodeValue
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 16
+    AllowNulls: true
+  - ColumnName: PerformedProcedureStepDescription
+    AllowNulls: true
+  - ColumnName: SeriesDescription
+    AllowNulls: true
+  - ColumnName: SeriesDate
+    AllowNulls: true
+  - ColumnName: SeriesTime
+    AllowNulls: true
+  - ColumnName: BodyPartExamined
+    AllowNulls: true
+  - ColumnName: DeviceSerialNumber
+    AllowNulls: true
+  - ColumnName: SeriesNumber
+    AllowNulls: true
+  - ColumnName: SOPInstanceUID
+    IsPrimaryKey: true
+  - ColumnName: BurnedInAnnotation
+    AllowNulls: true
+  - ColumnName: RelativeFileArchiveURI
+    AllowNulls: true
+  - ColumnName: MessageGuid
+    AllowNulls: true
+  - ColumnName: ImageType
+    AllowNulls: true
+  - ColumnName: ManufacturerModelName
+    AllowNulls: true
+  - ColumnName: Manufacturer
+    AllowNulls: true
+  - ColumnName: SoftwareVersions
+    AllowNulls: true
+  - ColumnName: PhotometricInterpretation
+    AllowNulls: true
+  - ColumnName: AcquisitionNumber
+    AllowNulls: true
+  - ColumnName: AcquisitionDate
+    AllowNulls: true
+  - ColumnName: AcquisitionTime
+    AllowNulls: true
+  - ColumnName: PixelSpacing
+    AllowNulls: true
+  - ColumnName: AcquisitionDeviceProcessingDescription
+    AllowNulls: true
+  - ColumnName: NumberOfWaveformChannels
+    AllowNulls: true
+  - ColumnName: NumberOfWaveformSamples
+    AllowNulls: true
+  - ColumnName: SamplingFrequency
+    AllowNulls: true
+  - ColumnName: WaveformBitsAllocated
+    AllowNulls: true
+  - ColumnName: WaveformSequence
+    AllowNulls: true

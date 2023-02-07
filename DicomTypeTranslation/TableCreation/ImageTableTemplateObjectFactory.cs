@@ -1,19 +1,15 @@
-﻿using FAnsi.Discovery;
-using FAnsi.Discovery.TypeTranslation;
-using System;
+﻿using System;
 using TypeGuesser;
-using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.ObjectFactories;
 
-namespace DicomTypeTranslation.TableCreation
+namespace DicomTypeTranslation.TableCreation;
+
+internal class ImageTableTemplateObjectFactory : ObjectFactoryBase
 {
-    internal class ImageTableTemplateObjectFactory : IObjectFactory
+    public override object Create(Type type)
     {
-        public object Create(Type type)
-        {
-            if(type == typeof(DatabaseTypeRequest))
-                return new DatabaseTypeRequest(typeof(string),null,null);
-
-            return Activator.CreateInstance(type);
-        }
+        return type == typeof(DatabaseTypeRequest)
+            ? new DatabaseTypeRequest(typeof(string), null, null)
+            : Activator.CreateInstance(type);
     }
 }
