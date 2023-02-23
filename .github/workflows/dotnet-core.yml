@@ -32,9 +32,9 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --nologo
     - name: Test
-      run: dotnet test --no-restore --verbosity normal --nologo
+      run: dotnet test --configuration Release --verbosity normal --nologo
     - name: Pack and push
       if: contains(github.ref,'refs/tags/')
       run: |
-        version=$(fgrep AssemblyInformationalVersion SharedAssemblyInfo.cs |cut -d'"' -f2) dotnet pack -c Release --include-source --include-symbols -o dist
+        version=$(fgrep AssemblyInformationalVersion SharedAssemblyInfo.cs |cut -d'"' -f2) dotnet pack DicomTypeTranslation/DicomTypeTranslation.csproj -c Release --include-source --include-symbols -o dist
         nuget push -skipDuplicate dist/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_KEY }}
