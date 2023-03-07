@@ -194,8 +194,8 @@ public class JsonDicomConverterTests
         var json = DicomTypeTranslater.SerializeDatasetToJson(dataset, _useOwnConverter);
         _logger.Debug(json);
 
-        var recoDataset = DicomTypeTranslater.DeserializeJsonToDataset(json, _useOwnConverter);
-        Assert.True(DicomDatasetHelpers.ValueEquals(dataset, recoDataset));
+        var reconstructedDataset = DicomTypeTranslater.DeserializeJsonToDataset(json, _useOwnConverter);
+        Assert.True(DicomDatasetHelpers.ValueEquals(dataset, reconstructedDataset));
     }
 
     [Test]

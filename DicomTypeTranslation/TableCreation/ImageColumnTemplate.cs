@@ -16,7 +16,7 @@ public class ImageColumnTemplate
     public string ColumnName { get; set; }
 
     /// <summary>
-    /// Optional when <see cref="ColumnName"/> is a <see cref="DicomTag"/> otherwise required.  Determines what datatype should
+    /// Optional when <see cref="ColumnName"/> is a <see cref="DicomTag"/> otherwise required.  Determines what data type should
     /// be created in the database.
     /// </summary>
     public DatabaseTypeRequest Type { get;set;}

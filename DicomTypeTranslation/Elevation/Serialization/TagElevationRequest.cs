@@ -16,7 +16,7 @@ public class TagElevationRequest
     public string ColumnName { get; set; }
         
     /// <summary>
-    /// The path of <see cref="DicomSequence"/> and subsequences to travel and the leaf (non sequence) node to fetch e.g. "ContentSequence->TextValue"
+    /// The path of <see cref="DicomSequence"/> and sub-sequences to travel and the leaf (non sequence) node to fetch e.g. "ContentSequence->TextValue"
     /// </summary>
     public string ElevationPathway { get; set; }
 

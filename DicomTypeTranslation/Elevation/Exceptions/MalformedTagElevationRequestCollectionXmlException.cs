@@ -18,7 +18,7 @@ public class MalformedTagElevationRequestCollectionXmlException : Exception
     }
 
     /// <summary>
-    /// Creatres a new instance with the provided message and inner exception
+    /// Creates a new instance with the provided message and inner exception
     /// </summary>
     /// <param name="message"></param>
     /// <param name="ex"></param>

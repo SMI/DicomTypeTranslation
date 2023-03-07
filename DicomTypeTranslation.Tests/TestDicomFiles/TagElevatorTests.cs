@@ -670,57 +670,48 @@ public class TagElevatorTests
 
                             
                     //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence [array of 3 sequences]
-                    new DicomSequence(DicomTag.PatientInsurancePlanCodeSequence,
-                        new DicomDataset[]
-                        {
-                            new()
+                    new DicomSequence(DicomTag.PatientInsurancePlanCodeSequence, new DicomDataset
+                    {
+                            //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->ProbeDriveEquipmentSequence
+                            new DicomSequence(DicomTag.ProbeDriveEquipmentSequence,new DicomDataset
                             {
-                                //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->ProbeDriveEquipmentSequence
-                                new DicomSequence(DicomTag.ProbeDriveEquipmentSequence,new DicomDataset
-                                {
-                                    //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->ProbeDriveEquipmentSequence->SpecimenShortDescription
-                                    new DicomShortText(DicomTag.SpecimenShortDescription, "3_0_.1"),
+                                //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->ProbeDriveEquipmentSequence->SpecimenShortDescription
+                                new DicomShortText(DicomTag.SpecimenShortDescription, "3_0_.1"),
 
-                                    //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->ProbeDriveEquipmentSequence->PatientID
-                                    new DicomShortString(DicomTag.PatientID,"3_0_.2")
-                                }),
+                                //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->ProbeDriveEquipmentSequence->PatientID
+                                new DicomShortString(DicomTag.PatientID,"3_0_.2")
+                            }),
                                 
-                                //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->SpecimenShortDescription
-                                new DicomShortText(DicomTag.SpecimenShortDescription, "2_0_.1")
-                            },
-
-                            new()
+                            //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->SpecimenShortDescription
+                            new DicomShortText(DicomTag.SpecimenShortDescription, "2_0_.1")
+                        }, new DicomDataset
+                    {
+                            //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->ProbeDriveEquipmentSequence
+                            new DicomSequence(DicomTag.ProbeDriveEquipmentSequence,new DicomDataset
                             {
-                                //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->ProbeDriveEquipmentSequence
-                                new DicomSequence(DicomTag.ProbeDriveEquipmentSequence,new DicomDataset
-                                {
-                                    //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->ProbeDriveEquipmentSequence->SpecimenShortDescription
-                                    new DicomShortText(DicomTag.SpecimenShortDescription, "3_1_.1"),
+                                //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->ProbeDriveEquipmentSequence->SpecimenShortDescription
+                                new DicomShortText(DicomTag.SpecimenShortDescription, "3_1_.1"),
 
-                                    //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->ProbeDriveEquipmentSequence->PatientID
-                                    new DicomShortString(DicomTag.PatientID,"3_1_.2")
-                                }),
+                                //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->ProbeDriveEquipmentSequence->PatientID
+                                new DicomShortString(DicomTag.PatientID,"3_1_.2")
+                            }),
                                 
-                                //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->SpecimenShortDescription
-                                new DicomShortText(DicomTag.SpecimenShortDescription, "2_1_.1")
-                            },
-
-
-                            new()
+                            //root->PseudoColorPaletteInstanceReferenceSequence->PatientInsurancePlanCodeSequence->SpecimenShortDescription
+                            new DicomShortText(DicomTag.SpecimenShortDescription, "2_1_.1")
+                        }, new DicomDataset
+                    {
+                            //root->PseudoColorPaletteInstanceReferenceSequence->PatientGantryRelationshipCodeSequence->ProbeDriveEquipmentSequence
+                            new DicomSequence(DicomTag.ProbeDriveEquipmentSequence,new DicomDataset
                             {
-                                //root->PseudoColorPaletteInstanceReferenceSequence->PatientGantryRelationshipCodeSequence->ProbeDriveEquipmentSequence
-                                new DicomSequence(DicomTag.ProbeDriveEquipmentSequence,new DicomDataset
-                                {
-                                    //root->PseudoColorPaletteInstanceReferenceSequence->PatientGantryRelationshipCodeSequence->ProbeDriveEquipmentSequence->SpecimenShortDescription
-                                    new DicomShortText(DicomTag.SpecimenShortDescription, "3_2_.1"),
+                                //root->PseudoColorPaletteInstanceReferenceSequence->PatientGantryRelationshipCodeSequence->ProbeDriveEquipmentSequence->SpecimenShortDescription
+                                new DicomShortText(DicomTag.SpecimenShortDescription, "3_2_.1"),
 
-                                    //root->PseudoColorPaletteInstanceReferenceSequence->PatientGantryRelationshipCodeSequence->ProbeDriveEquipmentSequence->PatientID
-                                    new DicomShortString(DicomTag.PatientID,"3_2_.2")
-                                }),
+                                //root->PseudoColorPaletteInstanceReferenceSequence->PatientGantryRelationshipCodeSequence->ProbeDriveEquipmentSequence->PatientID
+                                new DicomShortString(DicomTag.PatientID,"3_2_.2")
+                            }),
                                 
-                                //root->PseudoColorPaletteInstanceReferenceSequence->PatientGantryRelationshipCodeSequence->SpecimenShortDescription
-                                new DicomShortText(DicomTag.SpecimenShortDescription, "2_2.1")
-                            }
+                            //root->PseudoColorPaletteInstanceReferenceSequence->PatientGantryRelationshipCodeSequence->SpecimenShortDescription
+                            new DicomShortText(DicomTag.SpecimenShortDescription, "2_2.1")
                         }),
                         
                     //root->PseudoColorPaletteInstanceReferenceSequence->PatientID

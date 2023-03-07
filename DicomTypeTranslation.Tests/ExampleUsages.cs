@@ -52,17 +52,13 @@ internal class ExampleUsages
         ds = new DicomDataset(new List<DicomItem>
         {
             new DicomUniqueIdentifier(DicomTag.SOPInstanceUID,"1.2.3"),
-            new DicomSequence(DicomTag.ActualHumanPerformersSequence,new []
+            new DicomSequence(DicomTag.ActualHumanPerformersSequence, new DicomDataset(new List<DicomItem>
             {
-                new DicomDataset(new List<DicomItem>
-                {
-                    new DicomShortString(DicomTag.PatientName,"Rabbit")
-                }),
-                new DicomDataset(new List<DicomItem>
-                {
-                    new DicomShortString(DicomTag.PatientName,"Roger")
-                })
-            })
+                new DicomShortString(DicomTag.PatientName,"Rabbit")
+            }), new DicomDataset(new List<DicomItem>
+            {
+                new DicomShortString(DicomTag.PatientName,"Roger")
+            }))
         });
 
         var seq = (Dictionary<DicomTag, object>[])DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.ActualHumanPerformersSequence);

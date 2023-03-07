@@ -52,7 +52,7 @@ public static class DicomTypeTranslater
         if (dataset == null)
             throw new ArgumentNullException(nameof(dataset));
 
-        return useOwn ? JsonConvert.SerializeObject(dataset, Formatting.None, new SmiJsonDicomConverter()) : FellowOakDicom.Serialization.DicomJson.ConvertDicomToJson(dataset);
+        return useOwn ? JsonConvert.SerializeObject(dataset, Formatting.None, new SmiJsonDicomConverter()) : DicomJson.ConvertDicomToJson(dataset);
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public static class DicomTypeTranslater
         if (string.IsNullOrWhiteSpace(json))
             throw new ArgumentNullException(nameof(json));
 
-        return useOwn ? JsonConvert.DeserializeObject<DicomDataset>(json, new SmiJsonDicomConverter()) : FellowOakDicom.Serialization.DicomJson.ConvertJsonToDicom(json, false);
+        return useOwn ? JsonConvert.DeserializeObject<DicomDataset>(json, new SmiJsonDicomConverter()) : DicomJson.ConvertJsonToDicom(json, false);
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public static class DicomTypeTranslater
         return Math.Max(a.Value, b.Value);
     }
 
-    /// <inheritdoc cref="GetNaturalTypeForVr(DicomVR[], DicomVM)"/>
+    /// <inheritdoc cref="GetNaturalTypeForVr(IEnumerable{DicomVR}, DicomVM)"/>
     public static DatabaseTypeRequest GetNaturalTypeForVr(DicomVR dicomVr, DicomVM valueMultiplicity)
     {
         var decimalSize = new DecimalSize(19, 19);
