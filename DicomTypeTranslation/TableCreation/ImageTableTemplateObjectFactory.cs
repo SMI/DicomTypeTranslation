@@ -8,6 +8,8 @@ internal class ImageTableTemplateObjectFactory : ObjectFactoryBase
 {
     public override object Create(Type type)
     {
-        return type == typeof(DatabaseTypeRequest) ? new DatabaseTypeRequest(typeof(string)) : Activator.CreateInstance(type);
+        return type == typeof(DatabaseTypeRequest)
+            ? new DatabaseTypeRequest(typeof(string))
+            : Activator.CreateInstance(type);
     }
 }
