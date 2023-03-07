@@ -52,7 +52,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Bump Microsoft.NET.Test.Sdk from 17.1.0 to 17.2.0
 
 
-### [4.0.0] - 2022-03-21
+## [4.0.0] - 2022-03-21
 
 - Now using fo-dicom 5, some API changes
 
