@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ...
 
+- Now .Net 6.0
+
 ### [4.0.0] - 2022-03-21
 
 - Now using fo-dicom 5, some API changes
