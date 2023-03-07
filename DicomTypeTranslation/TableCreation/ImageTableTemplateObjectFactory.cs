@@ -1,12 +1,12 @@
 ﻿using System;
 using TypeGuesser;
-using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.ObjectFactories;
 
 namespace DicomTypeTranslation.TableCreation;
 
-internal class ImageTableTemplateObjectFactory : IObjectFactory
+internal class ImageTableTemplateObjectFactory : ObjectFactoryBase
 {
-    public object Create(Type type)
+    public override object Create(Type type)
     {
         return type == typeof(DatabaseTypeRequest) ? new DatabaseTypeRequest(typeof(string)) : Activator.CreateInstance(type);
     }
