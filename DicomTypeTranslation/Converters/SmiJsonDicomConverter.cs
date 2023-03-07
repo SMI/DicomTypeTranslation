@@ -45,7 +45,7 @@ namespace DicomTypeTranslation.Converters
 
             writer.WriteStartObject();
 
-            foreach (DicomItem item in dataset)
+            foreach (var item in dataset)
             {
                 // Group length (gggg,0000) attributes shall not be included in a DICOM JSON Model object.
                 if (((uint)item.Tag & 0xffff) == 0)
@@ -73,11 +73,11 @@ namespace DicomTypeTranslation.Converters
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
-                DicomTag tag = ParseTag((string)reader.Value);
+                var tag = ParseTag((string)reader.Value);
 
                 reader.Read();
 
-                DicomItem item = ReadJsonDicomItem(tag, reader, serializer);
+                var item = ReadJsonDicomItem(tag, reader, serializer);
 
                 dataset.Add(item);
 
@@ -85,15 +85,14 @@ namespace DicomTypeTranslation.Converters
             }
 
             // Ensure all private tags have a reference to their Private Creator tag
-            foreach (DicomItem item in dataset)
+            foreach (var item in dataset)
             {
-                if (item.Tag.IsPrivate && ((item.Tag.Element & 0xff00) != 0))
-                {
-                    var privateCreatorTag = new DicomTag(item.Tag.Group, (ushort)(item.Tag.Element >> 8));
+                if (!item.Tag.IsPrivate || (item.Tag.Element & 0xff00) == 0) continue;
 
-                    if (dataset.Contains(privateCreatorTag))
-                        item.Tag.PrivateCreator = new DicomPrivateCreator(dataset.GetSingleValue<string>(privateCreatorTag));
-                }
+                var privateCreatorTag = new DicomTag(item.Tag.Group, (ushort)(item.Tag.Element >> 8));
+
+                if (dataset.Contains(privateCreatorTag))
+                    item.Tag.PrivateCreator = new DicomPrivateCreator(dataset.GetSingleValue<string>(privateCreatorTag));
             }
 
             if (reader.TokenType != JsonToken.EndObject)
@@ -230,7 +229,7 @@ namespace DicomTypeTranslation.Converters
 
             writer.WritePropertyName(VALUE_PROPERTY_NAME);
 
-            string val = elem.Get<string>().TrimEnd('\0');
+            var val = elem.Get<string>().TrimEnd('\0');
             writer.WriteValue(val);
         }
 
@@ -242,7 +241,7 @@ namespace DicomTypeTranslation.Converters
             writer.WritePropertyName(VALUE_PROPERTY_NAME);
             writer.WriteStartArray();
 
-            foreach (T val in elem.Get<T[]>())
+            foreach (var val in elem.Get<T[]>())
                 writer.WriteValue(val);
 
             writer.WriteEndArray();
@@ -257,7 +256,7 @@ namespace DicomTypeTranslation.Converters
 
             var sb = new StringBuilder();
 
-            foreach (DicomTag val in elem.Get<DicomTag[]>())
+            foreach (var val in elem.Get<DicomTag[]>())
                 sb.Append(((uint)val).ToString("X8"));
 
             if (sb.Length % 8 != 0)
@@ -273,7 +272,7 @@ namespace DicomTypeTranslation.Converters
             writer.WritePropertyName(VALUE_PROPERTY_NAME);
             writer.WriteStartArray();
 
-            foreach (DicomDataset child in seq.Items)
+            foreach (var child in seq.Items)
                 WriteJson(writer, child, serializer);
 
             writer.WriteEndArray();
@@ -308,8 +307,8 @@ namespace DicomTypeTranslation.Converters
 
         private static DicomTag ParseTag(string tagStr)
         {
-            ushort group = Convert.ToUInt16(tagStr.Substring(0, 4), 16);
-            ushort element = Convert.ToUInt16(tagStr.Substring(4), 16);
+            var group = Convert.ToUInt16(tagStr.Substring(0, 4), 16);
+            var element = Convert.ToUInt16(tagStr.Substring(4), 16);
             var tag = new DicomTag(group, element);
             return tag;
         }
@@ -513,7 +512,7 @@ namespace DicomTypeTranslation.Converters
             reader.Read();
 
             if (reader.TokenType == JsonToken.EndObject)
-                return new T[0];
+                return Array.Empty<T>();
 
             if (reader.TokenType != JsonToken.PropertyName && (string)reader.Value != VALUE_PROPERTY_NAME)
                 throw new JsonReaderException("Malformed DICOM json");
@@ -527,7 +526,7 @@ namespace DicomTypeTranslation.Converters
 
             var values = new List<T>();
 
-            while (reader.TokenType == JsonToken.Float || reader.TokenType == JsonToken.Integer)
+            while (reader.TokenType is JsonToken.Float or JsonToken.Integer)
             {
                 values.Add((T)Convert.ChangeType(reader.Value, typeof(T)));
                 reader.Read();
@@ -545,17 +544,14 @@ namespace DicomTypeTranslation.Converters
         {
             reader.Read();
 
-            if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == INL_BIN_PROPERTY_NAME)
+            return reader.TokenType switch
             {
-                return ReadJsonInlineBinary(reader);
-            }
-
-            if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == BLK_URI_PROPERTY_NAME)
-            {
-                return ReadJsonBulkDataUri(reader);
-            }
-
-            return EmptyBuffer.Value;
+                JsonToken.PropertyName when (string)reader.Value == INL_BIN_PROPERTY_NAME => ReadJsonInlineBinary(
+                    reader),
+                JsonToken.PropertyName when (string)reader.Value == BLK_URI_PROPERTY_NAME =>
+                    ReadJsonBulkDataUri(reader),
+                _ => EmptyBuffer.Value
+            };
         }
 
         private static IByteBuffer ReadJsonInlineBinary(JsonReader reader)
@@ -589,7 +585,7 @@ namespace DicomTypeTranslation.Converters
             reader.Read();
 
             if (reader.TokenType != JsonToken.PropertyName || (string)reader.Value != VALUE_PROPERTY_NAME)
-                return new DicomDataset[0];
+                return Array.Empty<DicomDataset>();
 
             reader.Read();
 
@@ -600,7 +596,7 @@ namespace DicomTypeTranslation.Converters
 
             var childItems = new List<DicomDataset>();
 
-            while (reader.TokenType == JsonToken.StartObject || reader.TokenType == JsonToken.Null)
+            while (reader.TokenType is JsonToken.StartObject or JsonToken.Null)
             {
                 childItems.Add((DicomDataset)ReadJson(reader, typeof(DicomDataset), null, serializer));
                 reader.Read();

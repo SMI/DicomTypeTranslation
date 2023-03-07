@@ -31,11 +31,9 @@ namespace DicomTypeTranslation.Helpers
                 return DictionaryHelperMethods.DictionaryEquals((IDictionary)a, (IDictionary)b);
 
             //if they are both arrays
-            if (a is Array)
-                return ArrayHelperMethods.ArrayEquals((Array)a, (Array)b);
+            return a is Array ? ArrayHelperMethods.ArrayEquals((Array)a, (Array)b) : Equals(a, b);
 
             //they are not dictionaries or arrays
-            return Equals(a, b);
         }
     }
 }

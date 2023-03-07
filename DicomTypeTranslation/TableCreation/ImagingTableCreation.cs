@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using FellowOakDicom;
-using DicomTypeTranslation;
 using FAnsi.Discovery;
 using FAnsi.Discovery.QuerySyntax;
 using FAnsi.Discovery.TypeTranslation;
@@ -80,10 +79,7 @@ namespace DicomTypeTranslation.TableCreation
         /// <returns></returns>
         public DatabaseColumnRequest GetColumnDefinition(ImageColumnTemplate col)
         {
-            if (col.Type != null)
-                return new DatabaseColumnRequest(col.ColumnName, col.Type, col.AllowNulls) { IsPrimaryKey = col.IsPrimaryKey };
-
-            return GetColumnDefinition(col.ColumnName,col.AllowNulls,col.IsPrimaryKey);
+            return col.Type != null ? new DatabaseColumnRequest(col.ColumnName, col.Type, col.AllowNulls) { IsPrimaryKey = col.IsPrimaryKey } : GetColumnDefinition(col.ColumnName,col.AllowNulls,col.IsPrimaryKey);
         }
 
         /// <summary>
@@ -99,15 +95,14 @@ namespace DicomTypeTranslation.TableCreation
         /// <returns></returns>
         public DatabaseColumnRequest GetColumnDefinition(string tag, bool allowNulls = true, bool pk = false)
         {
-            if (tag == RelativeFileArchiveURI)
-                return GetRelativeFileArchiveURIColumn(allowNulls, pk);
-
-            if (tag == "MessageGuid")
-                return new DatabaseColumnRequest("MessageGuid", new DatabaseTypeRequest(typeof(string), int.MaxValue), allowNulls) { IsPrimaryKey = pk };
-
-            var tt = _querySyntaxHelper.TypeTranslater;
-
-            return new DatabaseColumnRequest(tag, GetDataTypeForTag(tag, tt), allowNulls) { IsPrimaryKey = pk };
+            return tag switch
+            {
+                RelativeFileArchiveURI => GetRelativeFileArchiveURIColumn(allowNulls, pk),
+                "MessageGuid" => new DatabaseColumnRequest("MessageGuid",
+                    new DatabaseTypeRequest(typeof(string), int.MaxValue), allowNulls) { IsPrimaryKey = pk },
+                _ => new DatabaseColumnRequest(tag, GetDataTypeForTag(tag, _querySyntaxHelper.TypeTranslater),
+                    allowNulls) { IsPrimaryKey = pk }
+            };
         }
 
         /// <summary>

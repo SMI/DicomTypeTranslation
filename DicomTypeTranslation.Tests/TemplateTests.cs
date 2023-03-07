@@ -23,13 +23,15 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void Template_ExampleYaml()
         {
-            ImageTableTemplateCollection collection = new ImageTableTemplateCollection();
-            ImageTableTemplate table = new ImageTableTemplate();
+            var collection = new ImageTableTemplateCollection();
+            var table = new ImageTableTemplate();
             
-            var colTemplate = new ImageColumnTemplate();
-            colTemplate.ColumnName = "mycol";
-            colTemplate.AllowNulls = true;
-            colTemplate.Type = new DatabaseTypeRequest(typeof(string),100);
+            var colTemplate = new ImageColumnTemplate
+            {
+                ColumnName = "mycol",
+                AllowNulls = true,
+                Type = new DatabaseTypeRequest(typeof(string),100)
+            };
 
             table.Columns = new[] {colTemplate};
             collection.Tables.Add(table);
@@ -66,9 +68,9 @@ namespace DicomTypeTranslation.Tests
         [TestCase("US", FAnsi.DatabaseType.Oracle)]
         public void TestTemplate(string template, FAnsi.DatabaseType dbType)
         {
-            string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.it");
+            var templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.it");
 
-            ImageTableTemplateCollection collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(templateFile));
+            var collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(templateFile));
 
             foreach (var tableTemplate in collection.Tables) 
                 Validate(tableTemplate,templateFile);
@@ -105,7 +107,7 @@ namespace DicomTypeTranslation.Tests
 
         private void Validate(ImageTableTemplate tableTemplate, string templateFile)
         {
-            List<Exception> errors = new List<Exception>();
+            var errors = new List<Exception>();
 
             foreach (var col in tableTemplate.Columns)
             {
@@ -113,31 +115,28 @@ namespace DicomTypeTranslation.Tests
                 {
                     Assert.LessOrEqual(col.ColumnName.Length,64, $"Column name '{col.ColumnName}' is too long");
 
-                    Regex rSeq = new Regex(@"_([A-Za-z]+)$");
+                    var rSeq = new Regex(@"_([A-Za-z]+)$");
                     var seqMatch = rSeq.Match(col.ColumnName);
 
-                    if (seqMatch.Success)
-                    {
-                        var leafTag = seqMatch.Groups[1].Value;
+                    if (!seqMatch.Success) continue;
+                    var leafTag = seqMatch.Groups[1].Value;
 
-                        var tag = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == leafTag);
+                    var tag = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == leafTag);
 
-                        if (tag == null)
-                            throw new NotSupportedException($"Leaf tag {leafTag} of sequence column {col.ColumnName} was not a valid dicom tag name");
+                    if (tag == null)
+                        throw new NotSupportedException($"Leaf tag {leafTag} of sequence column {col.ColumnName} was not a valid dicom tag name");
 
-                        var type = DicomTypeTranslater.GetNaturalTypeForVr(tag.ValueRepresentations, tag.ValueMultiplicity);
+                    var type = DicomTypeTranslater.GetNaturalTypeForVr(tag.ValueRepresentations, tag.ValueMultiplicity);
 
-                        Assert.AreEqual(type.CSharpType , col.Type.CSharpType,$"Listed Type for column {col.ColumnName} did not match expected Type");
+                    Assert.AreEqual(type.CSharpType , col.Type.CSharpType,$"Listed Type for column {col.ColumnName} did not match expected Type");
                         
-                        // The declared widths must be sufficient to hold the basic leaf node
-                        if(type.Width == int.MaxValue)
-                            Assert.GreaterOrEqual(col.Type.Width ??0,100,$"Listed Width for column {col.ColumnName} did not match expected minimum Width");
-                        else
-                            Assert.GreaterOrEqual(col.Type.Width ??0,type.Width ??0 ,$"Listed Width for column {col.ColumnName} did not match expected minimum Width");
+                    // The declared widths must be sufficient to hold the basic leaf node
+                    if(type.Width == int.MaxValue)
+                        Assert.GreaterOrEqual(col.Type.Width ??0,100,$"Listed Width for column {col.ColumnName} did not match expected minimum Width");
+                    else
+                        Assert.GreaterOrEqual(col.Type.Width ??0,type.Width ??0 ,$"Listed Width for column {col.ColumnName} did not match expected minimum Width");
                         
-                        Assert.AreEqual(type.Size , col.Type.Size,$"Listed Size for column {col.ColumnName} ({DescribeSize(col.Type.Size)}) did not match expected Size ({DescribeSize(type.Size)})");
-                    
-                    }
+                    Assert.AreEqual(type.Size , col.Type.Size,$"Listed Size for column {col.ColumnName} ({DescribeSize(col.Type.Size)}) did not match expected Size ({DescribeSize(type.Size)})");
                 }
                 catch (Exception e)
                 {
@@ -158,9 +157,9 @@ namespace DicomTypeTranslation.Tests
         [TestCase("SmiTagElevation")]
         public void TestElevationTemplate(string template)
         {
-            string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.xml");
+            var templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.xml");
             
-            TagElevationRequestCollection elevation = new TagElevationRequestCollection(File.ReadAllText(templateFile));
+            var elevation = new TagElevationRequestCollection(File.ReadAllText(templateFile));
             
             //at least one request
             Assert.GreaterOrEqual(elevation.Requests.Count,1);
@@ -174,17 +173,18 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void Test_Serializing_DicomTagsOnly()
         {
-            ImageTableTemplateCollection collection = new ImageTableTemplateCollection();
+            var collection = new ImageTableTemplateCollection();
 
-            ImageTableTemplate table = new ImageTableTemplate();
-            table.TableName = "Fish";
-            
-            
-            table.Columns = new[]
+            var table = new ImageTableTemplate
             {
-                new ImageColumnTemplate(DicomTag.SOPInstanceUID){IsPrimaryKey = true },
-                new ImageColumnTemplate(DicomTag.CurrentPatientLocation)
+                TableName = "Fish",
+                Columns = new[]
+                {
+                    new ImageColumnTemplate(DicomTag.SOPInstanceUID){IsPrimaryKey = true },
+                    new ImageColumnTemplate(DicomTag.CurrentPatientLocation)
+                }
             };
+
 
             collection.Tables.Add(table);
 
@@ -205,11 +205,11 @@ namespace DicomTypeTranslation.Tests
             //doesn't actually have to exist
             var db = new DiscoveredServer("localhost","nobody",FAnsi.DatabaseType.MySql,"captain","morgans").ExpectDatabase("neverland");
 
-            ImagingTableCreation creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
+            var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
                        
 
-            var sql1 = creator.GetCreateTableSql(db,collection.Tables[0].TableName, collection.Tables[0],null);
-            var sql2 = creator.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0], null);
+            var sql1 = creator.GetCreateTableSql(db,collection.Tables[0].TableName, collection.Tables[0]);
+            var sql2 = creator.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0]);
 
             Assert.AreEqual(sql1,sql2);
         }
@@ -221,28 +221,29 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void Test_Serializing_DicomTagsAndArbitraryColumns()
         {
-            ImageTableTemplateCollection collection = new ImageTableTemplateCollection();
+            var collection = new ImageTableTemplateCollection();
 
-            ImageTableTemplate table = new ImageTableTemplate();
-            table.TableName = "Fish";
-
-            //table has 3 columns, one is a DicomTag (SOPInstanceUID) while the other 2 are arbitrary
-            table.Columns = new[]
+            var table = new ImageTableTemplate
             {
-                new ImageColumnTemplate(DicomTag.SOPInstanceUID){IsPrimaryKey = true },
-                new ImageColumnTemplate(DicomTag.SeriesInstanceUID),
-                new ImageColumnTemplate(DicomTag.StudyInstanceUID),
-                new ImageColumnTemplate(DicomTag.PatientID),
-                new ImageColumnTemplate(){
-                    ColumnName = "LocationOfFiles",
-                    Type = new DatabaseTypeRequest(typeof(string),500,null),
-                    AllowNulls = true},
-                new ImageColumnTemplate(){
-                    ColumnName = "DataQualityEngineScore",
-                    Type = new DatabaseTypeRequest(typeof(decimal),null,new DecimalSize(10,5)),
-                    AllowNulls = false} 
+                TableName = "Fish",
+                //table has 3 columns, one is a DicomTag (SOPInstanceUID) while the other 2 are arbitrary
+                Columns = new[]
+                {
+                    new ImageColumnTemplate(DicomTag.SOPInstanceUID){IsPrimaryKey = true },
+                    new ImageColumnTemplate(DicomTag.SeriesInstanceUID),
+                    new ImageColumnTemplate(DicomTag.StudyInstanceUID),
+                    new ImageColumnTemplate(DicomTag.PatientID),
+                    new ImageColumnTemplate(){
+                        ColumnName = "LocationOfFiles",
+                        Type = new DatabaseTypeRequest(typeof(string),500),
+                        AllowNulls = true},
+                    new ImageColumnTemplate(){
+                        ColumnName = "DataQualityEngineScore",
+                        Type = new DatabaseTypeRequest(typeof(decimal),null,new DecimalSize(10,5)),
+                        AllowNulls = false} 
+                }
             };
-    
+
 
             collection.Tables.Add(table);
 
@@ -270,10 +271,10 @@ namespace DicomTypeTranslation.Tests
             //doesn't actually have to exist
             var db = new DiscoveredServer("localhost", "nobody", FAnsi.DatabaseType.MySql, "captain", "morgans").ExpectDatabase("neverland");
 
-            ImagingTableCreation creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
+            var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
 
-            var sql1 = creator.GetCreateTableSql(db, collection.Tables[0].TableName, collection.Tables[0], null);
-            var sql2 = creator.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0], null);
+            var sql1 = creator.GetCreateTableSql(db, collection.Tables[0].TableName, collection.Tables[0]);
+            var sql2 = creator.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0]);
 
             Assert.AreEqual(sql1, sql2);
         }

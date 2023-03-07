@@ -5,7 +5,6 @@ using FAnsi.Implementations.Oracle;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using TypeGuesser;
 
 namespace DicomTypeTranslation.Tests
 {
@@ -22,15 +21,15 @@ namespace DicomTypeTranslation.Tests
                 new DicomDate(DicomTag.PatientBirthDate,new DateTime(2001,1,1))
             });
 
-            object name = DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.PatientName);
+            var name = DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.PatientName);
             Assert.AreEqual(typeof(string), name.GetType());
             Assert.AreEqual("Frank", name);
 
-            object age = DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.PatientAge);
+            var age = DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.PatientAge);
             Assert.AreEqual(typeof(string), age.GetType());
             Assert.AreEqual("032Y", age);
 
-            object dob = DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.PatientBirthDate);
+            var dob = DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.PatientBirthDate);
             Assert.AreEqual(typeof(DateTime), dob.GetType());
             Assert.AreEqual(new DateTime(2001, 01, 01), dob);
 
@@ -41,7 +40,7 @@ namespace DicomTypeTranslation.Tests
             });
 
             //Get the C# type
-            object name2 = DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.PatientName);
+            var name2 = DicomTypeTranslaterReader.GetCSharpValue(ds, DicomTag.PatientName);
             Assert.AreEqual(typeof(string[]), name2.GetType());
             Assert.AreEqual(new string[] { "Frank", "Anderson" }, name2);
 
@@ -84,7 +83,7 @@ namespace DicomTypeTranslation.Tests
         {
             var tag = DicomDictionary.Default["PatientAddress"];
 
-            DatabaseTypeRequest type = DicomTypeTranslater.GetNaturalTypeForVr(tag.DictionaryEntry.ValueRepresentations, tag.DictionaryEntry.ValueMultiplicity);
+            var type = DicomTypeTranslater.GetNaturalTypeForVr(tag.DictionaryEntry.ValueRepresentations, tag.DictionaryEntry.ValueMultiplicity);
 
             Assert.AreEqual(typeof(string), type.CSharpType);
             Assert.AreEqual(64, type.Width);

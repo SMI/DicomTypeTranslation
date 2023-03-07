@@ -66,7 +66,7 @@ namespace DicomTypeTranslation.Elevation
                 if (conditionalShouldMatch == null)
                     return;
                 else
-                    throw new ArgumentNullException("conditionalShouldMatch");
+                    throw new ArgumentNullException(nameof(conditionalShouldMatch));
 
 
             if (conditional.Contains("[]"))
@@ -89,7 +89,7 @@ namespace DicomTypeTranslation.Elevation
         /// <param name="elevationPathway"></param>
         public TagElevator(string elevationPathway)
         {
-            bool stop = false;
+            var stop = false;
 
             while (!stop)
                 elevationPathway = StripAndApplyOperators(elevationPathway, out stop);
@@ -109,7 +109,7 @@ namespace DicomTypeTranslation.Elevation
             if (toReturn.Length == 1)
                 throw new InvalidTagElevatorPathException("There must be at least 2 entries in a navigation pathway");
 
-            for (int i = 0; i < entries.Length; i++)
+            for (var i = 0; i < entries.Length; i++)
                 toReturn[i] = new TagNavigation(entries[i], i + 1 == entries.Length);
 
             return toReturn;
@@ -123,35 +123,32 @@ namespace DicomTypeTranslation.Elevation
         /// <returns></returns>
         public object GetValue(DicomDataset dataset)
         {
-            List<object> finalObjects = new List<object>();
+            var finalObjects = new List<object>();
 
             //first pathway we turn it into a dictionary 
 
-            foreach (SequenceElement element in _navigations[0].GetSubsets(dataset))
+            foreach (var element in _navigations[0].GetSubsets(dataset))
                 finalObjects.AddRange(GetValues(element, 1));
                     
             //none found
             if (!finalObjects.Any())
                 return null;
 
-            //found 1 only
-            if (finalObjects.Count == 1)
-                return finalObjects[0];
-
-            //found multiple
-            if (finalObjects.Count > 1)
-                if (ConcatenateMatches)
-                    return string.Join(ConcatenateMatchesSplitter, finalObjects);
-                else
-                    throw new TagNavigationException(
-                        $"Found {finalObjects.Count} matches among tree branches (ConcatenateMatches mode is off - append a '+' to turn it on)");
-
-            return finalObjects;
+            return finalObjects.Count switch
+            {
+                //found 1 only
+                1 => finalObjects[0],
+                //found multiple
+                > 1 when ConcatenateMatches => string.Join(ConcatenateMatchesSplitter, finalObjects),
+                > 1 => throw new TagNavigationException(
+                    $"Found {finalObjects.Count} matches among tree branches (ConcatenateMatches mode is off - append a '+' to turn it on)"),
+                _ => finalObjects
+            };
         }
 
         private IEnumerable<object> GetValues(SequenceElement element, int i)
         {
-            List<object> toReturn = new List<object>();
+            var toReturn = new List<object>();
 
             if (_navigations[i].IsLast)
             {
@@ -163,25 +160,31 @@ namespace DicomTypeTranslation.Elevation
                     if (_conditionalMatchesArrayElementsOfMultiplicity)
                         a = a.Cast<object>().Where(IsMatch).ToArray();
 
-                    //this last branch matches nothing
-                    if (a.Length == 0)
-                        return new object[0];
-
-                    if (a.Length == 1)
-                        toReturn.Add(a.GetValue(0));
-                    else
-                    if (!ConcatenateMultiplicity)
-                        throw new TagNavigationException(
-                            $"Found {a.Length} multiplicity in leaf tag (ConcatenateMultiplicity is off - append a '&' to turn it on)");
-                    else
-                        toReturn.Add(string.Join(ConcatenateMultiplicitySplitter, a.Cast<object>().Select(s => s.ToString())));
+                    switch (a.Length)
+                    {
+                        //this last branch matches nothing
+                        case 0:
+                            return Array.Empty<object>();
+                        case 1:
+                            toReturn.Add(a.GetValue(0));
+                            break;
+                        default:
+                        {
+                            if (!ConcatenateMultiplicity)
+                                throw new TagNavigationException(
+                                    $"Found {a.Length} multiplicity in leaf tag (ConcatenateMultiplicity is off - append a '&' to turn it on)");
+                            else
+                                toReturn.Add(string.Join(ConcatenateMultiplicitySplitter, a.Cast<object>().Select(s => s.ToString())));
+                            break;
+                        }
+                    }
                 }
                 else
                     if (IsMatch(o))
                     toReturn.Add(o);
             }
             else
-                foreach (SequenceElement subSequence in _navigations[i].GetSubset(element))
+                foreach (var subSequence in _navigations[i].GetSubset(element))
                     toReturn.AddRange(GetValues(subSequence, i + 1));
 
             return toReturn.ToArray();

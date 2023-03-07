@@ -1,9 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
 using DicomTypeTranslation.Elevation.Exceptions;
 
 namespace DicomTypeTranslation.Elevation.Serialization
@@ -25,7 +21,7 @@ namespace DicomTypeTranslation.Elevation.Serialization
         /// <param name="xml"></param>
         public TagElevationRequestCollection(string xml)
         {
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
             doc.LoadXml(xml);
 
             var root = doc["TagElevationRequestCollection"];
@@ -37,7 +33,7 @@ namespace DicomTypeTranslation.Elevation.Serialization
             {
                 if(n is XmlComment)
                     continue;
-                XmlElement requestXml = (XmlElement)n;
+                var requestXml = (XmlElement)n;
                 var toAdd = new TagElevationRequest(requestXml);
                 Requests.Add(toAdd);
             }

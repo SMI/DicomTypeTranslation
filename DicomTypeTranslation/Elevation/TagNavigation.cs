@@ -1,4 +1,5 @@
-﻿using FellowOakDicom;
+﻿using System;
+using FellowOakDicom;
 using DicomTypeTranslation.Elevation.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,29 +41,23 @@ namespace DicomTypeTranslation.Elevation
 
         public SequenceElement[] GetSubsets(DicomDataset dataset)
         {
-            if (!dataset.Contains(_tag))
-                return new SequenceElement[0];
-
-            return ToSequenceElementArray((Dictionary<DicomTag, object>[])DicomTypeTranslaterReader.GetCSharpValue(dataset, _tag), null);
+            return !dataset.Contains(_tag) ? Array.Empty<SequenceElement>() : ToSequenceElementArray((Dictionary<DicomTag, object>[])DicomTypeTranslaterReader.GetCSharpValue(dataset, _tag), null);
         }
 
         public SequenceElement[] GetSubset(SequenceElement location)
         {
-            if (location.Dataset.ContainsKey(_tag))
-                return ToSequenceElementArray((Dictionary<DicomTag, object>[])location.Dataset[_tag], location);
-
-            return new SequenceElement[0];
+            return location.Dataset.ContainsKey(_tag) ? ToSequenceElementArray((Dictionary<DicomTag, object>[])location.Dataset[_tag], location) : Array.Empty<SequenceElement>();
         }
 
         private SequenceElement[] ToSequenceElementArray(IEnumerable<Dictionary<DicomTag, object>> getCSharpValue, SequenceElement location)
         {
             if (getCSharpValue == null)
-                return new SequenceElement[0];
+                return Array.Empty<SequenceElement>();
 
             var toReturn = getCSharpValue.Select(s => new SequenceElement(_tag, s, location)).ToArray();
 
             //tell the SequenceElement about all the other elements (including itself) which appear side by side as array siblings in the sequence
-            foreach (SequenceElement element in toReturn)
+            foreach (var element in toReturn)
                 element.ArraySiblings.AddRange(toReturn);
 
             return toReturn;
@@ -76,9 +71,10 @@ namespace DicomTypeTranslation.Elevation
         /// <returns></returns>
         public object GetTags(SequenceElement sequenceElement, TagRelativeConditional conditional)
         {
-            if (sequenceElement.Dataset.ContainsKey(_tag))
-                if (conditional == null || conditional.IsMatch(sequenceElement, _tag))
-                    return sequenceElement.Dataset[_tag];
+            if (!sequenceElement.Dataset.ContainsKey(_tag)) return null;
+
+            if (conditional == null || conditional.IsMatch(sequenceElement, _tag))
+                return sequenceElement.Dataset[_tag];
 
             return null;
         }

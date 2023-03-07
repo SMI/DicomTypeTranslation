@@ -1,6 +1,4 @@
-﻿
-using System;
-using NLog;
+﻿using NLog;
 using NLog.Config;
 using NLog.Targets;
 

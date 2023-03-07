@@ -51,9 +51,7 @@ namespace DicomTypeTranslation
             if (dataset == null)
                 throw new ArgumentNullException(nameof(dataset));
 
-            if (useOwn)
-                return JsonConvert.SerializeObject(dataset, Formatting.None, new SmiJsonDicomConverter());
-            return FellowOakDicom.Serialization.DicomJson.ConvertDicomToJson(dataset);
+            return useOwn ? JsonConvert.SerializeObject(dataset, Formatting.None, new SmiJsonDicomConverter()) : FellowOakDicom.Serialization.DicomJson.ConvertDicomToJson(dataset);
         }
 
         /// <summary>
@@ -67,9 +65,7 @@ namespace DicomTypeTranslation
             if (string.IsNullOrWhiteSpace(json))
                 throw new ArgumentNullException(nameof(json));
 
-            if (useOwn)
-                return JsonConvert.DeserializeObject<DicomDataset>(json, new SmiJsonDicomConverter());
-            return FellowOakDicom.Serialization.DicomJson.ConvertJsonToDicom(json, false);
+            return useOwn ? JsonConvert.DeserializeObject<DicomDataset>(json, new SmiJsonDicomConverter()) : FellowOakDicom.Serialization.DicomJson.ConvertJsonToDicom(json, false);
         }
 
         /// <summary>
@@ -80,16 +76,13 @@ namespace DicomTypeTranslation
         /// <returns></returns>
         public static object Flatten(object value)
         {
-            if (value is Array)
-                return ArrayHelperMethods.GetStringRepresentation((Array)value).Trim();
-
-            if (value is IDictionary)
-                return DictionaryHelperMethods.AsciiArt((IDictionary)value).Trim();
-
-            if (value is string)
-                return ((string)value).Trim();
-
-            return value;
+            return value switch
+            {
+                Array array => ArrayHelperMethods.GetStringRepresentation(array).Trim(),
+                IDictionary dictionary => DictionaryHelperMethods.AsciiArt(dictionary).Trim(),
+                string s => s.Trim(),
+                _ => value
+            };
         }
 
         #region VR Types to C# / Database types
@@ -103,7 +96,7 @@ namespace DicomTypeTranslation
         public static DatabaseTypeRequest GetNaturalTypeForVr(DicomVR[] valueRepresentations, DicomVM valueMultiplicity)
         {
             //maximum lengths are defined by http://dicom.nema.org/dicom/2013/output/chtml/part05/sect_6.2.html  in bytes... lets err on the side of caution and say it is not unicode so 1 byte = 1 character
-            List<DatabaseTypeRequest> vrs = valueRepresentations
+            var vrs = valueRepresentations
                 .Select(dicomVr => GetNaturalTypeForVr(dicomVr, valueMultiplicity))
                 .ToList();
 
@@ -114,15 +107,16 @@ namespace DicomTypeTranslation
         {
             var toReturn = vrs.First();
 
-            foreach (DatabaseTypeRequest newType in vrs)
+            foreach (var newType in vrs)
             {
-                Type t = toReturn.CSharpType;
+                var t = toReturn.CSharpType;
 
                 if (toReturn.CSharpType != newType.CSharpType)
                     if (
-                        (toReturn.CSharpType == typeof(UInt16) || toReturn.CSharpType == typeof(Int16)) //some tags e.g. SmallestValidPixelValue can be either ushort or short 
+                        (toReturn.CSharpType == typeof(UInt16) ||
+                         toReturn.CSharpType == typeof(Int16)) //some tags e.g. SmallestValidPixelValue can be either ushort or short 
                         && newType.CSharpType == typeof(UInt16) || newType.CSharpType == typeof(Int16))
-                        t = typeof(Int32); //if they are being all creepy about it just use an int that way theres definetly enough space
+                        t = typeof(Int32); //if they are being all creepy about it just use an int that way there's definitely enough space
                     else
                         throw new Exception($"Incompatible Types '{toReturn.CSharpType}' and '{newType.CSharpType}'");
 
@@ -187,7 +181,7 @@ namespace DicomTypeTranslation
                 return new DatabaseTypeRequest(typeof(float), null, decimalSize);
 
             if (dicomVr == DicomVR.IS)
-                return new DatabaseTypeRequest(typeof(int), null);
+                return new DatabaseTypeRequest(typeof(int));
 
             if (dicomVr == DicomVR.LO)
                 return new DatabaseTypeRequest(typeof(string), 64);
