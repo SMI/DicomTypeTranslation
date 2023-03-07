@@ -7,9 +7,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-...
+## [4.0.3] - 2023-02-07
 
-- Now .Net 6.0
+### Changed
+
+- Add ECG type template
+
+### Dependencies
+
+- Bump MongoDB.Driver from 2.18.0 to 2.19.0
+- Bump NLog from 5.1.0 to 5.1.1
+- Bump YamlDotNet from 12.3.1 to 13.0.0
+
+## [4.0.2] - 2022-12-19
+
+### Changed
+
+- Now targets .Net Standard 2.1 and 6.0 instead of Standard 2.0
+- Add information on problematic tag to exception in `GetValueFromDatasetWithMultiplicity`
+
+### Dependencies
+
+- Bump HIC.FansiSql from 2.0.4 to 3.0.1
+- Bump MongoDB.Driver from 2.15.1 to 2.18.0
+- Bump Newtonsoft.Json from 13.0.1 to 13.0.2
+- Bump NLog from 5.0.5 to 5.1.0
+- Bump YamlDotNet from 12.0.2 to 12.3.1
+
+
+## [4.0.1] - 2022-06-06
+
+### Changed
+
+- Updated fo-dicom validation suppression to use DicomSetupBuilder not .AutoValidate
+- Switch JSON to prefer numerical encoding but fall back to string, rather than throwing
+
+### Dependencies
+
+- Bump fo-dicom from 5.0.0 to 5.0.3
+- Bump HIC.FAnsiSql from 2.0.3 to 2.0.4
+- Bump MongoDB.Driver from 2.15.0 to 2.15.1
+- Bump NLog from 4.7.14 to 5.0.0
+- Bump NUnit from 3.13.2 to 3.13.3
+- Bump Microsoft.NET.Test.Sdk from 17.1.0 to 17.2.0
+
 
 ### [4.0.0] - 2022-03-21
 
