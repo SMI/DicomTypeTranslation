@@ -19,24 +19,18 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
-    - name: Add MSFT code signing key
-      run: wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-    - name: Add MSFT package repo
-      run: sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/18.04/mssql-server-2019.list)"
     - name: MySQL
       run: sudo systemctl start mysql.service
-    - name: Install Sql Server
-      run: sudo apt-get install -y --no-install-recommends postgresql mssql-tools mssql-server
-    - name: Configure Sql Server
-      run: sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+    - name: MS SQL Server
+      run: |
+        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+        sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list)"
+        sudo apt-get install -y --no-install-recommends postgresql mssql-tools mssql-server
+        sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test -c Release --verbosity normal
     - name: Pack and push
       if: contains(github.ref,'refs/tags/')
       run: |
         version=$(fgrep AssemblyInformationalVersion SharedAssemblyInfo.cs |cut -d'"' -f2) dotnet pack -c Release --include-source --include-symbols -o dist
-        nuget push -skipDuplicate dist/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_KEY }}
+        dotnet nuget push  dist/*.nupkg --skip-duplicate -k ${{ secrets.NUGET_KEY }}
