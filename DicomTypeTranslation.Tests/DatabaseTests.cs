@@ -64,12 +64,11 @@ namespace DicomTypeTranslation.Tests
 
             _testScratchDatabase = e.Value;
             
-            foreach (XElement element in root.Elements("TestDatabase"))
+            foreach (var element in root.Elements("TestDatabase"))
             {
                 var type = element.Element("DatabaseType").Value;
-                DatabaseType databaseType;
 
-                if(!DatabaseType.TryParse(type, out databaseType))
+                if (!Enum.TryParse(type, out DatabaseType databaseType))
                     throw new Exception($"Could not parse DatabaseType {type}");
 
                 var constr = element.Element("ConnectionString").Value;
@@ -105,14 +104,12 @@ namespace DicomTypeTranslation.Tests
                 }
             else
             {
-                if (cleanDatabase)
-                {
-                    foreach (var t in db.DiscoverTables(true))
-                        t.Drop();
+                if (!cleanDatabase) return db;
+                foreach (var t in db.DiscoverTables(true))
+                    t.Drop();
 
-                    foreach (var func in db.DiscoverTableValuedFunctions())
-                        func.Drop();
-                }
+                foreach (var func in db.DiscoverTableValuedFunctions())
+                    func.Drop();
             }
 
             return db;
@@ -151,11 +148,11 @@ namespace DicomTypeTranslation.Tests
 
             foreach (DataRow row1 in dt1.Rows)
             {
-                bool match = false;
+                var match = false;
 
                 foreach (DataRow row2 in dt2.Rows)
                 {
-                    bool rowMatch = true;
+                    var rowMatch = true;
                     foreach (DataColumn column in dt1.Columns)
                     {
                         if (!AreBasicallyEquals(row1[column.ColumnName], row2[column.ColumnName]))

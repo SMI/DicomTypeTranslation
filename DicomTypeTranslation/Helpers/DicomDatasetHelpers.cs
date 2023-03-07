@@ -24,10 +24,7 @@ namespace DicomTypeTranslation.Helpers
             if (a == null || b == null)
                 return a == b;
 
-            if (a == b)
-                return true;
-
-            return a.Zip(b, ValueEquals).All(x => x);
+            return a == b || a.Zip(b, ValueEquals).All(x => x);
         }
 
 
@@ -49,31 +46,17 @@ namespace DicomTypeTranslation.Helpers
             if (a.ValueRepresentation != b.ValueRepresentation || (uint)a.Tag != (uint)b.Tag)
                 return false;
 
-            if (a is DicomElement)
+            return a switch
             {
-                if (b is DicomElement == false)
-                    return false;
-
-                return ValueEquals(((DicomElement)a).Buffer, ((DicomElement)b).Buffer);
-            }
-
-            if (a is DicomSequence)
-            {
-                if (b is DicomSequence == false)
-                    return false;
-
-                return ((DicomSequence)a).Items.Zip(((DicomSequence)b).Items, ValueEquals).All(x => x);
-            }
-
-            if (a is DicomFragmentSequence)
-            {
-                if (b is DicomFragmentSequence == false)
-                    return false;
-
-                return ((DicomFragmentSequence)a).Fragments.Zip(((DicomFragmentSequence)b).Fragments, ValueEquals).All(x => x);
-            }
-
-            return a.Equals(b);
+                DicomElement element => b is DicomElement dicomElementB &&
+                                        ValueEquals(element.Buffer, dicomElementB.Buffer),
+                DicomSequence sequence => b is DicomSequence bds &&
+                                          sequence.Items.Zip(bds.Items, ValueEquals).All(x => x),
+                DicomFragmentSequence sequence => b is DicomFragmentSequence bdfs &&  sequence.Fragments
+                    .Zip(bdfs.Fragments, ValueEquals)
+                    .All(x => x),
+                _ => a.Equals(b)
+            };
         }
 
         /// <summary>
@@ -156,7 +139,7 @@ namespace DicomTypeTranslation.Helpers
             if (a.Count() != b.Count())
                 differences.Add("A and B did not contain the same number of elements");
 
-            foreach (DicomItem item in a)
+            foreach (var item in a)
             {
                 if (!b.Contains(item.Tag))
                 {
@@ -166,32 +149,32 @@ namespace DicomTypeTranslation.Helpers
 
                 if (item.ValueRepresentation.IsString)
                 {
-                    string before = a.GetString(item.Tag);
-                    string after = b.GetString(item.Tag);
+                    var before = a.GetString(item.Tag);
+                    var after = b.GetString(item.Tag);
 
                     if (string.Equals(before, after)) continue;
 
                     if (ignoreTrailingNull && Math.Abs(before.Length - after.Length) == 1)
                     {
-                        string longest = before.Length > after.Length ? before : after;
+                        var longest = before.Length > after.Length ? before : after;
 
                         // Check for a single trailing NUL character (int value == 0)
                         if (longest[longest.Length - 1] == 0)
                             continue;
                     }
 
-                    differences.Add(string.Format("Tag {0} {1} {2} had value \"{3}\" in A and \"{4}\" in B",
-                        item.Tag, item.ValueRepresentation, item.Tag.DictionaryEntry.Keyword, before, after));
+                    differences.Add(
+                        $"Tag {item.Tag} {item.ValueRepresentation} {item.Tag.DictionaryEntry.Keyword} had value \"{before}\" in A and \"{after}\" in B");
                 }
                 else if (item.ValueRepresentation == DicomVR.SQ)
                 {
-                    DicomSequence seqA = a.GetSequence(item.Tag);
-                    DicomSequence seqB = b.GetSequence(item.Tag);
+                    var seqA = a.GetSequence(item.Tag);
+                    var seqB = b.GetSequence(item.Tag);
 
                     if (seqA.Count() != seqB.Count())
                     {
-                        differences.Add(string.Format("Sequence of tag {0} {1} had {2} elements in A, but {3} in B",
-                            item.Tag, item.Tag.DictionaryEntry.Keyword, seqA.Count(), seqB.Count()));
+                        differences.Add(
+                            $"Sequence of tag {item.Tag} {item.Tag.DictionaryEntry.Keyword} had {seqA.Count()} elements in A, but {seqB.Count()} in B");
                         continue;
                     }
 
@@ -200,17 +183,17 @@ namespace DicomTypeTranslation.Helpers
                 }
                 else
                 {
-                    object[] valA = a.GetValues<object>(item.Tag);
-                    object[] valB = b.GetValues<object>(item.Tag);
+                    var valA = a.GetValues<object>(item.Tag);
+                    var valB = b.GetValues<object>(item.Tag);
 
                     if (!(valA.Any() || valB.Any()))
                         continue;
 
                     if (valA.Length != valB.Length)
-                        differences.Add(string.Format("Tag {0} {1} {2} had {3} values in A and {4} values in B",
-                            item.Tag, item.ValueRepresentation, item.Tag.DictionaryEntry.Keyword, valA.Length, valB.Length));
+                        differences.Add(
+                            $"Tag {item.Tag} {item.ValueRepresentation} {item.Tag.DictionaryEntry.Keyword} had {valA.Length} values in A and {valB.Length} values in B");
 
-                    List<object> diffs = valA.Except(valB).ToList();
+                    var diffs = valA.Except(valB).ToList();
 
                     if (!diffs.Any())
                         continue;

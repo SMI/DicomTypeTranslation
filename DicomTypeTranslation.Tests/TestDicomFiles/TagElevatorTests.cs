@@ -49,7 +49,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         public void AreSequenceTagsAmbiguous()
         {
             //For all tags
-            foreach (DicomDictionaryEntry entry in DicomDictionary.Default)
+            foreach (var entry in DicomDictionary.Default)
             {
                 //that can be Sequences
                 if (entry.ValueRepresentations.Any(v => v == DicomVR.SQ))
@@ -59,18 +59,12 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [Test]
         public void DoWeNeedToMakeTagsSane()
         {
-            Dictionary<string, string> dodgy = new Dictionary<string, string>();
+            var dodgy = DicomDictionary.Default.Where(entry => entry.Keyword != QuerySyntaxHelper.MakeHeaderNameSensible(entry.Keyword)).ToDictionary(entry => entry.Keyword, entry => QuerySyntaxHelper.MakeHeaderNameSensible(entry.Keyword));
 
             //For all tags
-            foreach (DicomDictionaryEntry entry in DicomDictionary.Default)
-            {
-                //that can be Sequences
-                if (entry.Keyword != QuerySyntaxHelper.MakeHeaderNameSensible(entry.Keyword))
-                    dodgy.Add(entry.Keyword, QuerySyntaxHelper.MakeHeaderNameSensible(entry.Keyword));
-            }
 
-            foreach (var kvp in dodgy)
-                Console.WriteLine($"{kvp.Key}|{kvp.Value}");
+            foreach (var (key, value) in dodgy)
+                Console.WriteLine($"{key}|{value}");
 
             //no we don't
             Assert.AreEqual(0, dodgy.Count);
@@ -87,7 +81,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             var elevator = new TagElevator("ModalityLUTSequence->LUTExplanation");
 
-            object value = elevator.GetValue(file.Dataset);
+            var value = elevator.GetValue(file.Dataset);
 
             Assert.IsNotNull(file);
             Assert.AreEqual(value, "KESPR LUT");
@@ -104,7 +98,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             var elevator = new TagElevator(path);
 
-            object value = elevator.GetValue(file.Dataset);
+            var value = elevator.GetValue(file.Dataset);
 
             Assert.IsNotNull(file);
             Assert.IsNull(value);
@@ -120,7 +114,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             var elevator = new TagElevator(path);
 
-            object value = elevator.GetValue(file.Dataset);
+            var value = elevator.GetValue(file.Dataset);
 
             Assert.IsNotNull(file);
             Assert.IsNull(value);
@@ -138,9 +132,9 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             var elevator = new TagElevator("ContentSequence->ConceptNameCodeSequence->CodeMeaning+");
 
-            object value = elevator.GetValue(file.Dataset);
+            var value = elevator.GetValue(file.Dataset);
 
-            string expected =
+            var expected =
                 $"Observer Name{Environment.NewLine}Observer Organization Name{Environment.NewLine}Description{Environment.NewLine}Diagnosis{Environment.NewLine}Treatment";
             Assert.AreEqual(expected, value);
         }
@@ -157,7 +151,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             ShowContentSequence(file.Dataset);
 
-            object value = elevator.GetValue(file.Dataset);
+            var value = elevator.GetValue(file.Dataset);
 
             Assert.IsNotNull(file);
             Assert.IsTrue(value.ToString().Contains("Redlands Clinic"));
@@ -179,7 +173,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             ShowContentSequence(file.Dataset);
 
-            object value = elevator.GetValue(file.Dataset);
+            var value = elevator.GetValue(file.Dataset);
 
             Assert.IsNotNull(file);
             Assert.AreEqual("Redlands Clinic", value);
@@ -385,7 +379,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             ShowContentSequence(file.Dataset);
 
-            object value = elevator.GetValue(file.Dataset);
+            var value = elevator.GetValue(file.Dataset);
 
             if (expectedToFind)
                 Assert.AreEqual("Treatment", value);
@@ -411,7 +405,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
                 Assert.Throws<TagNavigationException>(() => elevator.GetValue(file.Dataset));
             else
             {
-                object value = elevator.GetValue(file.Dataset);
+                var value = elevator.GetValue(file.Dataset);
 
                 if (expectedToFind)
                     Assert.AreEqual("Treatment", value);
@@ -432,7 +426,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             ShowContentSequence(file.Dataset);
 
-            object value = elevator.GetValue(file.Dataset);
+            var value = elevator.GetValue(file.Dataset);
 
             Assert.AreEqual("Treatment", value);
         }
@@ -448,7 +442,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             ShowContentSequence(file.Dataset);
 
-            object value = elevator.GetValue(file.Dataset);
+            var value = elevator.GetValue(file.Dataset);
 
             Assert.AreEqual($"Observer Name{Environment.NewLine}Observer Organization Name{Environment.NewLine}Description{Environment.NewLine}Diagnosis{Environment.NewLine}Treatment", value);
         }
@@ -467,7 +461,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             ShowContentSequence(file.Dataset);
 
-            object value = elevator.GetValue(file.Dataset);
+            var value = elevator.GetValue(file.Dataset);
 
             Assert.IsNull(value);
         }
@@ -486,7 +480,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             ShowContentSequence(file.Dataset);
 
-            object value = elevator.GetValue(file.Dataset);
+            var value = elevator.GetValue(file.Dataset);
 
             Assert.AreEqual("Redlands Clinic", value);
         }
@@ -572,7 +566,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             ShowContentSequence(ds, DicomTag.PatientInsurancePlanCodeSequence);
 
-            object value = elevator.GetValue(ds);
+            var value = elevator.GetValue(ds);
 
             Assert.AreEqual(expectedResults, value);
 
@@ -741,7 +735,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
             ShowContentSequence(ds, DicomTag.PseudoColorPaletteInstanceReferenceSequence);
 
-            object value = elevator.GetValue(ds);
+            var value = elevator.GetValue(ds);
 
             Assert.AreEqual(expectedResults, value);
 
@@ -749,7 +743,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 
         private void ShowContentSequence(DicomDataset dataset, DicomTag tag = null)
         {
-            tag = tag ?? DicomTag.ContentSequence;
+            tag ??= DicomTag.ContentSequence;
             Console.WriteLine($"{tag.DictionaryEntry.Keyword} Contains the following:");
             Console.WriteLine("-------------------------------------------------------------");
 
@@ -757,8 +751,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
             var str = ArrayHelperMethods.AsciiArt(array);
 
 
-            foreach (var keyword in DicomDictionary.Default)
-                str = str.Replace(keyword.Tag.ToString(), keyword.Keyword);
+            str = DicomDictionary.Default.Aggregate(str, (current, keyword) => current.Replace(keyword.Tag.ToString(), keyword.Keyword));
 
             Console.WriteLine(str);
             Console.WriteLine();

@@ -8,7 +8,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [Test]
         public void Deserialize_SingleRequest()
         {
-            var xml = @"<!DOCTYPE TagElevationRequestCollection
+            const string xml = @"<!DOCTYPE TagElevationRequestCollection
 [
   <!ELEMENT TagElevationRequestCollection (TagElevationRequest*)>
   <!ELEMENT TagElevationRequest (ColumnName,ElevationPathway,Conditional?)>
@@ -44,7 +44,7 @@ namespace DicomTypeTranslation.Tests.ElevationTests
         [Test]
         public void Deserialize_TwoRequest_OneWithConditional()
         {
-            var xml = @"<!DOCTYPE TagElevationRequestCollection
+            const string xml = @"<!DOCTYPE TagElevationRequestCollection
 [
   <!ELEMENT TagElevationRequestCollection (TagElevationRequest*)>
   <!ELEMENT TagElevationRequest (ColumnName,ElevationPathway,Conditional?)>

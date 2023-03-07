@@ -1,8 +1,5 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace DicomTypeTranslation.Tests
@@ -28,7 +25,7 @@ namespace DicomTypeTranslation.Tests
             var match = Regex.Match(File.ReadAllText(assemblyInfo),@"AssemblyInformationalVersion\(""(.*)""\)");
             Assert.IsTrue(match.Success, $"Could not find AssemblyInformationalVersion tag in {assemblyInfo}");
             
-            string currentVersion = match.Groups[1].Value;
+            var currentVersion = match.Groups[1].Value;
 
             var changeLog = File.ReadAllText(changeLogPath);
 

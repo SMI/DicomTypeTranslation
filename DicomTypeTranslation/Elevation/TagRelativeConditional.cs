@@ -14,10 +14,10 @@ namespace DicomTypeTranslation.Elevation
         
         private List<TagNavigation> _navigations;
 
-        private string[] validStartersTokens = new[] {".", "[..]", ".."};
+        private static readonly string[] validStartersTokens = {".", "[..]", ".."};
 
         //.. and [..] only
-        private List<string> _relativeOperators = new List<string>();
+        private readonly List<string> _relativeOperators = new List<string>();
 
         public TagRelativeConditional(string conditional, string conditionalShouldMatch)
         {
@@ -45,29 +45,36 @@ namespace DicomTypeTranslation.Elevation
             _navigations = new List<TagNavigation>();
             
             //Process the . and .. elements
-            for (int i=0; i < path.Length; i++)
+            for (var i=0; i < path.Length; i++)
             {
                 //if it is a relative positional 
 
-                //if we are going up a level
-                if (path[i] == ".." || path[i] == "[..]")
+                switch (path[i])
                 {
-                    if (_navigations.Any())
-                        throw new InvalidTagElevatorPathException(
-                            $"TagRelativeConditional pathways cannot have '{path[i]}' after the first dicom tag");
+                    //if we are going up a level
+                    case "..":
+                    case "[..]":
+                    {
+                        if (_navigations.Any())
+                            throw new InvalidTagElevatorPathException(
+                                $"TagRelativeConditional pathways cannot have '{path[i]}' after the first dicom tag");
 
-                    //go up
-                    _relativeOperators.Add(path[i]);
+                        //go up
+                        _relativeOperators.Add(path[i]);
+                        break;
+                    }
+                    case ".":
+                    {
+                        //only valid at the start of the path
+                        if (i != 0)
+                            throw new InvalidTagElevatorPathException(
+                                $"'{path[i]}' is only valid at the start of a TagRelativeConditional");
+                        break;
+                    }
+                    default:
+                        _navigations.Add(new TagNavigation(path[i], i + 1 == path.Length)); //navigational (no more positionals please!)
+                        break;
                 }
-                else if (path[i] == ".")
-                {
-                    //only valid at the start of the path
-                    if (i != 0)
-                        throw new InvalidTagElevatorPathException(
-                            $"'{path[i]}' is only valid at the start of a TagRelativeConditional");
-                }
-                else
-                    _navigations.Add(new TagNavigation(path[i], i + 1 == path.Length)); //navigational (no more positionals please!)
             }
 
             if (!_navigations.Any())
@@ -85,31 +92,32 @@ namespace DicomTypeTranslation.Elevation
             //match all elements in the current array of the sequence e.g. [2]
             var toMatchIn = new List<SequenceElement> {element};
 
-            foreach (string relativeOperator in _relativeOperators)
+            foreach (var relativeOperator in _relativeOperators)
             {
-                //[..] - match array siblings
-                if(relativeOperator == "[..]")
-                    toMatchIn = toMatchIn.SelectMany(s=>s.ArraySiblings).Distinct().ToList();
-
-                //.. - match containing parent of the current Sequence (where not null)
-                if (relativeOperator == "..")
-                    toMatchIn = toMatchIn.Select(s => s.Parent).Where(p => p != null).Distinct().ToList();
+                toMatchIn = relativeOperator switch
+                {
+                    //[..] - match array siblings
+                    "[..]" => toMatchIn.SelectMany(s => s.ArraySiblings).Distinct().ToList(),
+                    //.. - match containing parent of the current Sequence (where not null)
+                    ".." => toMatchIn.Select(s => s.Parent).Where(p => p != null).Distinct().ToList(),
+                    _ => toMatchIn
+                };
 
                 //distinct it
                 toMatchIn = toMatchIn.Distinct().ToList();
             }
 
-            List<object> finalObjects = new List<object>();
+            var finalObjects = new List<object>();
 
             foreach (var navigation in _navigations)
             {
                 var newSets = new List<SequenceElement>();
 
                 if (navigation.IsLast)
-                    foreach (SequenceElement sequenceElement in toMatchIn)
+                    foreach (var sequenceElement in toMatchIn)
                         finalObjects.Add(navigation.GetTags(sequenceElement, null));
                 else
-                    foreach (SequenceElement sequenceElement in toMatchIn)
+                    foreach (var sequenceElement in toMatchIn)
                         newSets.AddRange(navigation.GetSubset(sequenceElement));
 
                 toMatchIn = newSets;
@@ -120,26 +128,23 @@ namespace DicomTypeTranslation.Elevation
 
         private bool IsMatch(object value)
         {
-            if (value == null)
-                return false;
-
-            //if it is an array (multiplicity) then conditional matches any sub element
-            var a = value as Array;
-            if (a != null)
-                if (a.Length == 0)
+            switch (value)
+            {
+                case null:
+                //if it is an array (multiplicity) then conditional matches any sub element
+                case Array { Length: 0 }:
                     return false;
-                else
-                if (a.Length == 1)
+                case Array { Length: 1 } a:
                     value = a.GetValue(0);
-                else
-                {
+                    break;
+                case Array a:
                     //return ((Array) value).Cast<object>().Any(o => o != null && Regex.IsMatch(o.ToString(), _conditionalShouldMatch));
 
                     throw new TagNavigationException($"Conditional matched a leaf node with Multiplicity of {a.Length}");
-                }
-                
+            }
 
-            //its not multiplicity
+
+            //it's not multiplicity
             return Regex.IsMatch(value.ToString(),_conditionalShouldMatch);
         }
     }

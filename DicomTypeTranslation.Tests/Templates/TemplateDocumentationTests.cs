@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
+﻿using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using DicomTypeTranslation.TableCreation;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 namespace DicomTypeTranslation.Tests.Templates
 {
@@ -18,9 +12,9 @@ namespace DicomTypeTranslation.Tests.Templates
         {
             var files = Directory.EnumerateFiles(Path.Combine(TestContext.CurrentContext.TestDirectory, "Templates"), "*.it");
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            foreach (string file in files)
+            foreach (var file in files)
             {
                 var collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(file));
 
@@ -28,14 +22,14 @@ namespace DicomTypeTranslation.Tests.Templates
                 sb.AppendLine($"## {Path.GetFileNameWithoutExtension(file)}");
                 sb.AppendLine();
 
-                foreach (ImageTableTemplate table in collection.Tables)
+                foreach (var table in collection.Tables)
                 {
                     sb.AppendLine($"### {table.TableName}");
                     sb.AppendLine();
                     sb.AppendLine("| Field | Description |");
                     sb.AppendLine("| ------------- | ------------- |");
 
-                    foreach (ImageColumnTemplate col in table.Columns)
+                    foreach (var col in table.Columns)
                     {
                         sb.AppendLine($"| {col.ColumnName} |  |");
                     }

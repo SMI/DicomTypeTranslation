@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using FAnsi;
-using FAnsi.Discovery;
 using TypeGuesser;
 using YamlDotNet.Serialization;
 

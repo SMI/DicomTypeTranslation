@@ -46,7 +46,7 @@ namespace DicomTypeTranslation.Tests
             var dir = Path.Combine(TestContext.CurrentContext.TestDirectory ,"TestDicomFiles");
 
             //Load some dicom files and copy tag data into DataTable (where tag exists)
-            foreach (string file in Directory.EnumerateFiles(dir, "*.dcm", SearchOption.AllDirectories))
+            foreach (var file in Directory.EnumerateFiles(dir, "*.dcm", SearchOption.AllDirectories))
             {
                 var dcm = DicomFile.Open(file);
                 var ds = dcm.Dataset;
@@ -60,8 +60,8 @@ namespace DicomTypeTranslation.Tests
             }
 
             //put the DataTable into the database
-            using (var insert = tbl.BeginBulkInsert())
-                insert.Upload(dt);
+            using var insert = tbl.BeginBulkInsert();
+            insert.Upload(dt);
 
 
         }

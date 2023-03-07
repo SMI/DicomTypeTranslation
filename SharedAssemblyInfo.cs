@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Reflection;
+﻿using System.Reflection;
 
 [assembly: AssemblyCompany("Universities of Dundee and Edinburgh")]
 [assembly: AssemblyProduct("DicomTypeTranslation")]

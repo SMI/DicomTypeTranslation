@@ -21,11 +21,7 @@ namespace DicomTypeTranslation.Helpers
             if (a.Length != b.Length)
                 return false;
 
-            for (var i = 0; i < a.Length; i++)
-                if (!FlexibleEquality.FlexibleEquals(a.GetValue(i), b.GetValue(i)))
-                    return false;
-
-            return true;
+            return !a.Cast<object>().Where((t, i) => !FlexibleEquality.FlexibleEquals(a.GetValue(i), b.GetValue(i))).Any();
         }
 
         /// <summary>
@@ -43,13 +39,12 @@ namespace DicomTypeTranslation.Helpers
                 sb.Append($"{prefix} [{i}] - ");
 
                 //if run out of values in dictionary 1
-                object val = a.GetValue(i) ?? "Null";
+                var val = a.GetValue(i) ?? "Null";
 
                 if (DictionaryHelperMethods.IsDictionary(val))
-                    sb.AppendLine(string.Format("\r\n {0}",
-                        DictionaryHelperMethods.AsciiArt((IDictionary)val, $"{prefix}\t")));
+                    sb.AppendLine($"\r\n {DictionaryHelperMethods.AsciiArt((IDictionary)val, $"{prefix}\t")}");
                 else if (val is Array)
-                    sb.AppendLine(string.Format("\r\n {0}", AsciiArt((Array)val, $"{prefix}\t")));
+                    sb.AppendLine($"\r\n {AsciiArt((Array)val, $"{prefix}\t")}");
                 else
                     sb.AppendLine(val.ToString());
             }
@@ -74,30 +69,25 @@ namespace DicomTypeTranslation.Helpers
 
                 //if run out of values in dictionary 1
                 if (i > a.Length)
-                    sb.AppendLine(string.Format(" \t <NULL> \t {0}", b.GetValue(i)));
+                    sb.AppendLine($" \t <NULL> \t {b.GetValue(i)}");
                 //if run out of values in dictionary 2
                 else if (i > b.Length)
-                    sb.AppendLine(string.Format(" \t {0} \t <NULL>", a.GetValue(i)));
+                    sb.AppendLine($" \t {a.GetValue(i)} \t <NULL>");
                 else
                 {
-                    object val1 = a.GetValue(i);
-                    object val2 = b.GetValue(i);
+                    var val1 = a.GetValue(i);
+                    var val2 = b.GetValue(i);
 
                     if (DictionaryHelperMethods.IsDictionary(val1) && DictionaryHelperMethods.IsDictionary(val2))
-                        sb.Append(string.Format("\r\n {0}",
-                            DictionaryHelperMethods.AsciiArt((IDictionary)val1,
-                            (IDictionary)val2, $"{prefix}\t")));
+                        sb.Append(
+                            $"\r\n {DictionaryHelperMethods.AsciiArt((IDictionary)val1, (IDictionary)val2, $"{prefix}\t")}");
                     else
                     if (val1 is Array && val2 is Array)
-                        sb.Append(string.Format("\r\n {0}",
-                            AsciiArt((Array)val1,
-                            (Array)val2, $"{prefix}\t")));
+                        sb.Append($"\r\n {AsciiArt((Array)val1, (Array)val2, $"{prefix}\t")}");
                     else
                         //if we haven't outrun of either array
-                        sb.AppendLine(string.Format(" \t {0} \t {1} {2}",
-                            val1,
-                            val2,
-                            FlexibleEquality.FlexibleEquals(val1, val2) ? "" : "<DIFF>"));
+                        sb.AppendLine(
+                            $" \t {val1} \t {val2} {(FlexibleEquality.FlexibleEquals(val1, val2) ? "" : "<DIFF>")}");
                 }
             }
 
