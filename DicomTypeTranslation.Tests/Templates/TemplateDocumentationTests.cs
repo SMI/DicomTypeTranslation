@@ -3,43 +3,42 @@ using System.Text;
 using DicomTypeTranslation.TableCreation;
 using NUnit.Framework;
 
-namespace DicomTypeTranslation.Tests.Templates
+namespace DicomTypeTranslation.Tests.Templates;
+
+internal class TemplateDocumentationTests
 {
-    class TemplateDocumentationTests
+    [Test]
+    public void Test_TemplateDocumentation_Generate()
     {
-        [Test]
-        public void Test_TemplateDocumentation_Generate()
+        var files = Directory.EnumerateFiles(Path.Combine(TestContext.CurrentContext.TestDirectory, "Templates"), "*.it");
+
+        var sb = new StringBuilder();
+
+        foreach (var file in files)
         {
-            var files = Directory.EnumerateFiles(Path.Combine(TestContext.CurrentContext.TestDirectory, "Templates"), "*.it");
+            var collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(file));
 
-            var sb = new StringBuilder();
 
-            foreach (var file in files)
+            sb.AppendLine($"## {Path.GetFileNameWithoutExtension(file)}");
+            sb.AppendLine();
+
+            foreach (var table in collection.Tables)
             {
-                var collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(file));
-
-
-                sb.AppendLine($"## {Path.GetFileNameWithoutExtension(file)}");
+                sb.AppendLine($"### {table.TableName}");
                 sb.AppendLine();
+                sb.AppendLine("| Field | Description |");
+                sb.AppendLine("| ------------- | ------------- |");
 
-                foreach (var table in collection.Tables)
+                foreach (var col in table.Columns)
                 {
-                    sb.AppendLine($"### {table.TableName}");
-                    sb.AppendLine();
-                    sb.AppendLine("| Field | Description |");
-                    sb.AppendLine("| ------------- | ------------- |");
-
-                    foreach (var col in table.Columns)
-                    {
-                        sb.AppendLine($"| {col.ColumnName} |  |");
-                    }
-
-                    sb.AppendLine();
+                    sb.AppendLine($"| {col.ColumnName} |  |");
                 }
-            }
 
-            TestContext.WriteLine("Suggested Documentation:");
-            TestContext.Write(sb.ToString());
+                sb.AppendLine();
+            }
         }
+
+        TestContext.WriteLine("Suggested Documentation:");
+        TestContext.Write(sb.ToString());
     }
 }
