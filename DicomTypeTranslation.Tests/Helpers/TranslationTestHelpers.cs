@@ -20,50 +20,50 @@ public static class TranslationTestHelpers
         .ToArray();
 
 
-        public static DicomDataset BuildVrDataset(DicomVR singleVr = null)
+    public static DicomDataset BuildVrDataset(DicomVR singleVr = null)
+    {
+        var ds = new DicomDataset
         {
-            var ds = new DicomDataset
+            new DicomApplicationEntity(DicomTag.RetrieveAETitle, "AppEntity-1", "AppEntity-2"),
+            new DicomAgeString(DicomTag.PatientAge, "034Y"),
+            new DicomAttributeTag(DicomTag.SelectorATValue, DicomTag.SOPInstanceUID, DicomTag.SeriesInstanceUID),
+            new DicomCodeString(DicomTag.QualityControlImage, "FOOBAR"),
+            new DicomDate(DicomTag.AcquisitionDate, "20000229"),
+            new DicomDecimalString(DicomTag.LossyImageCompressionRatio, "123.456"),
+            new DicomDateTime(DicomTag.AcquisitionDateTime, "20180401235959"),
+            new DicomFloatingPointSingle(DicomTag.SelectorFLValue, 0, float.MinValue),
+            new DicomFloatingPointDouble(DicomTag.SelectorFDValue, 0, double.MinValue),
+            new DicomIntegerString(DicomTag.ImagesInAcquisition, int.MaxValue),
+            new DicomLongString(DicomTag.PatientState, "This is a long string"),
+            new DicomLongText(DicomTag.AdditionalPatientHistory, @"This is a dicom long string. Backslashes should be ok: \\\\\\"),
+            new DicomOtherByte(DicomTag.SelectorOBValue, 1, 2, 3, 0, 255),
+            new DicomOtherDouble(DicomTag.SelectorODValue, 0, double.MinValue, double.MaxValue),
+            new DicomOtherFloat(DicomTag.FloatPixelData, 0, float.MinValue, float.MaxValue),
+            new DicomOtherLong(DicomTag.SelectorOLValue, 0, 1, uint.MaxValue),
+            new DicomOtherWord(DicomTag.SelectorOWValue, 0, 1, ushort.MaxValue),
+            new DicomOtherVeryLong(DicomTag.ExtendedOffsetTable, 0, 1, ulong.MaxValue),
+            new DicomPersonName(DicomTag.SelectorPNValue, new [] { "Morrison-Jones^Susan^^^Ph.D.1", "Morrison-Jones^Susan^^^Ph.D.2"}),
+            new DicomShortString(DicomTag.SelectorSHValue, "ShortString-1", "Short-String-2"),
+            new DicomSignedLong(DicomTag.SelectorSLValue, 0, int.MinValue, int.MaxValue),
+            new DicomSequence(DicomTag.AdmittingDiagnosesCodeSequence, new DicomDataset
             {
-                new DicomApplicationEntity(DicomTag.RetrieveAETitle, "AppEntity-1", "AppEntity-2"),
-                new DicomAgeString(DicomTag.PatientAge, "034Y"),
-                new DicomAttributeTag(DicomTag.SelectorATValue, DicomTag.SOPInstanceUID, DicomTag.SeriesInstanceUID),
-                new DicomCodeString(DicomTag.QualityControlImage, "FOOBAR"),
-                new DicomDate(DicomTag.AcquisitionDate, "20000229"),
-                new DicomDecimalString(DicomTag.LossyImageCompressionRatio, "123.456"),
-                new DicomDateTime(DicomTag.AcquisitionDateTime, "20180401235959"),
-                new DicomFloatingPointSingle(DicomTag.SelectorFLValue, 0, float.MinValue),
-                new DicomFloatingPointDouble(DicomTag.SelectorFDValue, 0, double.MinValue),
-                new DicomIntegerString(DicomTag.ImagesInAcquisition, int.MaxValue),
-                new DicomLongString(DicomTag.PatientState, "This is a long string"),
-                new DicomLongText(DicomTag.AdditionalPatientHistory, @"This is a dicom long string. Backslashes should be ok: \\\\\\"),
-                new DicomOtherByte(DicomTag.SelectorOBValue, 1, 2, 3, 0, 255),
-                new DicomOtherDouble(DicomTag.SelectorODValue, 0, double.MinValue, double.MaxValue),
-                new DicomOtherFloat(DicomTag.FloatPixelData, 0, float.MinValue, float.MaxValue),
-                new DicomOtherLong(DicomTag.SelectorOLValue, 0, 1, uint.MaxValue),
-                new DicomOtherWord(DicomTag.SelectorOWValue, 0, 1, ushort.MaxValue),
-                new DicomOtherVeryLong(DicomTag.ExtendedOffsetTable, 0, 1, ulong.MaxValue),
-                new DicomPersonName(DicomTag.SelectorPNValue, new [] { "Morrison-Jones^Susan^^^Ph.D.1", "Morrison-Jones^Susan^^^Ph.D.2"}),
-                new DicomShortString(DicomTag.SelectorSHValue, "ShortString-1", "Short-String-2"),
-                new DicomSignedLong(DicomTag.SelectorSLValue, 0, int.MinValue, int.MaxValue),
-                new DicomSequence(DicomTag.AdmittingDiagnosesCodeSequence, new DicomDataset
-                {
-                    new DicomShortText(DicomTag.SelectorSTValue, @"Short\Text"),
-                    new DicomIntegerString(DicomTag.ImagesInAcquisition, "1234"),
-                    new DicomOtherWord(DicomTag.SelectorOWValue, 0, ushort.MaxValue)
-                }),
-                new DicomSignedShort(DicomTag.SelectorSSValue, 0, short.MinValue, short.MaxValue),
-                new DicomShortText(DicomTag.SelectorSTValue, @"Short\\Text\\Backslashes should be ok: \\\\\\"),
-                new DicomSignedVeryLong(DicomTag.SelectorSVValue,1,7),
-                new DicomTime(DicomTag.SelectorTMValue, "123456", "235959"),
-                new DicomUnlimitedCharacters(DicomTag.SelectorUCValue, "UnlimitedCharacters-1"),
-                new DicomUniqueIdentifier(DicomTag.SelectorUIValue, "1.2.3.4", "5.6.7.8"),
-                new DicomUnsignedLong(DicomTag.SelectorULValue, 0, 1, uint.MaxValue),
-                new DicomUnknown(DicomTag.SelectorUNValue, 0, 1, 255),
-                new DicomUniversalResource(DicomTag.URNCodeValue, "https://example.com?q=1"),
-                new DicomUnsignedShort(DicomTag.SelectorUSValue, 0, 1, ushort.MaxValue),
-                new DicomUnlimitedText(DicomTag.SelectorUTValue, "unlimited!"),
-                new DicomUnsignedVeryLong(DicomTag.SelectorUVValue,new UInt64[]{1}),
-            };
+                new DicomShortText(DicomTag.SelectorSTValue, @"Short\Text"),
+                new DicomIntegerString(DicomTag.ImagesInAcquisition, "1234"),
+                new DicomOtherWord(DicomTag.SelectorOWValue, 0, ushort.MaxValue)
+            }),
+            new DicomSignedShort(DicomTag.SelectorSSValue, 0, short.MinValue, short.MaxValue),
+            new DicomShortText(DicomTag.SelectorSTValue, @"Short\\Text\\Backslashes should be ok: \\\\\\"),
+            new DicomSignedVeryLong(DicomTag.SelectorSVValue,1,7), // NOTE(rkm 2020-03-25) No tags actually have this VR yet! JS 2022-03-18 there are now...
+            new DicomTime(DicomTag.SelectorTMValue, "123456", "235959"),
+            new DicomUnlimitedCharacters(DicomTag.SelectorUCValue, "UnlimitedCharacters-1"),
+            new DicomUniqueIdentifier(DicomTag.SelectorUIValue, "1.2.3.4", "5.6.7.8"),
+            new DicomUnsignedLong(DicomTag.SelectorULValue, 0, 1, uint.MaxValue),
+            new DicomUnknown(DicomTag.SelectorUNValue, 0, 1, 255),
+            new DicomUniversalResource(DicomTag.URNCodeValue, "https://example.com?q=1"),
+            new DicomUnsignedShort(DicomTag.SelectorUSValue, 0, 1, ushort.MaxValue),
+            new DicomUnlimitedText(DicomTag.SelectorUTValue, "unlimited!"),
+            new DicomUnsignedVeryLong(DicomTag.SelectorUVValue,new ulong[]{1}) // NOTE(rkm 2020-03-25) No tags actually have this VR yet! JS 2022-03-18 there are now...
+        };
 
         if (singleVr != null)
             ds.Remove(x => x.ValueRepresentation != singleVr);

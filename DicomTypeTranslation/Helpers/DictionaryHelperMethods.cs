@@ -31,19 +31,19 @@ public static class DictionaryHelperMethods
         return typeof(IDictionary).IsAssignableFrom(t);
     }
 
-        /// <summary>
-        /// Determines whether the two dictionaries contain the same keys and values (using <see cref="FlexibleEquality"/>).  Handles any generic dictionary and uses
-        /// Equals for comparison.  Note that this will handle Values that are sub dictionaries (recursively calling <see cref="DictionaryEquals"/>) but will not handle
-        /// when keys are dictionaries.
-        /// </summary>
-        /// <param name="dict1"></param>
-        /// <param name="dict2"></param>
-        /// <returns>true if the keys/values are Equal and neither contains novel keys</returns>
-        public static bool DictionaryEquals(IDictionary dict1, IDictionary dict2)
-        {
-            //if either is null
-            if (dict1 == null || dict2 == null)
-                return Object.ReferenceEquals(dict1,dict2); //they are only equal if they are both null
+    /// <summary>
+    /// Determines whether the two dictionaries contain the same keys and values (using <see cref="FlexibleEquality"/>).  Handles any generic dictionary and uses
+    /// Equals for comparison.  Note that this will handle Values that are sub dictionaries (recursively calling <see cref="DictionaryEquals"/>) but will not handle
+    /// when keys are dictionaries.
+    /// </summary>
+    /// <param name="dict1"></param>
+    /// <param name="dict2"></param>
+    /// <returns>true if the keys/values are Equal and neither contains novel keys</returns>
+    public static bool DictionaryEquals(IDictionary dict1, IDictionary dict2)
+    {
+        //if either is null
+        if (dict1 == null || dict2 == null)
+            return ReferenceEquals(dict1, dict2); //they are only equal if they are both null
 
         var keys1 = new HashSet<object>();
 

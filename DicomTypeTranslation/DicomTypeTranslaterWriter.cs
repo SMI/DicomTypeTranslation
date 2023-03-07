@@ -106,10 +106,8 @@ public static class DicomTypeTranslaterWriter
                 return;
         }
 
-            // Otherwise do generic add
-            var key = _dicomAddMethodDictionary.ContainsKey(value.GetType())
-                ? value.GetType()
-                : _dicomAddMethodDictionary.Keys.FirstOrDefault(k => k.IsInstanceOfType(value));
+        // Otherwise do generic add
+        var key = _dicomAddMethodDictionary.ContainsKey(value.GetType()) ? value.GetType() : _dicomAddMethodDictionary.Keys.FirstOrDefault(k => k.IsInstanceOfType(value));
 
         if (key == null)
             throw new Exception($"No method to call for value type {value.GetType()}");

@@ -14,25 +14,23 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - name: Disable disk flush for CI
-      run: sudo apt-get install -y libeatmydata1
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
-    - name: Install MS SQL Server and Postgresql, start existing MySQL
+    - name: MySQL
+      run: sudo systemctl start mysql.service
+    - name: MS SQL Server
       run: |
-        sudo wget -qO/etc/apt/trusted.gpg.d/microsoft.asc https://packages.microsoft.com/keys/microsoft.asc
+        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
         sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list)"
-        sed -i -e 's/Pwd=;/Pwd=root;AllowPublicKeyRetrieval=True;/' DicomTypeTranslation.Tests/TestDatabases.xml
         sudo apt-get install -y --no-install-recommends postgresql mssql-tools mssql-server
         sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
-        sudo service mysql start
     - name: Test
-      run: dotnet test -c Release --verbosity normal --nologo
+      run: dotnet test -c Release --verbosity normal
     - name: Pack and push
       if: contains(github.ref,'refs/tags/')
       run: |
         version=$(fgrep AssemblyInformationalVersion SharedAssemblyInfo.cs |cut -d'"' -f2) dotnet pack -c Release --include-source --include-symbols -o dist
-        dotnet nuget push --skip-duplicate dist/*.nupkg -k ${{ secrets.NUGET_KEY }}
+        dotnet nuget push  dist/*.nupkg --skip-duplicate -k ${{ secrets.NUGET_KEY }}

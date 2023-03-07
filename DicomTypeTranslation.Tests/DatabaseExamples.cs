@@ -36,12 +36,12 @@ public class DatabaseExamples : DatabaseTests
         //add a column for where the image is on disk
         tbl.AddColumn("FileLocation", new DatabaseTypeRequest(typeof(string), 500), true, 500);
 
-            //Create a DataTable in memory for the data we read from disk
-            using var dt = new DataTable();
-            dt.Columns.Add("SOPInstanceUID");
-            dt.Columns.Add("Modality");
-            dt.Columns.Add("PatientID");
-            dt.Columns.Add("FileLocation");
+        //Create a DataTable in memory for the data we read from disk
+        var dt = new DataTable();
+        dt.Columns.Add("SOPInstanceUID");
+        dt.Columns.Add("Modality");
+        dt.Columns.Add("PatientID");
+        dt.Columns.Add("FileLocation");
 
         var dir = Path.Combine(TestContext.CurrentContext.TestDirectory ,"TestDicomFiles");
 
@@ -101,8 +101,8 @@ public class DatabaseExamples : DatabaseTests
             new DicomDate(DicomTag.PatientBirthDate,new DateTime(2001,1,1))
         });
 
-            using var dt = new DataTable();
-            var row = ds.ToRow(dt);
+        var dt = new DataTable();
+        var row = ds.ToRow(dt);
 
         Assert.AreEqual("Frank", row["PatientName"]);
         Assert.AreEqual("032Y", row["PatientAge"]);

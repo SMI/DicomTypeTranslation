@@ -59,51 +59,45 @@ public static class DicomDatasetHelpers
         };
     }
 
-        /// <summary>
-        /// Returns true if <paramref name="a"/> and <paramref name="b"/> are equal.  Supports <see cref="IBulkDataUriByteBuffer"/>, <see cref="EmptyBuffer"/>, 
-        /// <see cref="StreamByteBuffer"/> and <see cref="CompositeByteBuffer"/>.
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        private static bool ValueEquals(IByteBuffer a, IByteBuffer b)
-        {
-            if (a == null || b == null)
-                return ReferenceEquals(a,b);
+    /// <summary>
+    /// Returns true if <paramref name="a"/> and <paramref name="b"/> are equal.  Supports <see cref="IBulkDataUriByteBuffer"/>, <see cref="EmptyBuffer"/>, 
+    /// <see cref="StreamByteBuffer"/> and <see cref="CompositeByteBuffer"/>.
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    private static bool ValueEquals(IByteBuffer a, IByteBuffer b)
+    {
+        if (a == null || b == null)
+            return a == b;
 
-            if (ReferenceEquals(a, b))
-                return true;
+        if (a == b)
+            return true;
 
         if (a.IsMemory)
             return b.IsMemory && a.Data.SequenceEqual(b.Data);
 
-            switch (a)
+        switch (a)
+        {
+            case IBulkDataUriByteBuffer abuff:
             {
-                case IBulkDataUriByteBuffer abuff:
-                {
-                    if (b is not IBulkDataUriByteBuffer bbuff)
-                        return false;
-
-                    return abuff.BulkDataUri == bbuff.BulkDataUri;
-                }
-                case EmptyBuffer when b is EmptyBuffer:
-                    return true;
-                case StreamByteBuffer buffer when b is StreamByteBuffer:
-                {
-                    var asbb = buffer;
-                    var bsbb = (StreamByteBuffer)b;
-
-                    if (asbb.Stream == null || bsbb.Stream == null)
-                        return asbb.Stream == bsbb.Stream;
-
-                    return asbb.Position == bsbb.Position && asbb.Size == bsbb.Size && asbb.Stream.Equals(bsbb.Stream);
-                }
-                case CompositeByteBuffer buffer when b is CompositeByteBuffer:
-                    return buffer.Buffers.Zip(((CompositeByteBuffer)b).Buffers, ValueEquals).All(x => x);
-                default:
-                    return a.Equals(b);
+                return b is IBulkDataUriByteBuffer bbuff && abuff.BulkDataUri == bbuff.BulkDataUri;
             }
+            case EmptyBuffer when b is EmptyBuffer:
+                return true;
+            case StreamByteBuffer buffer when b is StreamByteBuffer bsbb:
+            {
+                if (buffer.Stream == null || bsbb.Stream == null)
+                    return buffer.Stream == bsbb.Stream;
+
+                return buffer.Position == bsbb.Position && buffer.Size == bsbb.Size && buffer.Stream.Equals(bsbb.Stream);
+            }
+            case CompositeByteBuffer buffer when b is CompositeByteBuffer byteBuffer:
+                return buffer.Buffers.Zip(byteBuffer.Buffers, ValueEquals).All(x => x);
+            default:
+                return a.Equals(b);
         }
+    }
 
     /// <summary>
     /// Compares two <see cref="DicomDataset"/>s for differences, taking the first input as the source for comparison.

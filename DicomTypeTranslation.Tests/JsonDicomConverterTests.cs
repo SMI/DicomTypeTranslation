@@ -222,8 +222,8 @@ public class JsonDicomConverterTests
 
         ValidatePrivateCreatorsExist(originalDataset);
 
-            var json = DicomJson.ConvertDicomToJson(originalDataset,false,false,NumberSerializationMode.PreferablyAsNumber);
-            var recoDs = DicomJson.ConvertJsonToDicom(json);
+        var json = FellowOakDicom.Serialization.DicomJson.ConvertDicomToJson(originalDataset);
+        var recoDs = FellowOakDicom.Serialization.DicomJson.ConvertJsonToDicom(json);
 
         ValidatePrivateCreatorsExist(recoDs);
     }
