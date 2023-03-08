@@ -1,30 +1,29 @@
 ﻿using DicomTypeTranslation.Elevation.Serialization;
 using System;
 
-namespace DicomTypeTranslation.Elevation.Exceptions
+namespace DicomTypeTranslation.Elevation.Exceptions;
+
+/// <summary>
+/// Thrown when the xml provided to <see cref="TagElevationRequestCollection"/> is invalid
+/// </summary>
+public class MalformedTagElevationRequestCollectionXmlException : Exception
 {
     /// <summary>
-    /// Thrown when the xml provided to <see cref="TagElevationRequestCollection"/> is invalid
+    /// Creates a new instance with the provided message
     /// </summary>
-    public class MalformedTagElevationRequestCollectionXmlException : Exception
+    /// <param name="message"></param>
+    public MalformedTagElevationRequestCollectionXmlException(string message):base(message)
     {
-        /// <summary>
-        /// Creates a new instance with the provided message
-        /// </summary>
-        /// <param name="message"></param>
-        public MalformedTagElevationRequestCollectionXmlException(string message):base(message)
-        {
             
-        }
+    }
 
-        /// <summary>
-        /// Creatres a new instance with the provided message and inner exception
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="ex"></param>
-        public MalformedTagElevationRequestCollectionXmlException(string message, Exception ex):base(message,ex)
-        {
+    /// <summary>
+    /// Creates a new instance with the provided message and inner exception
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="ex"></param>
+    public MalformedTagElevationRequestCollectionXmlException(string message, Exception ex):base(message,ex)
+    {
 
-        }
     }
 }

@@ -21,20 +21,18 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-    - name: Install MS SQL Server and Postgresql, start existing MySQL
+    - name: MySQL
+      run: sudo systemctl start mysql.service
+    - name: MS SQL Server
       run: |
         sudo wget -qO/etc/apt/trusted.gpg.d/microsoft.asc https://packages.microsoft.com/keys/microsoft.asc
         sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list)"
-        sed -i -e 's/Pwd=;/Pwd=root;AllowPublicKeyRetrieval=True;/' DicomTypeTranslation.Tests/TestDatabases.xml
         sudo apt-get install -y --no-install-recommends postgresql mssql-tools mssql-server
         sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
-        sudo service mysql start
-    - name: Build
-      run: dotnet build --configuration Release --nologo
     - name: Test
-      run: dotnet test --no-restore --verbosity normal --nologo
+      run: dotnet test -c Release --verbosity normal
     - name: Pack and push
       if: contains(github.ref,'refs/tags/')
       run: |
         version=$(fgrep AssemblyInformationalVersion SharedAssemblyInfo.cs |cut -d'"' -f2) dotnet pack -c Release --include-source --include-symbols -o dist
-        nuget push -skipDuplicate dist/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_KEY }}
+        dotnet nuget push  dist/*.nupkg --skip-duplicate -k ${{ secrets.NUGET_KEY }}
