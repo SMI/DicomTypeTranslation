@@ -1,5 +1,7 @@
 
-[![.NET Core](https://github.com/HicServices/DicomTypeTranslation/actions/workflows/dotnet-core.yml/badge.svg)](https://github.com/HicServices/DicomTypeTranslation/actions/workflows/dotnet-core.yml) [![Total alerts](https://img.shields.io/lgtm/alerts/g/HicServices/DicomTypeTranslation.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/HicServices/DicomTypeTranslation/alerts/) [![NuGet Badge](https://buildstats.info/nuget/HIC.DicomTypeTranslation)](https://buildstats.info/nuget/HIC.DicomTypeTranslation)
+[![.NET Core](https://github.com/SMI/DicomTypeTranslation/actions/workflows/dotnet-core.yml/badge.svg)](https://github.com/SMI/DicomTypeTranslation/actions/workflows/dotnet-core.yml)
+[![CodeQL](https://github.com/SMI/DicomTypeTranslation/actions/workflows/codeql.yml/badge.svg)](https://github.com/SMI/DicomTypeTranslation/actions/workflows/codeql.yml)
+[![NuGet Badge](https://buildstats.info/nuget/HIC.DicomTypeTranslation)](https://buildstats.info/nuget/HIC.DicomTypeTranslation)
 
 # DicomTypeTranslation
 
