@@ -12,7 +12,7 @@
     <PackageVersion>$(version)</PackageVersion>
     <Authors>Health Informatics Centre - University of Dundee</Authors>
     <Owners>Health Informatics Centre - University of Dundee</Owners>
-    <PackageProjectUrl>https://github.com/HicServices/DicomTypeTranslation</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/SMI/DicomTypeTranslation</PackageProjectUrl>
     <PackageTags>Dicom,ETL,SQL</PackageTags>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <Title>HIC.DicomTypeTranslation</Title>

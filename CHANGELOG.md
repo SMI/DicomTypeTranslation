@@ -252,24 +252,24 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.3...develop
-[4.0.3]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.2..4.0.3
-[4.0.2]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.1..4.0.2
-[4.0.1]: https://github.com/HicServices/DicomTypeTranslation/compare/4.0.0..4.0.1
-[4.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/3.0.0..4.0.0
-[3.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.2..3.0.0
-[2.3.2]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.1..2.3.2
-[2.3.1]: https://github.com/HicServices/DicomTypeTranslation/compare/2.3.0..2.3.1
-[2.3.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.2..2.3.0
-[2.2.2]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.1..2.2.2
-[2.2.1]: https://github.com/HicServices/DicomTypeTranslation/compare/2.2.0..2.2.1
-[2.2.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.1.2..2.2.0
-[2.1.2]: https://github.com/HicServices/DicomTypeTranslation/compare/2.1.1..2.1.2
-[2.1.1]: https://github.com/HicServices/DicomTypeTranslation/compare/2.1.0..2.1.1
-[2.1.0]: https://github.com/HicServices/DicomTypeTranslation/compare/2.0.0..2.1.0
-[2.0.0]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.4...2.0.0
-[1.0.4]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.3...1.0.4
-[1.0.0.3]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.2...1.0.0.3
-[1.0.0.2]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.1...1.0.0.2
-[1.0.0.1]: https://github.com/HicServices/DicomTypeTranslation/compare/1.0.0.0...1.0.0.1
-[1.0.0.0]: https://github.com/HicServices/DicomTypeTranslation/releases/tag/1.0.0.0
+[Unreleased]: https://github.com/SMI/DicomTypeTranslation/compare/4.0.3...develop
+[4.0.3]: https://github.com/SMI/DicomTypeTranslation/compare/4.0.2..4.0.3
+[4.0.2]: https://github.com/SMI/DicomTypeTranslation/compare/4.0.1..4.0.2
+[4.0.1]: https://github.com/SMI/DicomTypeTranslation/compare/4.0.0..4.0.1
+[4.0.0]: https://github.com/SMI/DicomTypeTranslation/compare/3.0.0..4.0.0
+[3.0.0]: https://github.com/SMI/DicomTypeTranslation/compare/2.3.2..3.0.0
+[2.3.2]: https://github.com/SMI/DicomTypeTranslation/compare/2.3.1..2.3.2
+[2.3.1]: https://github.com/SMI/DicomTypeTranslation/compare/2.3.0..2.3.1
+[2.3.0]: https://github.com/SMI/DicomTypeTranslation/compare/2.2.2..2.3.0
+[2.2.2]: https://github.com/SMI/DicomTypeTranslation/compare/2.2.1..2.2.2
+[2.2.1]: https://github.com/SMI/DicomTypeTranslation/compare/2.2.0..2.2.1
+[2.2.0]: https://github.com/SMI/DicomTypeTranslation/compare/2.1.2..2.2.0
+[2.1.2]: https://github.com/SMI/DicomTypeTranslation/compare/2.1.1..2.1.2
+[2.1.1]: https://github.com/SMI/DicomTypeTranslation/compare/2.1.0..2.1.1
+[2.1.0]: https://github.com/SMI/DicomTypeTranslation/compare/2.0.0..2.1.0
+[2.0.0]: https://github.com/SMI/DicomTypeTranslation/compare/1.0.4...2.0.0
+[1.0.4]: https://github.com/SMI/DicomTypeTranslation/compare/1.0.0.3...1.0.4
+[1.0.0.3]: https://github.com/SMI/DicomTypeTranslation/compare/1.0.0.2...1.0.0.3
+[1.0.0.2]: https://github.com/SMI/DicomTypeTranslation/compare/1.0.0.1...1.0.0.2
+[1.0.0.1]: https://github.com/SMI/DicomTypeTranslation/compare/1.0.0.0...1.0.0.1
+[1.0.0.0]: https://github.com/SMI/DicomTypeTranslation/releases/tag/1.0.0.0
