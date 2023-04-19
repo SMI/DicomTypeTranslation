@@ -14,13 +14,8 @@ internal class TagNavigation
 
     public TagNavigation(string navigationToken, bool isLast)
     {
-        IsLast = isLast;
-
-        var entry = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == navigationToken);
-
-        if (entry == null)
-            throw new TagNavigationException($"Unknown DICOM tag '{navigationToken}'");
-
+        var entry = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == navigationToken) ??
+                    throw new TagNavigationException($"Unknown DICOM tag '{navigationToken}'");
         if (!isLast)
         {
             if (entry.ValueRepresentations.All(v => v != DicomVR.SQ))
@@ -33,7 +28,7 @@ internal class TagNavigation
                 throw new TagNavigationException(
                     $"Navigation Token {navigationToken} was the final token in the pathway so cannot be DicomVR.SQ");
         }
-
+        IsLast = isLast;
         _tag = entry.Tag;
     }
 
@@ -46,7 +41,7 @@ internal class TagNavigation
 
     public IEnumerable<SequenceElement> GetSubset(SequenceElement location)
     {
-        return location.Dataset.ContainsKey(_tag) ? ToSequenceElementArray((Dictionary<DicomTag, object>[])location.Dataset[_tag], location) : Array.Empty<SequenceElement>();
+        return location.Dataset.TryGetValue(_tag, out var value) ? ToSequenceElementArray((Dictionary<DicomTag, object>[])value, location) : Array.Empty<SequenceElement>();
     }
 
     private SequenceElement[] ToSequenceElementArray(IEnumerable<Dictionary<DicomTag, object>> getCSharpValue, SequenceElement location)

@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text;
 using FellowOakDicom;
 using MongoDB.Bson;
-using Newtonsoft.Json;
 
 namespace DicomTypeTranslation.Tests.Helpers;
 
@@ -197,7 +196,7 @@ public static class TranslationTestHelpers
             new DicomPersonName(DicomTag.PatientName, new[] {"Anna^Pelle", null, "Olle^Jöns^Pyjamas"}),
             {DicomTag.SOPClassUID, DicomUID.RTPlanStorage},
             {DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateDerivedFromUUID()},
-            {DicomTag.SeriesInstanceUID, new DicomUID[] { }},
+            {DicomTag.SeriesInstanceUID, Array.Empty<DicomUID>()},
             {DicomTag.DoseType, "HEJ"},
             {DicomTag.ControlPointSequence, (DicomSequence[]) null}
         };
@@ -246,14 +245,8 @@ public static class TranslationTestHelpers
             }
         }
 
-        sb.Append("}");
+        sb.Append('}');
 
         return sb.ToString();
-    }
-
-    public static JsonConverter GetConverter(Type converterType)
-    {
-        const BindingFlags flags = BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance | BindingFlags.OptionalParamBinding;
-        return (JsonConverter)Activator.CreateInstance(converterType, flags, null, new[] { Type.Missing }, null);
     }
 }

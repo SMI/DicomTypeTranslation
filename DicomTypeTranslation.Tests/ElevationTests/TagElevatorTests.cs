@@ -1,13 +1,12 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using FellowOakDicom;
 using DicomTypeTranslation.Elevation;
 using DicomTypeTranslation.Elevation.Exceptions;
 using DicomTypeTranslation.Helpers;
 using FAnsi.Discovery;
+using FellowOakDicom;
 using NUnit.Framework;
 
 namespace DicomTypeTranslation.Tests.ElevationTests;

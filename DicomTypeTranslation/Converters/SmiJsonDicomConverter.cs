@@ -1,12 +1,12 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using FellowOakDicom;
 using FellowOakDicom.IO.Buffer;
-using Newtonsoft.Json;
 
 namespace DicomTypeTranslation.Converters;
 
@@ -14,16 +14,46 @@ namespace DicomTypeTranslation.Converters;
 /// SMI JSON to DICOM converter. Lazily converts between certain DICOM value types to allow greater coverage over real data.
 /// This means it does not comply with the formal DICOM JSON specification.
 /// </summary>
-public class SmiJsonDicomConverter : JsonConverter
+public class SmiJsonDicomConverter
 {
     private const string VALUE_PROPERTY_NAME = "val";
     private const string INL_BIN_PROPERTY_NAME = "bin";
     private const string BLK_URI_PROPERTY_NAME = "uri";
     private const string VR_PROPERTY_NAME = "vr";
 
+    /// <summary>
+    /// Convert this dataset to a json string
+    /// </summary>
+    /// <param name="dataset"></param>
+    /// <returns></returns>
+    public static string ToJson(DicomDataset dataset)
+    {
+        var self=new SmiJsonDicomConverter();
+        using var ms = new MemoryStream();
+        JsonWriterOptions writerOptions=new()
+        {
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+        using var writer = new Utf8JsonWriter(ms,writerOptions);
+        self.WriteJson(writer, dataset);
+        writer.Flush();
+        return Encoding.UTF8.GetString(ms.ToArray());
+    }
 
     /// <summary>
-    /// Constructor with 1 bool argument required for compatibility testing with
+    /// Convert a json string to a dataset
+    /// </summary>
+    /// <param name="json"></param>
+    /// <returns></returns>
+    public static DicomDataset FromJson(string json)
+    {
+        var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
+        reader.Read();
+        return ReadJson(ref reader);
+    }
+
+    /// <summary>
+    /// Constructor with 1 boolean argument required for compatibility testing with
     /// original version of the class.
     /// </summary>
     /// <param name="_"></param>
@@ -32,12 +62,11 @@ public class SmiJsonDicomConverter : JsonConverter
 
     #region JsonConverter overrides
 
-    /// <inheritdoc />
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    private void WriteJson(Utf8JsonWriter writer, object value)
     {
         if (value == null)
         {
-            writer.WriteNull();
+            writer.WriteNullValue();
             return;
         }
 
@@ -48,36 +77,34 @@ public class SmiJsonDicomConverter : JsonConverter
         foreach (var item in dataset)
         {
             // Group length (gggg,0000) attributes shall not be included in a DICOM JSON Model object.
-            if (((uint)item.Tag & 0xffff) == 0)
+            if (item.Tag.Element == 0)
                 continue;
 
-            writer.WritePropertyName(item.Tag.Group.ToString("X4") + item.Tag.Element.ToString("X4"));
-            WriteJsonDicomItem(writer, item, serializer);
+            writer.WritePropertyName($"{item.Tag.Group:X4}{item.Tag.Element:X4}");
+            WriteJsonDicomItem(writer, item);
         }
 
         writer.WriteEndObject();
     }
 
-    /// <inheritdoc />
-    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    private static DicomDataset ReadJson(ref Utf8JsonReader reader)
     {
         var dataset = new DicomDataset();
-
-        if (reader.TokenType == JsonToken.Null)
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
 
-        if (reader.TokenType != JsonToken.StartObject)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (reader.TokenType != JsonTokenType.StartObject)
+            throw new Exception("Malformed DICOM json");
 
         reader.Read();
 
-        while (reader.TokenType == JsonToken.PropertyName)
+        while (reader.TokenType == JsonTokenType.PropertyName)
         {
-            var tag = ParseTag((string)reader.Value);
+            var tag = ParseTag(reader.GetString());
 
             reader.Read();
 
-            var item = ReadJsonDicomItem(tag, reader, serializer);
+            var item = ReadJsonDicomItem(tag, ref reader);
 
             dataset.Add(item);
 
@@ -95,33 +122,20 @@ public class SmiJsonDicomConverter : JsonConverter
                 item.Tag.PrivateCreator = new DicomPrivateCreator(dataset.GetSingleValue<string>(privateCreatorTag));
         }
 
-        if (reader.TokenType != JsonToken.EndObject)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (reader.TokenType != JsonTokenType.EndObject)
+            throw new Exception("Malformed DICOM json");
 
         return dataset;
-    }
-
-    /// <summary>
-    /// Determines whether this instance can convert the specified object type.
-    /// </summary>
-    /// <param name="objectType">Type of the object.</param>
-    /// <returns>
-    /// <c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-    /// </returns>
-    public override bool CanConvert(Type objectType)
-    {
-        return typeof(DicomDataset).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
     }
 
     #endregion
 
     #region WriteJson helpers
 
-    private void WriteJsonDicomItem(JsonWriter writer, DicomItem item, JsonSerializer serializer)
+    private void WriteJsonDicomItem(Utf8JsonWriter writer, DicomItem item)
     {
         writer.WriteStartObject();
-        writer.WritePropertyName(VR_PROPERTY_NAME);
-        writer.WriteValue(item.ValueRepresentation.Code);
+        writer.WriteString(VR_PROPERTY_NAME,item.ValueRepresentation.Code);
 
         // Could also do if(item is DicomStringElement) {...} here, but better to be explicit
         // in specifying each VR and also to match the old version of the converter
@@ -196,7 +210,7 @@ public class SmiJsonDicomConverter : JsonConverter
                 break;
 
             case "SQ": // Sequence
-                WriteJsonSequence(writer, (DicomSequence)item, serializer);
+                WriteJsonSequence(writer, (DicomSequence)item);
                 break;
 
             case "OB":
@@ -222,32 +236,44 @@ public class SmiJsonDicomConverter : JsonConverter
     /// </summary>
     /// <param name="writer"></param>
     /// <param name="elem"></param>
-    private static void WriteJsonStringElement(JsonWriter writer, DicomElement elem)
+    private static void WriteJsonStringElement(Utf8JsonWriter writer, DicomElement elem)
     {
-        if (elem.Count == 0)
-            return;
-
-        writer.WritePropertyName(VALUE_PROPERTY_NAME);
-
-        var val = elem.Get<string>().TrimEnd('\0');
-        writer.WriteValue(val);
+        if (elem.Count != 0) writer.WriteString(VALUE_PROPERTY_NAME, elem.Get<string>().TrimEnd('\0'));
     }
 
-    private static void WriteDicomValueElement<T>(JsonWriter writer, DicomElement elem) where T : struct
+    private static void WriteDicomValueElement<T>(Utf8JsonWriter writer, DicomElement elem) where T : struct
     {
         if (elem.Count == 0)
             return;
-
-        writer.WritePropertyName(VALUE_PROPERTY_NAME);
-        writer.WriteStartArray();
+        writer.WriteStartArray(VALUE_PROPERTY_NAME);
 
         foreach (var val in elem.Get<T[]>())
-            writer.WriteValue(val);
+            switch (val)
+            {
+                case ulong u: writer.WriteNumberValue(u);
+                    break;
+                case uint u: writer.WriteNumberValue(u);
+                    break;
+                case ushort u: writer.WriteNumberValue(u);
+                    break;
+                case long u: writer.WriteNumberValue(u);
+                    break;
+                case int u: writer.WriteNumberValue(u);
+                    break;
+                case short u: writer.WriteNumberValue(u);
+                    break;
+                case float u: writer.WriteNumberValue(u);
+                    break;
+                case double u: writer.WriteNumberValue(u);
+                    break;
+                default:
+                    throw new ArgumentException($"No case implemented to write data for type {typeof(T)} to JSON");
+            }
 
         writer.WriteEndArray();
     }
 
-    private static void WriteJsonAttributeTag(JsonWriter writer, DicomElement elem)
+    private static void WriteJsonAttributeTag(Utf8JsonWriter writer, DicomElement elem)
     {
         if (elem.Count == 0)
             return;
@@ -262,9 +288,9 @@ public class SmiJsonDicomConverter : JsonConverter
         if (sb.Length % 8 != 0)
             throw new JsonException($"AttributeTag string of length {sb.Length} is not divisible by 8");
 
-        writer.WriteValue(sb.ToString());
+        writer.WriteStringValue(sb.ToString());
     }
-    private void WriteJsonSequence(JsonWriter writer, DicomSequence seq, JsonSerializer serializer)
+    private void WriteJsonSequence(Utf8JsonWriter writer, DicomSequence seq)
     {
         if (seq.Items.Count == 0)
             return;
@@ -273,12 +299,12 @@ public class SmiJsonDicomConverter : JsonConverter
         writer.WriteStartArray();
 
         foreach (var child in seq.Items)
-            WriteJson(writer, child, serializer);
+            WriteJson(writer, child);
 
         writer.WriteEndArray();
     }
 
-    private static void WriteJsonOther(JsonWriter writer, DicomItem item)
+    private static void WriteJsonOther(Utf8JsonWriter writer, DicomItem item)
     {
         // DicomFragmentSequence - Only for pixel data
         if (item is not DicomElement elem)
@@ -290,12 +316,12 @@ public class SmiJsonDicomConverter : JsonConverter
         if (elem.Buffer is IBulkDataUriByteBuffer buffer)
         {
             writer.WritePropertyName(BLK_URI_PROPERTY_NAME);
-            writer.WriteValue(buffer.BulkDataUri);
+            writer.WriteStringValue(buffer.BulkDataUri);
         }
         else if (elem.Count != 0)
         {
             writer.WritePropertyName(INL_BIN_PROPERTY_NAME);
-            writer.WriteValue(Convert.ToBase64String(elem.Buffer.Data));
+            writer.WriteStringValue(Convert.ToBase64String(elem.Buffer.Data));
         }
     }
 
@@ -311,118 +337,104 @@ public class SmiJsonDicomConverter : JsonConverter
         return tag;
     }
 
-    private DicomItem ReadJsonDicomItem(DicomTag tag, JsonReader reader, JsonSerializer serializer)
+    private static DicomItem ReadJsonDicomItem(DicomTag tag, ref Utf8JsonReader reader)
     {
-        if (reader.TokenType != JsonToken.StartObject)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (reader.TokenType != JsonTokenType.StartObject)
+            throw new Exception("Malformed DICOM json");
 
         reader.Read();
 
-        if (reader.TokenType != JsonToken.PropertyName)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (reader.TokenType != JsonTokenType.PropertyName)
+            throw new Exception("Malformed DICOM json");
 
-        if ((string)reader.Value != VR_PROPERTY_NAME)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (reader.GetString() != VR_PROPERTY_NAME)
+            throw new Exception("Malformed DICOM json");
 
         reader.Read();
 
-        if (reader.TokenType != JsonToken.String)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (reader.TokenType != JsonTokenType.String)
+            throw new Exception("Malformed DICOM json");
 
-        var vr = (string)reader.Value;
+        var vr = reader.GetString();
 
-        if (vr.Length != 2)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (vr?.Length != 2)
+            throw new Exception("Malformed DICOM json");
 
-        object data;
-
-        switch (vr)
+        object data = vr switch
         {
             // Subclasses of DicomStringElement
-
-            case "AE": // Application Entity
-            case "AS": // Age String
-            case "CS": // Code String
-            case "DS": // Decimal String
-            case "IS": // Integer String
-            case "LO": // Long String
-            case "PN": // Person Name
-            case "SH": // Short String
-            case "UI": // Unique Identifier
-            case "UC": // Unlimited Characters
-            case "LT": // Long Text
-            case "ST": // Short Text
-            case "UR": // Universal Resource
-            case "UT": // Unlimited Text
-            case "DA": // Date
-            case "DT": // DateTime
-            case "TM": // Time
-            case "AT": // Attribute Tag
-                data = ReadJsonString(reader);
-                break;
-
+            "AE" => // Application Entity
+                ReadJsonString(ref reader),
+            "AS" => // Age String
+                ReadJsonString(ref reader),
+            "CS" => // Code String
+                ReadJsonString(ref reader),
+            "DS" => // Decimal String
+                ReadJsonString(ref reader),
+            "IS" => // Integer String
+                ReadJsonString(ref reader),
+            "LO" => // Long String
+                ReadJsonString(ref reader),
+            "PN" => // Person Name
+                ReadJsonString(ref reader),
+            "SH" => // Short String
+                ReadJsonString(ref reader),
+            "UI" => // Unique Identifier
+                ReadJsonString(ref reader),
+            "UC" => // Unlimited Characters
+                ReadJsonString(ref reader),
+            "LT" => // Long Text
+                ReadJsonString(ref reader),
+            "ST" => // Short Text
+                ReadJsonString(ref reader),
+            "UR" => // Universal Resource
+                ReadJsonString(ref reader),
+            "UT" => // Unlimited Text
+                ReadJsonString(ref reader),
+            "DA" => // Date
+                ReadJsonString(ref reader),
+            "DT" => // DateTime
+                ReadJsonString(ref reader),
+            "TM" => // Time
+                ReadJsonString(ref reader),
+            "AT" => // Attribute Tag
+                ReadJsonString(ref reader),
             // Subclasses of DicomValueElement<T>
-
             // DicomValueElement<double>
-            case "FD": // Floating Point Double
-                data = ReadJsonNumeric<double>(reader);
-                break;
-
+            "FD" => // Floating Point Double
+                ReadJsonNumeric<double>(ref reader),
             // DicomValueElement<float>
-            case "FL": // Floating Point Single
-                data = ReadJsonNumeric<float>(reader);
-                break;
-
+            "FL" => // Floating Point Single
+                ReadJsonNumeric<float>(ref reader),
             // DicomValueElement<int>
-            case "SL": // Signed Long
-                data = ReadJsonNumeric<int>(reader);
-                break;
-
+            "SL" => // Signed Long
+                ReadJsonNumeric<int>(ref reader),
             // DicomValueElement<uint>
-            case "UL": // Unsigned Long
-                data = ReadJsonNumeric<uint>(reader);
-                break;
-
+            "UL" => // Unsigned Long
+                ReadJsonNumeric<uint>(ref reader),
             // DicomValueElement<short>
-            case "SS": // Signed Short
-                data = ReadJsonNumeric<short>(reader);
-                break;
-
-            case "SV":
-                data = ReadJsonNumeric<long>(reader);
-                break;
-
+            "SS" => // Signed Short
+                ReadJsonNumeric<short>(ref reader),
+            "SV" => ReadJsonNumeric<long>(ref reader),
             // DicomValueElement<ushort>
-            case "US": // Unsigned Short
-                data = ReadJsonNumeric<ushort>(reader);
-                break;
-
-            case "UV":
-                data = ReadJsonNumeric<ulong>(reader);
-                break;
-
+            "US" => // Unsigned Short
+                ReadJsonNumeric<ushort>(ref reader),
+            "UV" => ReadJsonNumeric<ulong>(ref reader),
             // Sequence
-            case "SQ":
-                data = ReadJsonSequence(reader, serializer);
-                break;
-
+            "SQ" => ReadJsonSequence(ref reader),
             // OtherX elements
-            case "OB":
-            case "OD":
-            case "OF":
-            case "OL":
-            case "OW":
-            case "OV":
-            case "UN":
-                data = ReadJsonOX(reader);
-                break;
+            "OB" => ReadJsonOX(ref reader),
+            "OD" => ReadJsonOX(ref reader),
+            "OF" => ReadJsonOX(ref reader),
+            "OL" => ReadJsonOX(ref reader),
+            "OW" => ReadJsonOX(ref reader),
+            "OV" => ReadJsonOX(ref reader),
+            "UN" => ReadJsonOX(ref reader),
+            _ => throw new ArgumentException($"No case implemented to read object data for VR {vr} from JSON")
+        };
 
-            default:
-                throw new ArgumentException($"No case implemented to read object data for VR {vr} from JSON");
-        }
-
-        if (reader.TokenType != JsonToken.EndObject)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (reader.TokenType != JsonTokenType.EndObject)
+            throw new Exception($"Malformed DICOM json, got {reader.TokenType} when expecting {nameof(JsonTokenType.EndObject)}");
 
         return CreateDicomItem(tag, vr, data);
     }
@@ -469,22 +481,19 @@ public class SmiJsonDicomConverter : JsonConverter
         };
     }
 
-    private static string ReadJsonString(JsonReader reader)
+    private static string ReadJsonString(ref Utf8JsonReader reader)
     {
         reader.Read();
 
-        if (reader.TokenType == JsonToken.EndObject)
+        if (reader.TokenType == JsonTokenType.EndObject)
             return "";
 
-        if (reader.TokenType != JsonToken.PropertyName || (string)reader.Value != VALUE_PROPERTY_NAME)
-            throw new JsonReaderException("Malformed DICOM json");
-
-        reader.ReadAsString();
-
-        var val = (string)reader.Value;
+        if (reader.TokenType != JsonTokenType.PropertyName || reader.GetString() != VALUE_PROPERTY_NAME)
+            throw new Exception("Malformed DICOM json");
 
         reader.Read();
-
+        string val = reader.GetString();
+        reader.Read();
         return val;
     }
 
@@ -505,106 +514,101 @@ public class SmiJsonDicomConverter : JsonConverter
         return new DicomAttributeTag(tag, split.Select(ParseTag).ToArray());
     }
 
-    private static T[] ReadJsonNumeric<T>(JsonReader reader)
+    private static T[] ReadJsonNumeric<T>(ref Utf8JsonReader reader)
     {
         reader.Read();
 
-        if (reader.TokenType == JsonToken.EndObject)
+        if (reader.TokenType == JsonTokenType.EndObject)
             return Array.Empty<T>();
 
-        if (reader.TokenType != JsonToken.PropertyName && (string)reader.Value != VALUE_PROPERTY_NAME)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (reader.TokenType != JsonTokenType.PropertyName && reader.GetString() != VALUE_PROPERTY_NAME)
+            throw new Exception("Malformed DICOM json");
 
         reader.Read();
 
-        if (reader.TokenType != JsonToken.StartArray)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (reader.TokenType != JsonTokenType.StartArray)
+            throw new Exception("Malformed DICOM json");
 
         reader.Read();
 
         var values = new List<T>();
 
-        while (reader.TokenType is JsonToken.Float or JsonToken.Integer)
+        while (reader.TokenType is JsonTokenType.Number)
         {
-            values.Add((T)Convert.ChangeType(reader.Value, typeof(T)));
+            values.Add((T)Convert.ChangeType(reader.GetDouble(), typeof(T)));
             reader.Read();
         }
 
-        if (reader.TokenType != JsonToken.EndArray)
-            throw new JsonReaderException("Malformed DICOM json");
-
+        if (reader.TokenType != JsonTokenType.EndArray)
+            throw new Exception("Malformed DICOM json");
         reader.Read();
-
         return values.ToArray();
     }
 
-    private static IByteBuffer ReadJsonOX(JsonReader reader)
+    private static IByteBuffer ReadJsonOX(ref Utf8JsonReader reader)
     {
         reader.Read();
 
         return reader.TokenType switch
         {
-            JsonToken.PropertyName when (string)reader.Value == INL_BIN_PROPERTY_NAME => ReadJsonInlineBinary(
-                reader),
-            JsonToken.PropertyName when (string)reader.Value == BLK_URI_PROPERTY_NAME =>
-                ReadJsonBulkDataUri(reader),
+            JsonTokenType.PropertyName when reader.GetString() == INL_BIN_PROPERTY_NAME => ReadJsonInlineBinary(ref reader),
+            JsonTokenType.PropertyName when reader.GetString() == BLK_URI_PROPERTY_NAME =>
+                ReadJsonBulkDataUri(ref reader),
             _ => EmptyBuffer.Value
         };
     }
 
-    private static IByteBuffer ReadJsonInlineBinary(JsonReader reader)
+    private static IByteBuffer ReadJsonInlineBinary(ref Utf8JsonReader reader)
     {
         reader.Read();
 
-        if (reader.TokenType != JsonToken.String)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (reader.TokenType != JsonTokenType.String)
+            throw new Exception("Malformed DICOM json");
 
-        var data = new MemoryByteBuffer(Convert.FromBase64String(reader.Value as string ?? throw new InvalidOperationException()));
+        var data = new MemoryByteBuffer(reader.GetBytesFromBase64());
         reader.Read();
 
         return data;
     }
 
-    private static IBulkDataUriByteBuffer ReadJsonBulkDataUri(JsonReader reader)
+    private static IBulkDataUriByteBuffer ReadJsonBulkDataUri(ref Utf8JsonReader reader)
     {
         reader.Read();
 
-        if (reader.TokenType != JsonToken.String)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (reader.TokenType != JsonTokenType.String)
+            throw new Exception("Malformed DICOM json");
 
-        var data = new BulkDataUriByteBuffer((string)reader.Value);
+        var data = new BulkDataUriByteBuffer(reader.GetString());
         reader.Read();
 
         return data;
     }
 
-    private DicomDataset[] ReadJsonSequence(JsonReader reader, JsonSerializer serializer)
+    private static DicomDataset[] ReadJsonSequence(ref Utf8JsonReader reader)
     {
         reader.Read();
 
-        if (reader.TokenType != JsonToken.PropertyName || (string)reader.Value != VALUE_PROPERTY_NAME)
+        if (reader.TokenType != JsonTokenType.PropertyName || reader.GetString() != VALUE_PROPERTY_NAME)
             return Array.Empty<DicomDataset>();
 
         reader.Read();
 
-        if (reader.TokenType != JsonToken.StartArray)
-            throw new JsonReaderException("Malformed DICOM json");
+        if (reader.TokenType != JsonTokenType.StartArray)
+            throw new Exception("Malformed DICOM json");
 
         reader.Read();
 
         var childItems = new List<DicomDataset>();
 
-        while (reader.TokenType is JsonToken.StartObject or JsonToken.Null)
+        while (reader.TokenType is JsonTokenType.StartObject or JsonTokenType.Null)
         {
-            childItems.Add((DicomDataset)ReadJson(reader, typeof(DicomDataset), null, serializer));
+            childItems.Add(ReadJson(ref reader));
             reader.Read();
         }
 
-        if (reader.TokenType != JsonToken.EndArray)
-            throw new JsonReaderException("Malformed DICOM json");
-
+        if (reader.TokenType != JsonTokenType.EndArray)
+            throw new Exception("Malformed DICOM json");
         reader.Read();
-
         return childItems.ToArray();
     }
 

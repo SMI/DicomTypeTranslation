@@ -85,10 +85,7 @@ public class JsonDicomConverterTests
         // Remove them here to allow comparison between datasets.
         RemoveGroupLengths(originalDataset);
 
-        if (expectFail)
-            Assert.False(DicomDatasetHelpers.ValueEquals(originalDataset, recoDataset));
-        else
-            Assert.True(DicomDatasetHelpers.ValueEquals(originalDataset, recoDataset));
+        Assert.True(expectFail!=DicomDatasetHelpers.ValueEquals(originalDataset, recoDataset));
     }
 
     /// <summary>
@@ -366,15 +363,15 @@ public class JsonDicomConverterTests
         };
 
         DicomTypeTranslater.SerializeBinaryData = false;
-        var json = DicomTypeTranslater.SerializeDatasetToJson(ds,_useOwnConverter);
+            var json = DicomTypeTranslater.SerializeDatasetToJson(ds,_useOwnConverter);
 
-        Assert.DoesNotThrow(() => JToken.Parse(json));
+            Assert.DoesNotThrow(() => JToken.Parse(json));
 
-        var recoDs = DicomTypeTranslater.DeserializeJsonToDataset(json,_useOwnConverter);
+            var recoDs = DicomTypeTranslater.DeserializeJsonToDataset(json,_useOwnConverter);
 
-        Assert.AreEqual(ds.Count(), recoDs.Count());
-        AssertBlacklistedNulls(recoDs);
-    }
+            Assert.AreEqual(ds.Count(), recoDs.Count());
+            AssertBlacklistedNulls(recoDs);
+        }
 
     private static void AssertBlacklistedNulls(DicomDataset ds)
     {

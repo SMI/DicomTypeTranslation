@@ -12,7 +12,7 @@ internal class TagRelativeConditional
     public bool IsCurrentNodeMatch { get; }
     private readonly string _conditionalShouldMatch;
         
-    private List<TagNavigation> _navigations;
+    private readonly List<TagNavigation> _navigations;
 
     private static readonly string[] validStartersTokens = {".", "[..]", ".."};
 
