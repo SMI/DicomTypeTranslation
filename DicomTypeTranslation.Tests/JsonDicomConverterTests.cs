@@ -206,7 +206,7 @@ public class JsonDicomConverterTests
         {
             { DicomTag.Modality, "CT" },
             new DicomCodeString(privateTag1, "test1"),
-            { privateTag2, "test2" }
+            { DicomVR.LO, privateTag2, "test2" }
         };
 
         VerifyJsonTripleTrip(privateDs);

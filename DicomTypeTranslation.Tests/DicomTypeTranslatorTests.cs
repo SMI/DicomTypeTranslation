@@ -221,7 +221,10 @@ public class DicomTypeTranslatorTests
     {
         // Create a dataset with the private tag in it
         var aTag = new DicomTag(0x3001, 0x08, "PRIVATE");
-        var ds = new DicomDataset { { aTag, 1 } };
+        var ds = new DicomDataset
+        {
+            { DicomVR.IS, aTag, 1 }
+        };
 
         // Getting the value directly is fine
         Assert.AreEqual(1, ds.GetSingleValue<int>(aTag));
