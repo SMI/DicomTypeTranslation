@@ -28,12 +28,10 @@ public class DatabaseTests
     [OneTimeSetUp]
     public void CheckFiles()
     {
-        ImplementationManager.Load(
-            typeof(MicrosoftSQLServerHelper).Assembly,
-            typeof(OracleServerHelper).Assembly,
-            typeof(MySqlServerHelper).Assembly,
-            typeof(PostgreSqlServerHelper).Assembly
-        );
+        ImplementationManager.Load<MicrosoftSQLImplementation>();
+        ImplementationManager.Load<OracleImplementation>();
+        ImplementationManager.Load<MySqlImplementation>();
+        ImplementationManager.Load<PostgreSqlImplementation>();
 
         var file = Path.Combine(TestContext.CurrentContext.TestDirectory, TestFilename);
             
@@ -42,11 +40,8 @@ public class DatabaseTests
         var doc = XDocument.Load(file);
 
         var root = doc.Element("TestDatabases") ?? throw new Exception($"Missing element 'TestDatabases' in {TestFilename}");
-
         var settings = root.Element("Settings") ?? throw new Exception($"Missing element 'Settings' in {TestFilename}");
-
         var e = settings.Element("AllowDatabaseCreation") ?? throw new Exception($"Missing element 'AllowDatabaseCreation' in {TestFilename}");
-
         _allowDatabaseCreation = Convert.ToBoolean(e.Value);
 
         e = settings.Element("TestScratchDatabase");
