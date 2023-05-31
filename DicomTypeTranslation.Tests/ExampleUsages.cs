@@ -84,11 +84,9 @@ internal class ExampleUsages
         Assert.AreEqual(typeof(string), type.CSharpType);
         Assert.AreEqual(64, type.Width);
 
-        TypeTranslater tt = new MicrosoftSQLTypeTranslater();
-        Assert.AreEqual("varchar(64)", tt.GetSQLDBTypeForCSharpType(type));
+        Assert.AreEqual("varchar(64)", MicrosoftSQLTypeTranslater.Instance.GetSQLDBTypeForCSharpType(type));
 
-        tt = new OracleTypeTranslater();
-        Assert.AreEqual("varchar2(64)", tt.GetSQLDBTypeForCSharpType(type));
+        Assert.AreEqual("varchar2(64)", OracleTypeTranslater.Instance.GetSQLDBTypeForCSharpType(type));
 
     }
 }
