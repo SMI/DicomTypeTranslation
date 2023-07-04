@@ -87,8 +87,6 @@ public class DatabaseExamples : DatabaseTests
         //decide where you want to create the table
         var db = GetTestDatabase(dbType);
 
-        var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
-
         //actually do it
         ImagingTableCreation.CreateTable(db.ExpectTable("MyCoolTable"),toCreate);
     }

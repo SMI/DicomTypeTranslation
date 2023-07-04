@@ -25,11 +25,9 @@ public class TagElevationRequestCollection
         doc.LoadXml(xml);
 
         var root = doc["TagElevationRequestCollection"] ?? throw new MalformedTagElevationRequestCollectionXmlException("No root tag TagElevationRequestCollection");
-        foreach (var n in root.ChildNodes.Cast<XmlNode>().Where(n=>n is not XmlComment))
+        foreach (var n in root.ChildNodes.Cast<XmlNode>().Where(n=>n is not XmlComment).Cast<XmlElement>())
         {
-            var requestXml = (XmlElement)n;
-            var toAdd = new TagElevationRequest(requestXml);
-            Requests.Add(toAdd);
+            Requests.Add(new TagElevationRequest(n));
         }
     }
 }

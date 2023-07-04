@@ -77,8 +77,6 @@ internal class TemplateTests:DatabaseTests
             
         var db = GetTestDatabase(dbType);
             
-        var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
-
         foreach(var table in collection.Tables)
         {
             if(string.Equals(table.TableName, "ImageTable",StringComparison.CurrentCultureIgnoreCase))
@@ -198,9 +196,6 @@ internal class TemplateTests:DatabaseTests
         //doesn't actually have to exist
         var db = new DiscoveredServer("localhost","nobody",FAnsi.DatabaseType.MySql,"captain","morgans").ExpectDatabase("neverland");
 
-        var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
-                       
-
         var sql1 = ImagingTableCreation.GetCreateTableSql(db,collection.Tables[0].TableName, collection.Tables[0]);
         var sql2 = ImagingTableCreation.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0]);
 
@@ -265,8 +260,6 @@ internal class TemplateTests:DatabaseTests
 
         //doesn't actually have to exist
         var db = new DiscoveredServer("localhost", "nobody", FAnsi.DatabaseType.MySql, "captain", "morgans").ExpectDatabase("neverland");
-
-        var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
 
         var sql1 = ImagingTableCreation.GetCreateTableSql(db, collection.Tables[0].TableName, collection.Tables[0]);
         var sql2 = ImagingTableCreation.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0]);
