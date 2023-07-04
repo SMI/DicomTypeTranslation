@@ -19,7 +19,7 @@ public static class FlexibleEquality
     public static bool FlexibleEquals(object a, object b)
     {
         if (a == null || b == null)
-            return a == b;
+            return ReferenceEquals(a,b);
 
         //types are different so most likely we are not equipped to deal with this problem let a decide if it is equal or not
         if (a.GetType() != b.GetType())
