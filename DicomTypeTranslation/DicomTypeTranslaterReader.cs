@@ -321,10 +321,7 @@ public static class DicomTypeTranslaterReader
 
         else if (element is DicomStringElement)
         {
-            if (element is not DicomMultiStringElement && element.Length == 0)
-                retVal = BsonNull.Value;
-            else
-                retVal = (BsonString)dataset.GetString(element.Tag);
+            retVal = element is not DicomMultiStringElement && element.Length == 0 ? BsonNull.Value : (BsonString)dataset.GetString(element.Tag);
         }
 
         else if (element.ValueRepresentation == DicomVR.AT) // Special case - need to construct manually

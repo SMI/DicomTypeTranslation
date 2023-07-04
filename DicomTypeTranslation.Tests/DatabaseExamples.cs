@@ -37,7 +37,8 @@ public class DatabaseExamples : DatabaseTests
         tbl.AddColumn("FileLocation", new DatabaseTypeRequest(typeof(string), 500), true, 500);
 
         //Create a DataTable in memory for the data we read from disk
-        var dt = new DataTable();
+        using var dt = new DataTable();
+        dt.BeginDataLoad();
         dt.Columns.Add("SOPInstanceUID");
         dt.Columns.Add("Modality");
         dt.Columns.Add("PatientID");
@@ -61,6 +62,7 @@ public class DatabaseExamples : DatabaseTests
 
         //put the DataTable into the database
         using var insert = tbl.BeginBulkInsert();
+        dt.EndDataLoad();
         insert.Upload(dt);
 
 
@@ -101,7 +103,7 @@ public class DatabaseExamples : DatabaseTests
             new DicomDate(DicomTag.PatientBirthDate,new DateTime(2001,1,1))
         });
 
-        var dt = new DataTable();
+        using var dt = new DataTable();
         var row = ds.ToRow(dt);
 
         Assert.AreEqual("Frank", row["PatientName"]);
