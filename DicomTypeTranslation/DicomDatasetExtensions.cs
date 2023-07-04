@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-
+using System.Linq;
 using FellowOakDicom;
 
 
@@ -44,9 +44,8 @@ public static class DicomDatasetExtensions
         var row = inTable.Rows.Add();
 
         //for each item in the dataset
-        foreach (var i in dataset)
-            if (onlyTheseTags.Contains(DicomTypeTranslaterReader.GetColumnNameForTag(i.Tag, false)))
-                AddColumnValue(dataset, row, i);
+        foreach (var i in dataset.Where(i=> onlyTheseTags.Contains(DicomTypeTranslaterReader.GetColumnNameForTag(i.Tag, false))))
+            AddColumnValue(dataset, row, i);
 
         return row;
     }
@@ -64,9 +63,8 @@ public static class DicomDatasetExtensions
         var row = inTable.Rows.Add();
 
         //for each item in the dataset
-        foreach (var i in dataset)
-            if (filterTags(i))
-                AddColumnValue(dataset, row, i);
+        foreach (var i in dataset.Where(filterTags))
+            AddColumnValue(dataset, row, i);
 
         return row;
 

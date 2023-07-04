@@ -16,14 +16,14 @@ namespace DicomTypeTranslation.Tests;
 [TestFixture(ConverterTestCase.Smi)]
 public class JsonDicomConverterTests
 {
-    private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+    private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
     private readonly bool _useOwnConverter;
 
-    private static readonly string _dcmDir = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDicomFiles");
+    private static readonly string DcmDir = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDicomFiles");
 
-    private readonly string _srDcmPath = Path.Combine(_dcmDir, "report01.dcm");
-    private readonly string _imDcmPath = Path.Combine(_dcmDir, "image11.dcm");
+    private readonly string _srDcmPath = Path.Combine(DcmDir, "report01.dcm");
+    private readonly string _imDcmPath = Path.Combine(DcmDir, "image11.dcm");
 
 
     #region Fixture Methods 
@@ -69,12 +69,12 @@ public class JsonDicomConverterTests
     private void VerifyJsonTripleTrip(DicomDataset originalDataset, bool expectFail = false)
     {
         var json = DicomTypeTranslater.SerializeDatasetToJson(originalDataset, _useOwnConverter);
-        _logger.Debug($"Initial json:\n{json}");
+        Logger.Debug($"Initial json:\n{json}");
 
         var recoDataset = DicomTypeTranslater.DeserializeJsonToDataset(json, _useOwnConverter);
 
         var json2 = DicomTypeTranslater.SerializeDatasetToJson(recoDataset, _useOwnConverter);
-        _logger.Debug($"Final json:\n{json}");
+        Logger.Debug($"Final json:\n{json}");
 
         if (expectFail)
             Assert.AreNotEqual(json, json2);
@@ -189,7 +189,7 @@ public class JsonDicomConverterTests
         };
 
         var json = DicomTypeTranslater.SerializeDatasetToJson(dataset, _useOwnConverter);
-        _logger.Debug(json);
+        Logger.Debug(json);
 
         var reconstructedDataset = DicomTypeTranslater.DeserializeJsonToDataset(json, _useOwnConverter);
         Assert.True(DicomDatasetHelpers.ValueEquals(dataset, reconstructedDataset));
@@ -229,7 +229,7 @@ public class JsonDicomConverterTests
     public void TestMaskedTagSerialization()
     {
         //Example: OverlayRows element has a masked tag of (60xx,0010)
-        _logger.Info(
+        Logger.Info(
             $"DicomTag.OverlayRows.DictionaryEntry.MaskTag: {DicomTag.OverlayRows.DictionaryEntry.MaskTag}");
 
         const string rawJson = "{\"60000010\":{\"vr\":\"US\",\"val\":[128]},\"60000011\":{\"vr\":\"US\",\"val\":[614]},\"60000040\":" +
@@ -241,7 +241,7 @@ public class JsonDicomConverterTests
         var maskDataset = DicomTypeTranslater.DeserializeJsonToDataset(rawJson,_useOwnConverter);
 
         foreach (var item in maskDataset.Where(x => x.Tag.DictionaryEntry.Keyword == DicomTag.OverlayRows.DictionaryEntry.Keyword))
-            _logger.Debug("{0} {1} - Val: {2}", item.Tag, item.Tag.DictionaryEntry.Keyword, maskDataset.TryGetString(item.Tag,out var s)?s:"(unknown)");
+            Logger.Debug("{0} {1} - Val: {2}", item.Tag, item.Tag.DictionaryEntry.Keyword, maskDataset.TryGetString(item.Tag,out var s)?s:"(unknown)");
 
         VerifyJsonTripleTrip(maskDataset);
     }

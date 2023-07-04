@@ -49,7 +49,7 @@ public class ImagingTableCreation
     /// </summary>
     /// <param name="expectedTable"></param>
     /// <param name="tableTemplate"></param>
-    public void CreateTable(DiscoveredTable expectedTable, ImageTableTemplate tableTemplate)
+    public static void CreateTable(DiscoveredTable expectedTable, ImageTableTemplate tableTemplate)
     {
         expectedTable.Database.CreateTable(expectedTable.GetRuntimeName(), tableTemplate.GetColumns(expectedTable.Database.Server.DatabaseType));
 
@@ -58,17 +58,17 @@ public class ImagingTableCreation
     }
         
     /// <summary>
-    /// Returns the table creation script to create a new table of the given <paramref name="tablename"/> in the supplied <paramref name="expectedDatabase"/>
+    /// Returns the table creation script to create a new table of the given <paramref name="tableName"/> in the supplied <paramref name="expectedDatabase"/>
     /// that matches the <paramref name="tableTemplate"/>
     /// </summary>
     /// <param name="expectedDatabase"></param>
-    /// <param name="tablename"></param>
+    /// <param name="tableName"></param>
     /// <param name="tableTemplate"></param>
     /// <param name="schema">Only applies to DBMS which support schemas (e.g. dbo)</param>
     /// <returns></returns>
-    public string GetCreateTableSql(DiscoveredDatabase expectedDatabase,string tablename, ImageTableTemplate tableTemplate,string schema=null)
+    public static string GetCreateTableSql(DiscoveredDatabase expectedDatabase,string tableName, ImageTableTemplate tableTemplate,string schema=null)
     {
-        return expectedDatabase.Helper.GetCreateTableSql(expectedDatabase,tablename, tableTemplate.GetColumns(expectedDatabase.Server.DatabaseType),null,false,schema);
+        return expectedDatabase.Helper.GetCreateTableSql(expectedDatabase,tableName, tableTemplate.GetColumns(expectedDatabase.Server.DatabaseType),null,false,schema);
     }
 
     /// <summary>
@@ -113,12 +113,8 @@ public class ImagingTableCreation
     /// <returns></returns>
     public static string GetDataTypeForTag(string keyword, ITypeTranslater tt)
     {
-        var tag = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == keyword);
-
-        if (tag == null)
-            throw new NotSupportedException(
+        var tag = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == keyword) ?? throw new NotSupportedException(
                 $"Keyword '{keyword}' is not a valid Dicom Tag and no DatabaseTypeRequest was provided");
-
         var type = DicomTypeTranslater.GetNaturalTypeForVr(tag.ValueRepresentations, tag.ValueMultiplicity);
         return tt.GetSQLDBTypeForCSharpType(type);
     }

@@ -44,7 +44,7 @@ public class TagElevator
 
 
     private readonly bool _conditionalMatchesArrayElementsOfMultiplicity;
-    private readonly string _conditionalMatchesArrayElementsOfMultiplicityPattern;
+    private readonly Regex _conditionalMatchesArrayElementsOfMultiplicityPattern;
 
     /// <summary>
     /// Creates a new instance of the resolver ready to start evaluating matches to the given <paramref name="request"/>
@@ -66,7 +66,7 @@ public class TagElevator
             if (conditionalShouldMatch == null)
                 return;
             else
-                throw new ArgumentNullException(nameof(conditionalShouldMatch));
+                throw new ArgumentNullException(nameof(conditional));
 
 
         if (conditional.Contains("[]"))
@@ -76,7 +76,7 @@ public class TagElevator
                     $"Array operator conditional is only valid in isolation (i.e. '[]'), it cannot be part of a pathway (e.g. '{conditional}')");
 
             _conditionalMatchesArrayElementsOfMultiplicity = true;
-            _conditionalMatchesArrayElementsOfMultiplicityPattern = conditionalShouldMatch;
+            _conditionalMatchesArrayElementsOfMultiplicityPattern = new Regex(conditionalShouldMatch);
         }
         else
             _conditional = new TagRelativeConditional(conditional,conditionalShouldMatch);
@@ -100,7 +100,7 @@ public class TagElevator
         ConcatenateMultiplicitySplitter = "\\";
     }
 
-    private TagNavigation[] GetPath(string pathway)
+    private static TagNavigation[] GetPath(string pathway)
     {
         var entries = pathway.Split(new[] { Splitter }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -196,11 +196,8 @@ public class TagElevator
             return false;
 
         //if there is no conditional on returned elements then it's definitely a match (See TagRelativeConditional for relative tag querying)
-        if (_conditionalMatchesArrayElementsOfMultiplicityPattern == null)
-            return true;
-
-        //there is a conditional on returned elements.  So is the array element not null and matches condition?
-        return Regex.IsMatch(element.ToString() ?? throw new InvalidOperationException(), _conditionalMatchesArrayElementsOfMultiplicityPattern);
+        return _conditionalMatchesArrayElementsOfMultiplicityPattern?.IsMatch(element.ToString() ??
+                                                                              throw new InvalidOperationException()) != false;
     }
 
 

@@ -123,18 +123,12 @@ public static class DicomTypeTranslater
 
     private static int? Conflate(int? a, int? b)
     {
-        switch (a)
+        return a switch
         {
-            case null when b == null:
-                return null;
-            case null:
-                return b;
-        }
-
-        if (b == null)
-            return a;
-
-        return Math.Max(a.Value, b.Value);
+            null when b == null => null,
+            null => b,
+            _ => b == null ? a : Math.Max(a.Value, b.Value)
+        };
     }
 
     /// <inheritdoc cref="GetNaturalTypeForVr(IEnumerable{DicomVR}, DicomVM)"/>

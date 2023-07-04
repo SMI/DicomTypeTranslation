@@ -276,12 +276,10 @@ public class DicomToBsonTranslationTests
 
         Assert.AreEqual(ds.Count(), doc.Count());
 
-        foreach (var element in doc)
+        foreach (var asDoc in doc.Select(e=>e.Value.AsBsonDocument))
         {
-            var asBsonDoc = element.Value.AsBsonDocument;
-            Assert.NotNull(asBsonDoc);
-
-            Assert.True(asBsonDoc.GetValue("val").IsBsonNull); // Private elements
+            Assert.NotNull(asDoc);
+            Assert.True(asDoc.GetValue("val").IsBsonNull); // Private elements
         }
     }
 

@@ -38,7 +38,7 @@ public class DatabaseExamples : DatabaseTests
 
         //Create a DataTable in memory for the data we read from disk
         using var dt = new DataTable();
-        dt.BeginDataLoad();
+        dt.BeginLoadData();
         dt.Columns.Add("SOPInstanceUID");
         dt.Columns.Add("Modality");
         dt.Columns.Add("PatientID");
@@ -62,7 +62,7 @@ public class DatabaseExamples : DatabaseTests
 
         //put the DataTable into the database
         using var insert = tbl.BeginBulkInsert();
-        dt.EndDataLoad();
+        dt.EndLoadData();
         insert.Upload(dt);
 
 
@@ -90,7 +90,7 @@ public class DatabaseExamples : DatabaseTests
         var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
 
         //actually do it
-        creator.CreateTable(db.ExpectTable("MyCoolTable"),toCreate);
+        ImagingTableCreation.CreateTable(db.ExpectTable("MyCoolTable"),toCreate);
     }
 
     public void TestGetDataTable()

@@ -14,7 +14,7 @@ internal class TagRelativeConditional
         
     private readonly List<TagNavigation> _navigations;
 
-    private static readonly string[] validStartersTokens = {".", "[..]", ".."};
+    private static readonly string[] ValidStartersTokens = {".", "[..]", ".."};
 
     //.. and [..] only
     private readonly List<string> _relativeOperators = new();
@@ -34,9 +34,9 @@ internal class TagRelativeConditional
             
         var path = conditional.Split(new []{TagElevator.Splitter}, StringSplitOptions.RemoveEmptyEntries);
 
-        if (!validStartersTokens.Contains(path[0]))
+        if (!ValidStartersTokens.Contains(path[0]))
             throw new InvalidTagElevatorPathException(
-                $"Invalid starter token in TagRelativeConditional '{conditional}'.  Valid starter tokens are '{string.Join("','", validStartersTokens)}'");
+                $"Invalid starter token in TagRelativeConditional '{conditional}'.  Valid starter tokens are '{string.Join("','", ValidStartersTokens)}'");
 
         if(path.Length == 1)
             throw new InvalidTagElevatorPathException(

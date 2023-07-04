@@ -66,11 +66,8 @@ internal class TagNavigation
     /// <returns></returns>
     public object GetTags(SequenceElement sequenceElement, TagRelativeConditional conditional)
     {
-        if (!sequenceElement.Dataset.ContainsKey(_tag)) return null;
+        if (!sequenceElement.Dataset.TryGetValue(_tag,out var datum)) return null;
 
-        if (conditional == null || conditional.IsMatch(sequenceElement, _tag))
-            return sequenceElement.Dataset[_tag];
-
-        return null;
+        return conditional == null || conditional.IsMatch(sequenceElement, _tag) ? datum : null;
     }
 }

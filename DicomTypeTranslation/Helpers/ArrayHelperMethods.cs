@@ -121,7 +121,7 @@ public static class ArrayHelperMethods
             sb.Append(a.GetValue(i));
 
             if (i + 1 < a.Length)
-                sb.Append("\\");
+                sb.Append('\\');
         }
 
         return sb.ToString();

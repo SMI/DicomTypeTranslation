@@ -363,12 +363,9 @@ public static class DicomTypeTranslaterReader
     {
         var datasetDoc = new BsonDocument();
 
-        foreach (var item in dataset)
+        // Don't serialize group length elements
+        foreach (var item in dataset.Where(item=> ((uint)item.Tag & 0xffff) != 0))
         {
-            // Don't serialize group length elements
-            if (((uint)item.Tag & 0xffff) == 0)
-                continue;
-
             var bsonKey = GetBsonKeyForTag(item.Tag);
 
             // For private tags, or tags which have an ambiguous ValueRepresentation, we need to include the VR as well as the value

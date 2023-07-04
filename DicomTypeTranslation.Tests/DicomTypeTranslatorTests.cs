@@ -15,7 +15,7 @@ namespace DicomTypeTranslation.Tests;
 [TestFixture]
 public class DicomTypeTranslatorTests
 {
-    private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+    private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
     #region Fixture Methods 
 
@@ -186,22 +186,16 @@ public class DicomTypeTranslatorTests
         var vrs = TranslationTestHelpers.AllVrCodes;
         var uniqueTypes = new SortedSet<string>();
 
-        foreach (var vr in vrs)
+        //SQ value representation doesn't have ValueType defined
+        foreach (var vr in vrs.Where(vr=> vr != DicomVR.SQ))
         {
-            //SQ value representation doesn't have ValueType defined
-            if (vr == DicomVR.SQ)
-                continue;
-
-            _logger.Info($"VR: {vr.Code}\t Type: {vr.ValueType.Name}\t IsString: {vr.IsString}");
+            Logger.Info($"VR: {vr.Code}\t Type: {vr.ValueType.Name}\t IsString: {vr.IsString}");
             uniqueTypes.Add(vr.ValueType.Name.TrimEnd(']', '['));
         }
 
         var sb = new StringBuilder();
-        foreach (var str in uniqueTypes)
-            sb.Append($"{str}, ");
-
-        sb.Length -= 2;
-        _logger.Info($"Unique underlying types: {sb}");
+        sb.AppendJoin(", ", uniqueTypes);
+        Logger.Info($"Unique underlying types: {sb}");
     }
 
     [Test]
@@ -232,9 +226,8 @@ public class DicomTypeTranslatorTests
 
         // Getting it by iterating through the dataset also works
         // NOTE(rkm 2020-03-26) When creating a dataset with private tags, the "Private Creator" tags are also implicitly added to the dataset
-        foreach (var item in ds)
-            if (item.ToString().Contains("(3001,1008)"))
-                Assert.AreEqual(1, DicomTypeTranslaterReader.GetCSharpValue(ds, item));
+        foreach (var item in ds.Where(item=> item.ToString().Contains("(3001,1008)")))
+            Assert.AreEqual(1, DicomTypeTranslaterReader.GetCSharpValue(ds, item));
     }
 
     [Test]

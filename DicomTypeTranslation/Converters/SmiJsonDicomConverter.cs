@@ -74,12 +74,9 @@ public class SmiJsonDicomConverter
 
         writer.WriteStartObject();
 
-        foreach (var item in dataset)
+        // Group length (gggg,0000) attributes shall not be included in a DICOM JSON Model object.
+        foreach (var item in dataset.Where(item => item.Tag.Element != 0))
         {
-            // Group length (gggg,0000) attributes shall not be included in a DICOM JSON Model object.
-            if (item.Tag.Element == 0)
-                continue;
-
             writer.WritePropertyName($"{item.Tag.Group:X4}{item.Tag.Element:X4}");
             WriteJsonDicomItem(writer, item);
         }
@@ -112,14 +109,15 @@ public class SmiJsonDicomConverter
         }
 
         // Ensure all private tags have a reference to their Private Creator tag
-        foreach (var item in dataset)
+        foreach (var item in dataset.Where(item=> item.Tag.IsPrivate && (item.Tag.Element & 0xff00) != 0))
         {
-            if (!item.Tag.IsPrivate || (item.Tag.Element & 0xff00) == 0) continue;
+            {
+                var privateCreatorTag = new DicomTag(item.Tag.Group, (ushort)(item.Tag.Element >> 8));
 
-            var privateCreatorTag = new DicomTag(item.Tag.Group, (ushort)(item.Tag.Element >> 8));
-
-            if (dataset.Contains(privateCreatorTag))
-                item.Tag.PrivateCreator = new DicomPrivateCreator(dataset.GetSingleValue<string>(privateCreatorTag));
+                if (dataset.Contains(privateCreatorTag))
+                    item.Tag.PrivateCreator =
+                        new DicomPrivateCreator(dataset.GetSingleValue<string>(privateCreatorTag));
+            }
         }
 
         if (reader.TokenType != JsonTokenType.EndObject)
@@ -492,7 +490,7 @@ public class SmiJsonDicomConverter
             throw new Exception("Malformed DICOM json");
 
         reader.Read();
-        string val = reader.GetString();
+        var val = reader.GetString();
         reader.Read();
         return val;
     }

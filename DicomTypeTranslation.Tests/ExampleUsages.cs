@@ -1,5 +1,4 @@
 ﻿using FellowOakDicom;
-using FAnsi.Discovery.TypeTranslation;
 using FAnsi.Implementations.MicrosoftSQL;
 using FAnsi.Implementations.Oracle;
 using NUnit.Framework;
