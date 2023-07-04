@@ -101,7 +101,7 @@ public class DatabaseExamples : DatabaseTests
             new DicomDate(DicomTag.PatientBirthDate,new DateTime(2001,1,1))
         });
 
-        var dt = new DataTable();
+        using var dt = new DataTable();
         var row = ds.ToRow(dt);
 
         Assert.AreEqual("Frank", row["PatientName"]);
