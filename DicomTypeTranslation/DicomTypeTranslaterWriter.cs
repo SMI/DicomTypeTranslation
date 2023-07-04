@@ -318,14 +318,9 @@ public static class DicomTypeTranslaterWriter
 
     private static DicomVR GetVrForTag(DicomTag tag, BsonValue data)
     {
-        DicomVR vr;
-
         try
         {
-            if (tag.IsPrivate && data is BsonArray)
-                vr = DicomVR.SQ;
-            else
-                vr = tag.DictionaryEntry.ValueRepresentations.Single();
+            return tag.IsPrivate && data is BsonArray ? DicomVR.SQ : tag.DictionaryEntry.ValueRepresentations.Single();
         }
         catch (InvalidOperationException e)
         {
@@ -333,8 +328,6 @@ public static class DicomTypeTranslaterWriter
             e.Data["DicomTag"] += tag.DictionaryEntry.Keyword;
             throw;
         }
-
-        return vr;
     }
 
     #endregion
