@@ -77,8 +77,6 @@ internal class TemplateTests:DatabaseTests
             
         var db = GetTestDatabase(dbType);
             
-        var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
-
         foreach(var table in collection.Tables)
         {
             if(string.Equals(table.TableName, "ImageTable",StringComparison.CurrentCultureIgnoreCase))
@@ -87,25 +85,22 @@ internal class TemplateTests:DatabaseTests
             }
 
             var tbl = db.ExpectTable(table.TableName);
-            creator.CreateTable(tbl,table);
+            ImagingTableCreation.CreateTable(tbl,table);
 
             Assert.IsTrue(tbl.Exists());
         }
     }
 
-    private void EnforceExpectedImageColumns(string template, ImageTableTemplate table)
+    private static void EnforceExpectedImageColumns(string template, ImageTableTemplate table)
     {
-        foreach(var req in new[] { "PatientID","DicomFileSize","StudyInstanceUID"})
-        {
-            if (!table.Columns.Any(c => c.ColumnName.Equals(req)))
-            {
-                Assert.Fail($"Template {Path.GetFileName(template)} is missing expected field {req} in section {table.TableName}");
-            }
-        }
-            
+        var req = new[] { "PatientID", "DicomFileSize", "StudyInstanceUID" }.FirstOrDefault(req =>
+            !table.Columns.Any(c => c.ColumnName.Equals(req)));
+        if (req is not null)
+            Assert.Fail(
+                $"Template {Path.GetFileName(template)} is missing expected field {req} in section {table.TableName}");
     }
 
-    private void Validate(ImageTableTemplate tableTemplate, string templateFile)
+    private static void Validate(ImageTableTemplate tableTemplate, string templateFile)
     {
         var errors = new List<Exception>();
 
@@ -121,11 +116,7 @@ internal class TemplateTests:DatabaseTests
                 if (!seqMatch.Success) continue;
                 var leafTag = seqMatch.Groups[1].Value;
 
-                var tag = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == leafTag);
-
-                if (tag == null)
-                    throw new NotSupportedException($"Leaf tag {leafTag} of sequence column {col.ColumnName} was not a valid dicom tag name");
-
+                var tag = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == leafTag) ?? throw new NotSupportedException($"Leaf tag {leafTag} of sequence column {col.ColumnName} was not a valid dicom tag name");
                 var type = DicomTypeTranslater.GetNaturalTypeForVr(tag.ValueRepresentations, tag.ValueMultiplicity);
 
                 Assert.AreEqual(type.CSharpType , col.Type.CSharpType,$"Listed Type for column {col.ColumnName} did not match expected Type");
@@ -148,7 +139,7 @@ internal class TemplateTests:DatabaseTests
             throw new AggregateException($"Errors in file '{templateFile}'",errors.ToArray());
     }
 
-    private string DescribeSize(DecimalSize typeSize)
+    private static string DescribeSize(DecimalSize typeSize)
     {
         return
             $"NumbersBeforeDecimalPlace:{typeSize.NumbersBeforeDecimalPlace} NumbersAfterDecimalPlace:{typeSize.NumbersAfterDecimalPlace}";
@@ -205,11 +196,8 @@ internal class TemplateTests:DatabaseTests
         //doesn't actually have to exist
         var db = new DiscoveredServer("localhost","nobody",FAnsi.DatabaseType.MySql,"captain","morgans").ExpectDatabase("neverland");
 
-        var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
-                       
-
-        var sql1 = creator.GetCreateTableSql(db,collection.Tables[0].TableName, collection.Tables[0]);
-        var sql2 = creator.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0]);
+        var sql1 = ImagingTableCreation.GetCreateTableSql(db,collection.Tables[0].TableName, collection.Tables[0]);
+        var sql2 = ImagingTableCreation.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0]);
 
         Assert.AreEqual(sql1,sql2);
     }
@@ -273,10 +261,8 @@ internal class TemplateTests:DatabaseTests
         //doesn't actually have to exist
         var db = new DiscoveredServer("localhost", "nobody", FAnsi.DatabaseType.MySql, "captain", "morgans").ExpectDatabase("neverland");
 
-        var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
-
-        var sql1 = creator.GetCreateTableSql(db, collection.Tables[0].TableName, collection.Tables[0]);
-        var sql2 = creator.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0]);
+        var sql1 = ImagingTableCreation.GetCreateTableSql(db, collection.Tables[0].TableName, collection.Tables[0]);
+        var sql2 = ImagingTableCreation.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0]);
 
         Assert.AreEqual(sql1, sql2);
     }

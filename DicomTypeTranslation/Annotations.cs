@@ -22,7 +22,6 @@ SOFTWARE. */
 
 using System;
 
-#pragma warning disable 1591
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -402,7 +401,9 @@ internal enum ImplicitUseKindFlags
 internal enum ImplicitUseTargetFlags
 {
     Default = Itself,
+#pragma warning disable CA1069 // Enums values should not be duplicated, but Default is a synonym for Itself
     Itself = 1,
+#pragma warning restore CA1069 // Enums values should not be duplicated
     /// <summary>Members of entity marked with attribute are considered used.</summary>
     Members = 2,
     /// <summary>Entity marked with attribute and all its members considered used.</summary>

@@ -69,9 +69,9 @@ public static class DicomDatasetHelpers
     private static bool ValueEquals(IByteBuffer a, IByteBuffer b)
     {
         if (a == null || b == null)
-            return a == b;
+            return ReferenceEquals(a,b);
 
-        if (a == b)
+        if (ReferenceEquals(a,b))
             return true;
 
         if (a.IsMemory)

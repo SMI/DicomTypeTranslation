@@ -1,15 +1,11 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
 using FellowOakDicom;
-
 using DicomTypeTranslation.Converters;
 using DicomTypeTranslation.Helpers;
 using FellowOakDicom.Serialization;
-using Newtonsoft.Json;
 using TypeGuesser;
 
 
@@ -38,9 +34,6 @@ public static class DicomTypeTranslater
     public static bool SerializeBinaryData = false;
 
 
-    private static readonly JsonConverter _defaultJsonDicomConverter = new SmiJsonDicomConverter();
-
-
     /// <summary>
     /// Serialize a <see cref="DicomDataset"/> to a json <see cref="string"/>.
     /// </summary>
@@ -52,7 +45,7 @@ public static class DicomTypeTranslater
         if (dataset == null)
             throw new ArgumentNullException(nameof(dataset));
 
-        return useOwn ? JsonConvert.SerializeObject(dataset, Formatting.None, new SmiJsonDicomConverter()) : DicomJson.ConvertDicomToJson(dataset);
+        return useOwn ? SmiJsonDicomConverter.ToJson(dataset) : DicomJson.ConvertDicomToJson(dataset);
     }
 
     /// <summary>
@@ -63,10 +56,8 @@ public static class DicomTypeTranslater
     /// <returns>Dataset</returns>
     public static DicomDataset DeserializeJsonToDataset(string json, bool useOwn=false)
     {
-        if (string.IsNullOrWhiteSpace(json))
-            throw new ArgumentNullException(nameof(json));
-
-        return useOwn ? JsonConvert.DeserializeObject<DicomDataset>(json, new SmiJsonDicomConverter()) : DicomJson.ConvertJsonToDicom(json, false);
+        ArgumentNullException.ThrowIfNull(json);
+        return useOwn ? SmiJsonDicomConverter.FromJson(json) : DicomJson.ConvertJsonToDicom(json, false);
     }
 
     /// <summary>
@@ -132,18 +123,12 @@ public static class DicomTypeTranslater
 
     private static int? Conflate(int? a, int? b)
     {
-        switch (a)
+        return a switch
         {
-            case null when b == null:
-                return null;
-            case null:
-                return b;
-        }
-
-        if (b == null)
-            return a;
-
-        return Math.Max(a.Value, b.Value);
+            null when b == null => null,
+            null => b,
+            _ => b == null ? a : Math.Max(a.Value, b.Value)
+        };
     }
 
     /// <inheritdoc cref="GetNaturalTypeForVr(IEnumerable{DicomVR}, DicomVM)"/>

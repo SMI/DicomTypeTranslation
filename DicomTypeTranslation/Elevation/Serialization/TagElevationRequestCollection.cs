@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using DicomTypeTranslation.Elevation.Exceptions;
 
@@ -23,18 +24,10 @@ public class TagElevationRequestCollection
         var doc = new XmlDocument();
         doc.LoadXml(xml);
 
-        var root = doc["TagElevationRequestCollection"];
-            
-        if (root == null)
-            throw new MalformedTagElevationRequestCollectionXmlException("No root tag TagElevationRequestCollection");
-
-        foreach (var n in root.ChildNodes)
+        var root = doc["TagElevationRequestCollection"] ?? throw new MalformedTagElevationRequestCollectionXmlException("No root tag TagElevationRequestCollection");
+        foreach (var n in root.ChildNodes.Cast<XmlNode>().Where(n=>n is not XmlComment).Cast<XmlElement>())
         {
-            if(n is XmlComment)
-                continue;
-            var requestXml = (XmlElement)n;
-            var toAdd = new TagElevationRequest(requestXml);
-            Requests.Add(toAdd);
+            Requests.Add(new TagElevationRequest(n));
         }
     }
 }

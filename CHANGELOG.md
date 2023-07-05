@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- No longer dependent on Newtonsoft.Json
+
 ## [4.0.3] - 2023-02-07
 
 ### Changed

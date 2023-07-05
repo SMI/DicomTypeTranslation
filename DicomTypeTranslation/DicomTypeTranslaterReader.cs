@@ -321,10 +321,7 @@ public static class DicomTypeTranslaterReader
 
         else if (element is DicomStringElement)
         {
-            if (element is not DicomMultiStringElement && element.Length == 0)
-                retVal = BsonNull.Value;
-            else
-                retVal = (BsonString)dataset.GetString(element.Tag);
+            retVal = element is not DicomMultiStringElement && element.Length == 0 ? BsonNull.Value : (BsonString)dataset.GetString(element.Tag);
         }
 
         else if (element.ValueRepresentation == DicomVR.AT) // Special case - need to construct manually
@@ -366,12 +363,9 @@ public static class DicomTypeTranslaterReader
     {
         var datasetDoc = new BsonDocument();
 
-        foreach (var item in dataset)
+        // Don't serialize group length elements
+        foreach (var item in dataset.Where(item=> ((uint)item.Tag & 0xffff) != 0))
         {
-            // Don't serialize group length elements
-            if (((uint)item.Tag & 0xffff) == 0)
-                continue;
-
             var bsonKey = GetBsonKeyForTag(item.Tag);
 
             // For private tags, or tags which have an ambiguous ValueRepresentation, we need to include the VR as well as the value

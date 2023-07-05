@@ -1,13 +1,12 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using FellowOakDicom;
 using DicomTypeTranslation.Elevation;
 using DicomTypeTranslation.Elevation.Exceptions;
 using DicomTypeTranslation.Helpers;
 using FAnsi.Discovery;
+using FellowOakDicom;
 using NUnit.Framework;
 
 namespace DicomTypeTranslation.Tests.ElevationTests;
@@ -48,12 +47,10 @@ public class TagElevatorTests
     [Test]
     public void AreSequenceTagsAmbiguous()
     {
-        //For all tags
-        foreach (var entry in DicomDictionary.Default)
+        //For all tags that can be Sequences
+        foreach (var entry in DicomDictionary.Default.Where(entry=>entry.ValueRepresentations.Any(v => v == DicomVR.SQ)))
         {
-            //that can be Sequences
-            if (entry.ValueRepresentations.Any(v => v == DicomVR.SQ))
-                Assert.AreEqual(entry.ValueRepresentations.Length, 1, "Failed on " + entry.Name); //can they ONLY be sequences (pretty please!)
+            Assert.AreEqual(entry.ValueRepresentations.Length, 1, "Failed on {0}", entry.Name); //can they ONLY be sequences (pretty please!)
         }
     }
     [Test]
@@ -729,7 +726,7 @@ public class TagElevatorTests
 
     }
 
-    private void ShowContentSequence(DicomDataset dataset, DicomTag tag = null)
+    private static void ShowContentSequence(DicomDataset dataset, DicomTag tag = null)
     {
         tag ??= DicomTag.ContentSequence;
         Console.WriteLine($"{tag.DictionaryEntry.Keyword} Contains the following:");

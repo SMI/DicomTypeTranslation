@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
 using System.Xml.Linq;
 using FAnsi;
 using FAnsi.Discovery;
@@ -65,11 +63,7 @@ public class DatabaseTests
         }
     }
 
-    protected IEnumerable<DiscoveredServer> TestServer()
-    {
-        return _testConnectionStrings.Select(kvp => new DiscoveredServer(kvp.Value, kvp.Key));
-    }
-    protected DiscoveredServer GetTestServer(DatabaseType type)
+    private DiscoveredServer GetTestServer(DatabaseType type)
     {
         if(!_testConnectionStrings.ContainsKey(type))
             Assert.Inconclusive("No connection string configured for that server");
@@ -96,64 +90,10 @@ public class DatabaseTests
             foreach (var t in db.DiscoverTables(true))
                 t.Drop();
 
-            foreach (var func in db.DiscoverTableValuedFunctions())
-                func.Drop();
+            foreach (var fn in db.DiscoverTableValuedFunctions())
+                fn.Drop();
         }
 
         return db;
-    }
-
-    protected void AssertCanCreateDatabases()
-    {
-        if(!_allowDatabaseCreation)
-            Assert.Inconclusive("Test cannot run when AllowDatabaseCreation is false");
-    }
-
-    private static bool AreBasicallyEquals(object o, object o2, bool handleSlashRSlashN = true)
-    {
-        //if they are legit equals
-        if (Equals(o, o2))
-            return true;
-
-        //if they are null but basically the same
-        var oIsNull = o == null || o == DBNull.Value || o.ToString()?.Equals("0")==true;
-        var o2IsNull = o2 == null || o2 == DBNull.Value || o2.ToString()?.Equals("0")==true;
-
-        if (oIsNull || o2IsNull)
-            return oIsNull == o2IsNull;
-
-        //they are not null so toString them to deal with int vs long etc that DbDataAdapters can be a bit flaky on
-        if (handleSlashRSlashN)
-            return string.Equals(o.ToString()?.Replace("\r", "").Replace("\n", ""), o2.ToString()?.Replace("\r", "").Replace("\n", ""));
-
-        return string.Equals(o.ToString(), o2.ToString());
-    }
-
-    protected static void AssertAreEqual(DataTable dt1, DataTable dt2)
-    {
-        Assert.AreEqual(dt1.Columns.Count, dt2.Columns.Count, "DataTables had a column count mismatch");
-        Assert.AreEqual(dt1.Rows.Count, dt2.Rows.Count, "DataTables had a row count mismatch");
-
-        foreach (DataRow row1 in dt1.Rows)
-        {
-            var match = false;
-
-            foreach (DataRow row2 in dt2.Rows)
-            {
-                var rowMatch = true;
-                foreach (DataColumn column in dt1.Columns)
-                {
-                    if (!AreBasicallyEquals(row1[column.ColumnName], row2[column.ColumnName]))
-                        rowMatch = false;
-                }
-
-                if (rowMatch)
-                    match = true;
-            }
-
-            Assert.IsTrue(match, "Couldn't find match for row:" + string.Join(",", row1.ItemArray));
-
-        }
-
     }
 }
