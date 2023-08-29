@@ -3,17 +3,13 @@ updates:
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
-    interval: daily
-  target-branch: develop
+    interval: weekly
   reviewers:
-  - rkm
-  - jas88
+    - SMI/reviewers
 - package-ecosystem: nuget
   directory: "/"
   schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-  target-branch: develop
+    interval: weekly
+  open-pull-requests-limit: 99
   reviewers:
-  - rkm
-  - jas88
+    - SMI/reviewers
