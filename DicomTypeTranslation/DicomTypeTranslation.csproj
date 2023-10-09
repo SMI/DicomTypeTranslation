@@ -35,6 +35,6 @@
     <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NLog" Version="5.2.4" />
-    <PackageReference Include="YamlDotNet" Version="13.4.0" />
+    <PackageReference Include="YamlDotNet" Version="13.5.2" />
   </ItemGroup>
 </Project>
