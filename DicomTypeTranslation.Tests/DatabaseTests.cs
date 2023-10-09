@@ -31,6 +31,9 @@ namespace DicomTypeTranslation.Tests
         public void CheckFiles()
         {
             ImplementationManager.Load<MicrosoftSQLImplementation>();
+            ImplementationManager.Load<MySqlImplementation>();
+            ImplementationManager.Load<PostgreSqlImplementation>();
+            ImplementationManager.Load<OracleImplementation>();
 
             var file = Path.Combine(TestContext.CurrentContext.TestDirectory, TestFilename);
 
