@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <AssemblyTitle>DicomTypeTranslation</AssemblyTitle>
     <Product>DicomTypeTranslation</Product>
@@ -31,10 +31,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="fo-dicom" Version="5.1.1" />
-    <PackageReference Include="HIC.FAnsiSql" Version="3.0.1" />
+    <PackageReference Include="HIC.FAnsiSql" Version="3.1.1" />
     <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="NLog" Version="5.2.3" />
-    <PackageReference Include="YamlDotNet" Version="13.3.1" />
+    <PackageReference Include="NLog" Version="5.2.4" />
+    <PackageReference Include="YamlDotNet" Version="13.5.2" />
   </ItemGroup>
 </Project>
