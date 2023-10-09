@@ -25,7 +25,7 @@ namespace DicomTypeTranslation
             var row = inTable.Rows.Add();
 
             //for each item in the dataset
-            foreach (DicomItem i in dataset)
+            foreach (var i in dataset)
                 AddColumnValue(dataset, row, i);
 
             return row;
@@ -44,7 +44,7 @@ namespace DicomTypeTranslation
             var row = inTable.Rows.Add();
 
             //for each item in the dataset
-            foreach (DicomItem i in dataset)
+            foreach (var i in dataset)
                 if (onlyTheseTags.Contains(DicomTypeTranslaterReader.GetColumnNameForTag(i.Tag, false)))
                     AddColumnValue(dataset, row, i);
 
@@ -64,7 +64,7 @@ namespace DicomTypeTranslation
             var row = inTable.Rows.Add();
 
             //for each item in the dataset
-            foreach (DicomItem i in dataset)
+            foreach (var i in dataset)
                 if (filterTags(i))
                     AddColumnValue(dataset, row, i);
 

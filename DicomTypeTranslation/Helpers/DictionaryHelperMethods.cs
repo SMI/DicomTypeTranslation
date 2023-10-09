@@ -47,12 +47,12 @@ namespace DicomTypeTranslation.Helpers
 
             var keys1 = new HashSet<object>();
 
-            foreach (object k in dict1.Keys)
+            foreach (var k in dict1.Keys)
                 keys1.Add(k);
 
             var keys2 = new HashSet<object>();
 
-            foreach (object k in dict2.Keys)
+            foreach (var k in dict2.Keys)
                 keys2.Add(k);
 
             //they do not contain the same keys
@@ -60,7 +60,7 @@ namespace DicomTypeTranslation.Helpers
                 return false;
 
             //do all the key value pairs in dictionary 1 match dictionary 2
-            foreach (object key in keys1)
+            foreach (var key in keys1)
                 if (!FlexibleEquality.FlexibleEquals(dict1[key], dict2[key]))
                     return false;
 
@@ -86,8 +86,8 @@ namespace DicomTypeTranslation.Helpers
 
             unchecked
             {
-                int hashCode = dict.Keys.First().GetHashCode();
-                foreach (KeyValuePair<TKey, TValue> kvp in dict)
+                var hashCode = dict.Keys.First().GetHashCode();
+                foreach (var kvp in dict)
                 {
                     hashCode = (hashCode * 397) ^ kvp.Key.GetHashCode();
                     hashCode = (hashCode * 397) ^ (kvp.Value != null ? kvp.Value.GetHashCode() : 0);
@@ -107,14 +107,14 @@ namespace DicomTypeTranslation.Helpers
         {
             var sb = new StringBuilder();
 
-            List<object> keys1 = dict.Keys.Cast<object>().OrderBy(i => i).ToList();
+            var keys1 = dict.Keys.Cast<object>().OrderBy(i => i).ToList();
 
             for (var i = 0; i < keys1.Count; i++)
             {
                 sb.Append(prefix);
 
                 //if run out of values in dictionary 1
-                object val = dict[keys1[i]];
+                var val = dict[keys1[i]];
 
                 if (val is Array)
                     sb.Append(string.Format(" {0} : \r\n {1}",
@@ -148,8 +148,8 @@ namespace DicomTypeTranslation.Helpers
         {
             var sb = new StringBuilder();
 
-            List<object> keys1 = dict.Keys.Cast<object>().OrderBy(i => i).ToList();
-            List<object> keys2 = dict2.Keys.Cast<object>().OrderBy(i => i).ToList();
+            var keys1 = dict.Keys.Cast<object>().OrderBy(i => i).ToList();
+            var keys2 = dict2.Keys.Cast<object>().OrderBy(i => i).ToList();
 
             for (var i = 0; i < Math.Max(keys1.Count, keys2.Count); i++)
             {
@@ -163,8 +163,8 @@ namespace DicomTypeTranslation.Helpers
                     sb.AppendLine(string.Format(" {0} - \t {1} \t <NULL>", keys1[i], dict[keys1[i]]));
                 else
                 {
-                    object val1 = dict[keys1[i]];
-                    object val2 = dict2[keys2[i]];
+                    var val1 = dict[keys1[i]];
+                    var val2 = dict2[keys2[i]];
 
                     if (val1 is Array && val2 is Array)
                         sb.Append(string.Format(" {0} : \r\n {1}",

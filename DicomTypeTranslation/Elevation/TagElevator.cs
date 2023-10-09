@@ -89,7 +89,7 @@ namespace DicomTypeTranslation.Elevation
         /// <param name="elevationPathway"></param>
         public TagElevator(string elevationPathway)
         {
-            bool stop = false;
+            var stop = false;
 
             while (!stop)
                 elevationPathway = StripAndApplyOperators(elevationPathway, out stop);
@@ -109,7 +109,7 @@ namespace DicomTypeTranslation.Elevation
             if (toReturn.Length == 1)
                 throw new InvalidTagElevatorPathException("There must be at least 2 entries in a navigation pathway");
 
-            for (int i = 0; i < entries.Length; i++)
+            for (var i = 0; i < entries.Length; i++)
                 toReturn[i] = new TagNavigation(entries[i], i + 1 == entries.Length);
 
             return toReturn;
@@ -123,11 +123,11 @@ namespace DicomTypeTranslation.Elevation
         /// <returns></returns>
         public object GetValue(DicomDataset dataset)
         {
-            List<object> finalObjects = new List<object>();
+            var finalObjects = new List<object>();
 
             //first pathway we turn it into a dictionary 
 
-            foreach (SequenceElement element in _navigations[0].GetSubsets(dataset))
+            foreach (var element in _navigations[0].GetSubsets(dataset))
                 finalObjects.AddRange(GetValues(element, 1));
                     
             //none found
@@ -151,7 +151,7 @@ namespace DicomTypeTranslation.Elevation
 
         private IEnumerable<object> GetValues(SequenceElement element, int i)
         {
-            List<object> toReturn = new List<object>();
+            var toReturn = new List<object>();
 
             if (_navigations[i].IsLast)
             {
@@ -181,7 +181,7 @@ namespace DicomTypeTranslation.Elevation
                     toReturn.Add(o);
             }
             else
-                foreach (SequenceElement subSequence in _navigations[i].GetSubset(element))
+                foreach (var subSequence in _navigations[i].GetSubset(element))
                     toReturn.AddRange(GetValues(subSequence, i + 1));
 
             return toReturn.ToArray();

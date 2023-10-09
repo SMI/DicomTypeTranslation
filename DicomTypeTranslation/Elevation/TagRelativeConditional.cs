@@ -45,7 +45,7 @@ namespace DicomTypeTranslation.Elevation
             _navigations = new List<TagNavigation>();
             
             //Process the . and .. elements
-            for (int i=0; i < path.Length; i++)
+            for (var i=0; i < path.Length; i++)
             {
                 //if it is a relative positional 
 
@@ -85,7 +85,7 @@ namespace DicomTypeTranslation.Elevation
             //match all elements in the current array of the sequence e.g. [2]
             var toMatchIn = new List<SequenceElement> {element};
 
-            foreach (string relativeOperator in _relativeOperators)
+            foreach (var relativeOperator in _relativeOperators)
             {
                 //[..] - match array siblings
                 if(relativeOperator == "[..]")
@@ -99,17 +99,17 @@ namespace DicomTypeTranslation.Elevation
                 toMatchIn = toMatchIn.Distinct().ToList();
             }
 
-            List<object> finalObjects = new List<object>();
+            var finalObjects = new List<object>();
 
             foreach (var navigation in _navigations)
             {
                 var newSets = new List<SequenceElement>();
 
                 if (navigation.IsLast)
-                    foreach (SequenceElement sequenceElement in toMatchIn)
+                    foreach (var sequenceElement in toMatchIn)
                         finalObjects.Add(navigation.GetTags(sequenceElement, null));
                 else
-                    foreach (SequenceElement sequenceElement in toMatchIn)
+                    foreach (var sequenceElement in toMatchIn)
                         newSets.AddRange(navigation.GetSubset(sequenceElement));
 
                 toMatchIn = newSets;

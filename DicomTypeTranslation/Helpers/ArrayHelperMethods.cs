@@ -43,7 +43,7 @@ namespace DicomTypeTranslation.Helpers
                 sb.Append($"{prefix} [{i}] - ");
 
                 //if run out of values in dictionary 1
-                object val = a.GetValue(i) ?? "Null";
+                var val = a.GetValue(i) ?? "Null";
 
                 if (DictionaryHelperMethods.IsDictionary(val))
                     sb.AppendLine(string.Format("\r\n {0}",
@@ -80,8 +80,8 @@ namespace DicomTypeTranslation.Helpers
                     sb.AppendLine(string.Format(" \t {0} \t <NULL>", a.GetValue(i)));
                 else
                 {
-                    object val1 = a.GetValue(i);
-                    object val2 = b.GetValue(i);
+                    var val1 = a.GetValue(i);
+                    var val2 = b.GetValue(i);
 
                     if (DictionaryHelperMethods.IsDictionary(val1) && DictionaryHelperMethods.IsDictionary(val2))
                         sb.Append(string.Format("\r\n {0}",

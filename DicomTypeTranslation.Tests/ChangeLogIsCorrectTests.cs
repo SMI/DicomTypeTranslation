@@ -28,7 +28,7 @@ namespace DicomTypeTranslation.Tests
             var match = Regex.Match(File.ReadAllText(assemblyInfo),@"AssemblyInformationalVersion\(""(.*)""\)");
             Assert.IsTrue(match.Success, $"Could not find AssemblyInformationalVersion tag in {assemblyInfo}");
             
-            string currentVersion = match.Groups[1].Value;
+            var currentVersion = match.Groups[1].Value;
 
             var changeLog = File.ReadAllText(changeLogPath);
 

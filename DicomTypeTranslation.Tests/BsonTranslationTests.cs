@@ -32,7 +32,7 @@ namespace DicomTypeTranslation.Tests
                 new DicomApplicationEntity(DicomTag.SelectorAEValue)
             };
 
-            BsonDocument document = DicomTypeTranslaterReader.BuildBsonDocument(dataset);
+            var document = DicomTypeTranslaterReader.BuildBsonDocument(dataset);
 
             Assert.True(document.Count() == 2);
             Assert.True(document[0] == BsonNull.Value);
@@ -48,7 +48,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void DicomToBson_TranslatePrivateDataset_DoesNotThrow()
         {
-            DicomDataset ds = TranslationTestHelpers.BuildPrivateDataset();
+            var ds = TranslationTestHelpers.BuildPrivateDataset();
             Assert.DoesNotThrow(() => DicomTypeTranslaterReader.BuildBsonDocument(ds));
         }
 
@@ -60,8 +60,8 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void DicomToBson_BothBsonKeyFormats_ConvertedCorrectly()
         {
-            DicomPrivateCreator privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
-            DicomDictionary pDict = DicomDictionary.Default[privateCreator];
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
+            var pDict = DicomDictionary.Default[privateCreator];
 
             pDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx02"), "Private Tag 02", "PrivateTag02", DicomVM.VM_1, false, DicomVR.AE));
 
@@ -72,7 +72,7 @@ namespace DicomTypeTranslation.Tests
 
             ds.Add(new DicomApplicationEntity(ds.GetPrivateTag(new DicomTag(3, 0x0002, privateCreator)), "AETITLE"));
 
-            BsonDocument bsonDoc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
+            var bsonDoc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
 
             //NOTE: Ordering of items inside a MongoDB document is significant
             var expected = new BsonDocument
@@ -128,7 +128,7 @@ namespace DicomTypeTranslation.Tests
                 new DicomUnsignedShort(new DicomTag(1953, 4176, "ELSCINT3"), 789)
             };
 
-            BsonDocument convertedDoc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
+            var convertedDoc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
 
             var expectedDoc = new BsonDocument
             {
@@ -246,7 +246,7 @@ namespace DicomTypeTranslation.Tests
                 { "SelectorATValue", "00080018\\0020000E" }
             };
 
-            BsonDocument actual = DicomTypeTranslaterReader.BuildBsonDocument(ds);
+            var actual = DicomTypeTranslaterReader.BuildBsonDocument(ds);
             Assert.AreEqual(expected, actual);
         }
 
@@ -262,25 +262,25 @@ namespace DicomTypeTranslation.Tests
                 new DicomSequence(DicomTag.SelectorCodeSequenceValue)
             };
 
-            BsonDocument doc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
+            var doc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
 
             Assert.AreEqual(ds.Count(), doc.Count());
 
-            foreach (BsonElement element in doc)
+            foreach (var element in doc)
                 Assert.True(element.Value.IsBsonNull);
         }
 
         [Test]
         public void DicomToBson_EmptyPrivateElements_StoredAsBsonNull()
         {
-            DicomDataset ds = TranslationTestHelpers.BuildAllTypesNullDataset();
-            BsonDocument doc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
+            var ds = TranslationTestHelpers.BuildAllTypesNullDataset();
+            var doc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
 
             Assert.AreEqual(ds.Count(), doc.Count());
 
-            foreach (BsonElement element in doc)
+            foreach (var element in doc)
             {
-                BsonDocument asBsonDoc = element.Value.AsBsonDocument;
+                var asBsonDoc = element.Value.AsBsonDocument;
                 Assert.NotNull(asBsonDoc);
 
                 Assert.True(asBsonDoc.GetValue("val").IsBsonNull); // Private elements
@@ -378,9 +378,9 @@ namespace DicomTypeTranslation.Tests
 
         private static void VerifyBsonTripleTrip(DicomDataset ds)
         {
-            BsonDocument bsonDoc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
-            DicomDataset recoDataset = DicomTypeTranslaterWriter.BuildDicomDataset(bsonDoc);
-            BsonDocument recoDoc = DicomTypeTranslaterReader.BuildBsonDocument(recoDataset);
+            var bsonDoc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
+            var recoDataset = DicomTypeTranslaterWriter.BuildDicomDataset(bsonDoc);
+            var recoDoc = DicomTypeTranslaterReader.BuildBsonDocument(recoDataset);
 
             Assert.AreEqual(bsonDoc, recoDoc);
             Assert.True(DicomDatasetHelpers.ValueEquals(ds, recoDataset));
@@ -395,7 +395,7 @@ namespace DicomTypeTranslation.Tests
         public void BsonRoundTrip_TestFile_PassesConversion(string filePath)
         {
             Assert.True(File.Exists(filePath));
-            DicomDataset ds = DicomFile.Open(filePath).Dataset;
+            var ds = DicomFile.Open(filePath).Dataset;
             VerifyBsonTripleTrip(ds);
         }
 
@@ -424,14 +424,14 @@ namespace DicomTypeTranslation.Tests
             var usDataset = new DicomDataset { usItem };
             var owDataset = new DicomDataset { owItem };
 
-            BsonDocument usDocument = DicomTypeTranslaterReader.BuildBsonDocument(usDataset);
-            BsonDocument owDocument = DicomTypeTranslaterReader.BuildBsonDocument(owDataset);
+            var usDocument = DicomTypeTranslaterReader.BuildBsonDocument(usDataset);
+            var owDocument = DicomTypeTranslaterReader.BuildBsonDocument(owDataset);
 
             Assert.NotNull(usDocument);
             Assert.NotNull(owDocument);
 
-            DicomDataset recoUsDataset = DicomTypeTranslaterWriter.BuildDicomDataset(usDocument);
-            DicomDataset recoOwDataset = DicomTypeTranslaterWriter.BuildDicomDataset(owDocument);
+            var recoUsDataset = DicomTypeTranslaterWriter.BuildDicomDataset(usDocument);
+            var recoOwDataset = DicomTypeTranslaterWriter.BuildDicomDataset(owDocument);
 
             Assert.True(DicomDatasetHelpers.ValueEquals(usDataset, recoUsDataset));
             Assert.True(DicomDatasetHelpers.ValueEquals(owDataset, recoOwDataset));
@@ -440,7 +440,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void BsonRoundTrip_NormalPrivateDataset_SameAfterConversion()
         {
-            DicomDataset ds = TranslationTestHelpers.BuildPrivateDataset();
+            var ds = TranslationTestHelpers.BuildPrivateDataset();
             ds = new DicomDataset(ds.Where(x => !DicomTypeTranslater.DicomVrBlacklist.Contains(x.ValueRepresentation)));
             VerifyBsonTripleTrip(ds);
         }
@@ -448,8 +448,8 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void BsonRoundTrip_DicomUnsignedVeryLong_SameAfterConversion()
         {
-            DicomPrivateCreator privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
-            DicomDictionary pDict = DicomDictionary.Default[privateCreator];
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
+            var pDict = DicomDictionary.Default[privateCreator];
             pDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx01"), "Private Tag 01", "PrivateTag01", DicomVM.VM_1, false, DicomVR.UV));
             pDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx02"), "Private Tag 02", "PrivateTag02", DicomVM.VM_1, false, DicomVR.UV));
             pDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx03"), "Private Tag 03", "PrivateTag03", DicomVM.VM_1, false, DicomVR.UV));
@@ -466,15 +466,15 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void BsonRoundTrip_BlacklistPrivateDataset_ZeroAfterConversion()
         {
-            DicomDataset ds = TranslationTestHelpers.BuildPrivateDataset();
+            var ds = TranslationTestHelpers.BuildPrivateDataset();
             ds = new DicomDataset(ds.Where(x => DicomTypeTranslater.DicomVrBlacklist.Contains(x.ValueRepresentation)));
-            BsonDocument doc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
-            DicomDataset recoDataset = DicomTypeTranslaterWriter.BuildDicomDataset(doc);
-            BsonDocument recoDoc = DicomTypeTranslaterReader.BuildBsonDocument(recoDataset);
+            var doc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
+            var recoDataset = DicomTypeTranslaterWriter.BuildDicomDataset(doc);
+            var recoDoc = DicomTypeTranslaterReader.BuildBsonDocument(recoDataset);
 
             Assert.AreEqual(doc, recoDoc);
 
-            foreach (DicomElement element in recoDataset.Select(x => (DicomElement)x))
+            foreach (var element in recoDataset.Select(x => (DicomElement)x))
                 Assert.Zero(element.Buffer.Size);
         }
 
@@ -524,11 +524,11 @@ namespace DicomTypeTranslation.Tests
                                    "\"60020040\":{\"vr\":\"CS\",\"val\":\"H\"},\"60020050\":{\"vr\":\"SS\",\"val\":[1,2]},\"60020100\":{\"vr\":\"US\",\"val\":[3]}," +
                                    "\"60020102\":{\"vr\":\"US\",\"val\":[4]}}";
 
-            DicomDataset maskDataset = DicomTypeTranslater.DeserializeJsonToDataset(rawJson,true);
+            var maskDataset = DicomTypeTranslater.DeserializeJsonToDataset(rawJson,true);
 
             Assert.AreEqual(12, maskDataset.Count());
 
-            foreach (DicomItem item in maskDataset.Where(x => x.Tag.DictionaryEntry.Keyword == DicomTag.OverlayRows.DictionaryEntry.Keyword))
+            foreach (var item in maskDataset.Where(x => x.Tag.DictionaryEntry.Keyword == DicomTag.OverlayRows.DictionaryEntry.Keyword))
                 _logger.Debug("{0} {1} - Val: {2}", item.Tag, item.Tag.DictionaryEntry.Keyword, maskDataset.GetString(item.Tag));
 
             VerifyBsonTripleTrip(maskDataset);
@@ -564,15 +564,15 @@ namespace DicomTypeTranslation.Tests
                 ds.Select(x => x.ValueRepresentation).All(DicomTypeTranslater.DicomVrBlacklist.Contains)
                 && ds.Count() == DicomTypeTranslater.DicomVrBlacklist.Length);
 
-            BsonDocument doc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
+            var doc = DicomTypeTranslaterReader.BuildBsonDocument(ds);
 
             Assert.NotNull(doc);
             Assert.True(doc.All(x => x.Value.IsBsonNull));
 
-            DicomDataset recoDs = DicomTypeTranslaterWriter.BuildDicomDataset(doc);
+            var recoDs = DicomTypeTranslaterWriter.BuildDicomDataset(doc);
 
             Assert.AreEqual(4, recoDs.Count());
-            foreach (DicomItem item in recoDs)
+            foreach (var item in recoDs)
                 Assert.Zero(((DicomElement)item).Count);
         }
 
@@ -604,7 +604,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void BsonRoundTrip_EmptyPrivateElements_ConvertedCorrectly()
         {
-            DicomDataset ds = TranslationTestHelpers.BuildAllTypesNullDataset();
+            var ds = TranslationTestHelpers.BuildAllTypesNullDataset();
             VerifyBsonTripleTrip(ds);
         }
 
@@ -617,9 +617,9 @@ namespace DicomTypeTranslation.Tests
                 new DicomLongString(DicomTag.SelectorLOValue, "(╯°□°）╯︵ ┻━┻")
             };
 
-            DicomDataset recoDs = DicomTypeTranslaterWriter.BuildDicomDataset(DicomTypeTranslaterReader.BuildBsonDocument(ds));
+            var recoDs = DicomTypeTranslaterWriter.BuildDicomDataset(DicomTypeTranslaterReader.BuildBsonDocument(ds));
 
-            foreach (DicomStringElement stringElement in recoDs.Select(x => x as DicomStringElement))
+            foreach (var stringElement in recoDs.Select(x => x as DicomStringElement))
             {
                 Assert.NotNull(stringElement);
             }
@@ -631,7 +631,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void BsonRoundTrip_UnknownPrivateSequence_ConvertedCorrectly()
         {
-            DicomPrivateCreator privateCreator = DicomDictionary.Default.GetPrivateCreator("???");
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("???");
             
             var ds = new DicomDataset();
             ds.Add(new DicomSequence(ds.GetPrivateTag(new DicomTag(3, 0x0017, privateCreator)),

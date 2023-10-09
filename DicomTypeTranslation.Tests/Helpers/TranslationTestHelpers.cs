@@ -74,8 +74,8 @@ namespace DicomTypeTranslation.Tests.Helpers
 
         public static DicomDataset BuildPrivateDataset()
         {
-            DicomPrivateCreator privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
-            DicomDictionary pDict = DicomDictionary.Default[privateCreator];
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
+            var pDict = DicomDictionary.Default[privateCreator];
 
             pDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx02"), "Private Tag 02", "PrivateTag02", DicomVM.VM_1, false, DicomVR.AE));
             pDict.Add(new DicomDictionaryEntry(DicomMaskedTag.Parse("0003", "xx03"), "Private Tag 03", "PrivateTag03", DicomVM.VM_1, false, DicomVR.AS));
@@ -155,7 +155,7 @@ namespace DicomTypeTranslation.Tests.Helpers
 
         public static DicomDataset BuildAllTypesNullDataset()
         {
-            DicomPrivateCreator privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("TEST");
             return new DicomDataset {
                            new DicomApplicationEntity(new DicomTag(3, 0x1002, privateCreator)),
                            new DicomAgeString(new DicomTag(3, 0x1003, privateCreator)),
@@ -203,7 +203,7 @@ namespace DicomTypeTranslation.Tests.Helpers
                 {DicomTag.ControlPointSequence, (DicomSequence[]) null}
             };
 
-            List<DicomDataset> beams = new[] { 1, 2, 3 }.Select(beamNumber =>
+            var beams = new[] { 1, 2, 3 }.Select(beamNumber =>
             {
                 var beam = new DicomDataset
                 {
@@ -225,7 +225,7 @@ namespace DicomTypeTranslation.Tests.Helpers
 
             sb.AppendLine("\n{");
 
-            foreach (BsonElement item in document)
+            foreach (var item in document)
             {
                 sb.Append($"{item.Name}");
 

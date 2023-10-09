@@ -232,9 +232,9 @@ namespace DicomTypeTranslation
         {
             var toReturn = new List<Dictionary<DicomTag, object>>();
 
-            foreach (DicomDataset sequenceElement in ds.GetSequence(tag))
+            foreach (var sequenceElement in ds.GetSequence(tag))
             {
-                IEnumerator<DicomItem> enumerator = sequenceElement.GetEnumerator();
+                var enumerator = sequenceElement.GetEnumerator();
 
                 var current = new Dictionary<DicomTag, object>();
                 toReturn.Add(current);
@@ -282,7 +282,7 @@ namespace DicomTypeTranslation
         /// <returns></returns>
         private static string GetBsonKeyForTag(DicomTag tag)
         {
-            string tagName =
+            var tagName =
                 (tag.IsPrivate || tag.DictionaryEntry.MaskTag != null) ?
                 GetColumnNameForTag(tag, true) :
                 GetColumnNameForTag(tag, false);
@@ -298,7 +298,7 @@ namespace DicomTypeTranslation
 
             var sequenceArray = new BsonArray();
 
-            foreach (DicomDataset sequenceElement in ds.GetSequence(tag))
+            foreach (var sequenceElement in ds.GetSequence(tag))
                 sequenceArray.Add(BuildBsonDocument(sequenceElement));
 
             if (sequenceArray.Count > 0)
@@ -349,7 +349,7 @@ namespace DicomTypeTranslation
             else
             {
                 // Must be a numeric element - convert using default BSON mapper
-                object[] val = dataset.GetValues<object>(item.Tag);
+                var val = dataset.GetValues<object>(item.Tag);
                 retVal = BsonTypeMapper.MapToBsonValue(val);
             }
 
@@ -382,20 +382,20 @@ namespace DicomTypeTranslation
         {
             var datasetDoc = new BsonDocument();
 
-            foreach (DicomItem item in dataset)
+            foreach (var item in dataset)
             {
                 // Don't serialize group length elements
                 if (((uint)item.Tag & 0xffff) == 0)
                     continue;
 
-                string bsonKey = GetBsonKeyForTag(item.Tag);
+                var bsonKey = GetBsonKeyForTag(item.Tag);
 
                 // For private tags, or tags which have an ambiguous ValueRepresentation, we need to include the VR as well as the value
-                bool writeVr =
+                var writeVr =
                     item.Tag.IsPrivate ||
                     item.Tag.DictionaryEntry.ValueRepresentations.Length > 1;
 
-                BsonValue bsonVal = CreateBsonValue(dataset, item, writeVr);
+                var bsonVal = CreateBsonValue(dataset, item, writeVr);
 
                 datasetDoc.Add(bsonKey, bsonVal);
             }
