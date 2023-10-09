@@ -209,7 +209,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestGetCSharpValueThrowsException()
         {
-            Assert.Throws<FellowOakDicom.DicomValidationException>(() => DicomTypeTranslaterReader.GetCSharpValue(
+            Assert.Throws<FellowOakDicom.DicomValidationException>(static () => DicomTypeTranslaterReader.GetCSharpValue(
                 new DicomDataset
                 {
                     new DicomDecimalString(DicomTag.SelectorDSValue, "aaahhhhh")
@@ -224,7 +224,7 @@ namespace DicomTypeTranslation.Tests
             // Create a dataset with the private tag in it
             var aTag = new DicomTag(0x3001, 0x08, "PRIVATE");
             var ds = new DicomDataset();
-            ds.Add<int>(aTag, 1);
+            ds.Add<int>(DicomVR.IS,aTag, 1);
 
             // Getting the value directly is fine
             Assert.AreEqual(1, ds.GetSingleValue<int>(aTag));

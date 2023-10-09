@@ -3,11 +3,9 @@ using FellowOakDicom;
 using DicomTypeTranslation.Converters;
 using DicomTypeTranslation.Helpers;
 using DicomTypeTranslation.Tests.Helpers;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 using NUnit.Framework;
-using System;
 using System.IO;
 using System.Linq;
 using FellowOakDicom.Serialization;
@@ -142,7 +140,7 @@ namespace DicomTypeTranslation.Tests
             {
                 VerifyJsonTripleTrip(ds);
             } else {
-                Assert.Throws<OverflowException>(() => VerifyJsonTripleTrip(ds), $"[{typeof(SmiJsonDicomConverter)}] Expected OverflowException parsing 2.500000 as an IntegerString");
+                Assert.Throws<System.Text.Json.JsonException>(() => VerifyJsonTripleTrip(ds), $"[{typeof(SmiJsonDicomConverter)}] Expected OverflowException parsing 2.500000 as an IntegerString");
             }
         }
 
