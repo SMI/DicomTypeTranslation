@@ -30,15 +30,10 @@ namespace DicomTypeTranslation.Tests
         [OneTimeSetUp]
         public void CheckFiles()
         {
-            ImplementationManager.Load(
-                typeof(MicrosoftSQLServerHelper).Assembly,
-                typeof(OracleServerHelper).Assembly,
-                typeof(MySqlServerHelper).Assembly,
-                typeof(PostgreSqlServerHelper).Assembly
-                );
+            ImplementationManager.Load<MicrosoftSQLImplementation>();
 
             var file = Path.Combine(TestContext.CurrentContext.TestDirectory, TestFilename);
-            
+
             Assert.IsTrue(File.Exists(file),"Could not find " + TestFilename);
 
             var doc = XDocument.Load(file);
