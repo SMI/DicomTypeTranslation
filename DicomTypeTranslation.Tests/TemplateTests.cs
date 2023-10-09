@@ -23,8 +23,8 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void Template_ExampleYaml()
         {
-            ImageTableTemplateCollection collection = new ImageTableTemplateCollection();
-            ImageTableTemplate table = new ImageTableTemplate();
+            var collection = new ImageTableTemplateCollection();
+            var table = new ImageTableTemplate();
             
             var colTemplate = new ImageColumnTemplate();
             colTemplate.ColumnName = "mycol";
@@ -69,9 +69,9 @@ namespace DicomTypeTranslation.Tests
         [TestCase("US", FAnsi.DatabaseType.Oracle)]
         public void TestTemplate(string template, FAnsi.DatabaseType dbType)
         {
-            string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.it");
+            var templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.it");
 
-            ImageTableTemplateCollection collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(templateFile));
+            var collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(templateFile));
 
             foreach (var tableTemplate in collection.Tables) 
                 Validate(tableTemplate,templateFile);
@@ -108,7 +108,7 @@ namespace DicomTypeTranslation.Tests
 
         private void Validate(ImageTableTemplate tableTemplate, string templateFile)
         {
-            List<Exception> errors = new List<Exception>();
+            var errors = new List<Exception>();
 
             foreach (var col in tableTemplate.Columns)
             {
@@ -116,7 +116,7 @@ namespace DicomTypeTranslation.Tests
                 {
                     Assert.LessOrEqual(col.ColumnName.Length,64, $"Column name '{col.ColumnName}' is too long");
 
-                    Regex rSeq = new Regex(@"_([A-Za-z]+)$");
+                    var rSeq = new Regex(@"_([A-Za-z]+)$");
                     var seqMatch = rSeq.Match(col.ColumnName);
 
                     if (seqMatch.Success)
@@ -161,9 +161,9 @@ namespace DicomTypeTranslation.Tests
         [TestCase("SmiTagElevation")]
         public void TestElevationTemplate(string template)
         {
-            string templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.xml");
+            var templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.xml");
             
-            TagElevationRequestCollection elevation = new TagElevationRequestCollection(File.ReadAllText(templateFile));
+            var elevation = new TagElevationRequestCollection(File.ReadAllText(templateFile));
             
             //at least one request
             Assert.GreaterOrEqual(elevation.Requests.Count,1);
@@ -177,9 +177,9 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void Test_Serializing_DicomTagsOnly()
         {
-            ImageTableTemplateCollection collection = new ImageTableTemplateCollection();
+            var collection = new ImageTableTemplateCollection();
 
-            ImageTableTemplate table = new ImageTableTemplate();
+            var table = new ImageTableTemplate();
             table.TableName = "Fish";
             
             
@@ -208,7 +208,7 @@ namespace DicomTypeTranslation.Tests
             //doesn't actually have to exist
             var db = new DiscoveredServer("localhost","nobody",FAnsi.DatabaseType.MySql,"captain","morgans").ExpectDatabase("neverland");
 
-            ImagingTableCreation creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
+            var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
                        
 
             var sql1 = creator.GetCreateTableSql(db,collection.Tables[0].TableName, collection.Tables[0],null);
@@ -224,9 +224,9 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void Test_Serializing_DicomTagsAndArbitraryColumns()
         {
-            ImageTableTemplateCollection collection = new ImageTableTemplateCollection();
+            var collection = new ImageTableTemplateCollection();
 
-            ImageTableTemplate table = new ImageTableTemplate();
+            var table = new ImageTableTemplate();
             table.TableName = "Fish";
 
             //table has 3 columns, one is a DicomTag (SOPInstanceUID) while the other 2 are arbitrary
@@ -273,7 +273,7 @@ namespace DicomTypeTranslation.Tests
             //doesn't actually have to exist
             var db = new DiscoveredServer("localhost", "nobody", FAnsi.DatabaseType.MySql, "captain", "morgans").ExpectDatabase("neverland");
 
-            ImagingTableCreation creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
+            var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
 
             var sql1 = creator.GetCreateTableSql(db, collection.Tables[0].TableName, collection.Tables[0], null);
             var sql2 = creator.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0], null);

@@ -38,9 +38,9 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestBasicCSharpTranslation()
         {
-            DicomDataset ds = TranslationTestHelpers.BuildVrDataset();
+            var ds = TranslationTestHelpers.BuildVrDataset();
 
-            foreach (DicomItem item in ds)
+            foreach (var item in ds)
                 Assert.NotNull(DicomTypeTranslaterReader.GetCSharpValue(ds, item));
         }
 
@@ -59,7 +59,7 @@ namespace DicomTypeTranslation.Tests
                 new DicomSequence(DicomTag.ReferencedImageSequence, subDataset)
             };
 
-            object obj = DicomTypeTranslaterReader.GetCSharpValue(ds, ds.GetDicomItem<DicomItem>(DicomTag.ReferencedImageSequence));
+            var obj = DicomTypeTranslaterReader.GetCSharpValue(ds, ds.GetDicomItem<DicomItem>(DicomTag.ReferencedImageSequence));
 
             var asArray = obj as Dictionary<DicomTag, object>[];
             Assert.NotNull(asArray);
@@ -74,7 +74,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestWriteMultiplicity()
         {
-            DicomTag stringMultiTag = DicomTag.SpecimenShortDescription;
+            var stringMultiTag = DicomTag.SpecimenShortDescription;
             string[] values = { "this", "is", "a", "multi", "element", "" };
 
             var ds = new DicomDataset();
@@ -108,15 +108,15 @@ namespace DicomTypeTranslation.Tests
 
             var translatedDataset = new Dictionary<DicomTag, object>();
 
-            foreach (DicomItem item in originalDataset)
+            foreach (var item in originalDataset)
             {
-                object value = DicomTypeTranslaterReader.GetCSharpValue(originalDataset, item);
+                var value = DicomTypeTranslaterReader.GetCSharpValue(originalDataset, item);
                 translatedDataset.Add(item.Tag, value);
             }
 
             var reconstructedDataset = new DicomDataset();
 
-            foreach (KeyValuePair<DicomTag, object> item in translatedDataset)
+            foreach (var item in translatedDataset)
                 DicomTypeTranslaterWriter.SetDicomTag(reconstructedDataset, item.Key, item.Value);
 
             Assert.True(DicomDatasetHelpers.ValueEquals(originalDataset, reconstructedDataset));
@@ -159,10 +159,10 @@ namespace DicomTypeTranslation.Tests
                 {DicomTag.ProcedureCodeSequence, subDatasets.ToArray()}
             };
 
-            object result = DicomTypeTranslaterReader.GetCSharpValue(dicomDataset, DicomTag.ProcedureCodeSequence);
+            var result = DicomTypeTranslaterReader.GetCSharpValue(dicomDataset, DicomTag.ProcedureCodeSequence);
 
 
-            object flat = DicomTypeTranslater.Flatten(result);
+            var flat = DicomTypeTranslater.Flatten(result);
             Console.WriteLine(flat);
 
             StringAssert.Contains("CPELVD", (string)flat);
@@ -185,10 +185,10 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void PrintValueTypesForVrs()
         {
-            DicomVR[] vrs = TranslationTestHelpers.AllVrCodes;
+            var vrs = TranslationTestHelpers.AllVrCodes;
             var uniqueTypes = new SortedSet<string>();
 
-            foreach (DicomVR vr in vrs)
+            foreach (var vr in vrs)
             {
                 //SQ value representation doesn't have ValueType defined
                 if (vr == DicomVR.SQ)
@@ -199,7 +199,7 @@ namespace DicomTypeTranslation.Tests
             }
 
             var sb = new StringBuilder();
-            foreach (string str in uniqueTypes)
+            foreach (var str in uniqueTypes)
                 sb.Append($"{str}, ");
 
             sb.Length -= 2;
@@ -232,7 +232,7 @@ namespace DicomTypeTranslation.Tests
 
             // Getting it by iterating through the dataset also works
             // NOTE(rkm 2020-03-26) When creating a dataset with private tags, the "Private Creator" tags are also implicitly added to the dataset
-            foreach (DicomItem item in ds)
+            foreach (var item in ds)
                 if (item.ToString().Contains("(3001,1008)"))
                     Assert.AreEqual(1, DicomTypeTranslaterReader.GetCSharpValue(ds, item));
         }
@@ -240,7 +240,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void ShowBlacklistedTags()
         {
-            List<DicomTag> blacklistedTags = typeof(DicomTag)
+            var blacklistedTags = typeof(DicomTag)
                 .GetFields(BindingFlags.Public | BindingFlags.Static)
                 .Where(field => field.FieldType == typeof(DicomTag))
                 .Select(field => (DicomTag)field.GetValue(null))
@@ -250,7 +250,7 @@ namespace DicomTypeTranslation.Tests
 
             Console.WriteLine($"Total blacklisted elements {blacklistedTags.Count}");
 
-            foreach (DicomTag tag in blacklistedTags.OrderBy(x => x.DictionaryEntry.Keyword))
+            foreach (var tag in blacklistedTags.OrderBy(x => x.DictionaryEntry.Keyword))
                 Console.WriteLine($"{tag} || {tag.DictionaryEntry.Keyword}");
         }
 

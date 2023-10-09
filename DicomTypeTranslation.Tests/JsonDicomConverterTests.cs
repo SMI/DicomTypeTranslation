@@ -70,12 +70,12 @@ namespace DicomTypeTranslation.Tests
         /// </summary>
         private void VerifyJsonTripleTrip(DicomDataset originalDataset, bool expectFail = false)
         {
-            string json = DicomTypeTranslater.SerializeDatasetToJson(originalDataset, _useOwnConverter);
+            var json = DicomTypeTranslater.SerializeDatasetToJson(originalDataset, _useOwnConverter);
             _logger.Debug($"Initial json:\n{json}");
 
-            DicomDataset recoDataset = DicomTypeTranslater.DeserializeJsonToDataset(json, _useOwnConverter);
+            var recoDataset = DicomTypeTranslater.DeserializeJsonToDataset(json, _useOwnConverter);
 
-            string json2 = DicomTypeTranslater.SerializeDatasetToJson(recoDataset, _useOwnConverter);
+            var json2 = DicomTypeTranslater.SerializeDatasetToJson(recoDataset, _useOwnConverter);
             _logger.Debug($"Final json:\n{json}");
 
             if (expectFail)
@@ -106,14 +106,14 @@ namespace DicomTypeTranslation.Tests
             dataset.Remove(x => x.Tag.Element == 0x0000);
 
             // Handle sequences
-            foreach (DicomSequence sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>())
-                foreach (DicomDataset item in sq.Items)
+            foreach (var sq in dataset.Where(x => x.ValueRepresentation == DicomVR.SQ).Cast<DicomSequence>())
+                foreach (var item in sq.Items)
                     RemoveGroupLengths(item);
         }
 
         private static void ValidatePrivateCreatorsExist(DicomDataset dataset)
         {
-            foreach (DicomItem item in dataset)
+            foreach (var item in dataset)
             {
                 if ((item.Tag.Element & 0xff00) != 0)
                     Assert.False(string.IsNullOrWhiteSpace(item.Tag.PrivateCreator?.Creator));
@@ -123,7 +123,7 @@ namespace DicomTypeTranslation.Tests
                 if (item.ValueRepresentation != DicomVR.SQ)
                     continue;
 
-                foreach (DicomDataset subDs in ((DicomSequence)item).Items)
+                foreach (var subDs in ((DicomSequence)item).Items)
                     ValidatePrivateCreatorsExist(subDs);
             }
         }
@@ -135,7 +135,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestFile_Image11()
         {
-            DicomDataset ds = DicomFile.Open(_imDcmPath).Dataset;
+            var ds = DicomFile.Open(_imDcmPath).Dataset;
             ds.Remove(DicomTag.PixelData);
 
             if (_useOwnConverter)
@@ -149,7 +149,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestFile_Report01()
         {
-            DicomDataset ds = DicomFile.Open(_srDcmPath).Dataset;
+            var ds = DicomFile.Open(_srDcmPath).Dataset;
             VerifyJsonTripleTrip(ds);
         }
 
@@ -158,7 +158,7 @@ namespace DicomTypeTranslation.Tests
         public void TestFile_Other(string filePath)
         {
             Assert.True(File.Exists(filePath));
-            DicomDataset ds = DicomFile.Open(filePath).Dataset;
+            var ds = DicomFile.Open(filePath).Dataset;
             VerifyJsonTripleTrip(ds);
         }
 
@@ -171,14 +171,14 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void TestZooDataset()
         {
-            DicomDataset ds = TranslationTestHelpers.BuildZooDataset();
+            var ds = TranslationTestHelpers.BuildZooDataset();
             VerifyJsonTripleTrip(ds);
         }
 
         [Test]
         public void TestNullDataset()
         {
-            DicomDataset ds = TranslationTestHelpers.BuildAllTypesNullDataset();
+            var ds = TranslationTestHelpers.BuildAllTypesNullDataset();
             VerifyJsonTripleTrip(ds);
         }
 
@@ -193,17 +193,17 @@ namespace DicomTypeTranslation.Tests
                 new DicomFloatingPointDouble(DicomTag.SelectorFDValue)
             };
 
-            string json = DicomTypeTranslater.SerializeDatasetToJson(dataset, _useOwnConverter);
+            var json = DicomTypeTranslater.SerializeDatasetToJson(dataset, _useOwnConverter);
             _logger.Debug(json);
 
-            DicomDataset recoDataset = DicomTypeTranslater.DeserializeJsonToDataset(json, _useOwnConverter);
+            var recoDataset = DicomTypeTranslater.DeserializeJsonToDataset(json, _useOwnConverter);
             Assert.True(DicomDatasetHelpers.ValueEquals(dataset, recoDataset));
         }
 
         [Test]
         public void TestPrivateTagsDeserialization()
         {
-            DicomPrivateCreator privateCreator = DicomDictionary.Default.GetPrivateCreator("Testing");
+            var privateCreator = DicomDictionary.Default.GetPrivateCreator("Testing");
             var privateTag1 = new DicomTag(4013, 0x008, privateCreator);
             var privateTag2 = new DicomTag(4013, 0x009, privateCreator);
 
@@ -211,7 +211,7 @@ namespace DicomTypeTranslation.Tests
             {
                 { DicomTag.Modality, "CT" },
                 new DicomCodeString(privateTag1, "test1"),
-                { privateTag2, "test2" },
+                { DicomVR.SH, privateTag2, "test2" },
             };
 
             VerifyJsonTripleTrip(privateDs);
@@ -220,7 +220,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void Deserialize_PrivateCreators_AreSet()
         {
-            DicomDataset originalDataset = TranslationTestHelpers.BuildPrivateDataset();
+            var originalDataset = TranslationTestHelpers.BuildPrivateDataset();
 
             ValidatePrivateCreatorsExist(originalDataset);
 
@@ -243,9 +243,9 @@ namespace DicomTypeTranslation.Tests
                                    "\"60020011\":{\"vr\":\"US\",\"val\":[614]},\"60020040\":{\"vr\":\"CS\",\"val\":\"G\"},\"60020050\":" +
                                    "{\"vr\":\"SS\",\"val\":[0,0]},\"60020100\":{\"vr\":\"US\",\"val\":[1]},\"60020102\":{\"vr\":\"US\",\"val\":[0]}}";
 
-            DicomDataset maskDataset = DicomTypeTranslater.DeserializeJsonToDataset(rawJson,_useOwnConverter);
+            var maskDataset = DicomTypeTranslater.DeserializeJsonToDataset(rawJson,_useOwnConverter);
 
-            foreach (DicomItem item in maskDataset.Where(x => x.Tag.DictionaryEntry.Keyword == DicomTag.OverlayRows.DictionaryEntry.Keyword))
+            foreach (var item in maskDataset.Where(x => x.Tag.DictionaryEntry.Keyword == DicomTag.OverlayRows.DictionaryEntry.Keyword))
                 _logger.Debug("{0} {1} - Val: {2}", item.Tag, item.Tag.DictionaryEntry.Keyword, maskDataset.TryGetString(item.Tag,out var s)?s:"(unknown)");
 
             VerifyJsonTripleTrip(maskDataset);
@@ -262,7 +262,7 @@ namespace DicomTypeTranslation.Tests
                 new DicomDecimalString(DicomTag.PatientWeight, "")
             };
 
-            string json = DicomTypeTranslater.SerializeDatasetToJson(ds, _useOwnConverter);
+            var json = DicomTypeTranslater.SerializeDatasetToJson(ds, _useOwnConverter);
 
             Assert.True(json.Equals("{\"00101030\":{\"vr\":\"DS\"}}"));
 
@@ -273,7 +273,7 @@ namespace DicomTypeTranslation.Tests
                 json = DicomTypeTranslater.SerializeDatasetToJson(ds, _useOwnConverter);
                 if (_useOwnConverter)
                 {
-                    string expected = testValues[i].TrimEnd('\0');
+                    var expected = testValues[i].TrimEnd('\0');
                     Assert.AreEqual($"{{\"00101030\":{{\"vr\":\"DS\",\"val\":\"{expected}\"}}}}", json);
                 } else { 
                     Assert.AreEqual($"{{\"00101030\":{{\"vr\":\"DS\",\"Value\":[{expectedValues[i]}]}}}}",json);
@@ -309,28 +309,19 @@ namespace DicomTypeTranslation.Tests
             {
                 ds.AddOrUpdate(new DicomIntegerString(DicomTag.SelectorAttributePrivateCreator, testValues[i]));
 
-                string json = DicomTypeTranslater.SerializeDatasetToJson(ds, _useOwnConverter);
-                if (_useOwnConverter)
-                {
-                    Assert.AreEqual($@"{{""00720056"":{{""vr"":""IS"",""val"":""{testValues[i]}""}}}}", json);
-                } else {
-                    Assert.AreEqual(($@"{{""00720056"":{{""vr"":""IS"",""Value"":[{ expectedValues[i] }]}}}}"), json);
-                }
+                var json = DicomTypeTranslater.SerializeDatasetToJson(ds, _useOwnConverter);
+                Assert.AreEqual(
+                    _useOwnConverter
+                        ? $@"{{""00720056"":{{""vr"":""IS"",""val"":""{testValues[i]}""}}}}"
+                        : $@"{{""00720056"":{{""vr"":""IS"",""Value"":[{expectedValues[i]}]}}}}", json);
             }
 
             // Value larger than an Int32
             ds.AddOrUpdate(new DicomIntegerString(DicomTag.SelectorAttributePrivateCreator, "10001234123412"));
 
-            if (!_useOwnConverter)
-            {
-                // Default converter will try and force it into an int -> OverflowException
-                Assert.Throws<OverflowException>(() =>
-                    DicomTypeTranslater.SerializeDatasetToJson(ds, _useOwnConverter));
-            } else {
-                // Our converter doesn't enforce types, so this should pass
-                    string json = DicomTypeTranslater.SerializeDatasetToJson(ds, _useOwnConverter);
-                    Assert.AreEqual("{\"00720056\":{\"vr\":\"IS\",\"val\":\"10001234123412\"}}", json);
-            }
+            // Our converter doesn't enforce types, so this should pass
+            Assert.AreEqual($"{{\"00720056\":{{\"vr\":\"IS\",\"{(_useOwnConverter?"val":"Value")}\":{(_useOwnConverter ? "" : "[")}\"10001234123412\"{(_useOwnConverter?"":"]")}}}}}",
+                DicomTypeTranslater.SerializeDatasetToJson(ds, _useOwnConverter));
         }
 
         [Test]
@@ -350,7 +341,7 @@ namespace DicomTypeTranslation.Tests
         [Test]
         public void JsonSerialization_SerializeBinaryTrue_ContainsTags()
         {
-            DicomDataset ds = TranslationTestHelpers.BuildVrDataset();
+            var ds = TranslationTestHelpers.BuildVrDataset();
 
             DicomTypeTranslater.SerializeBinaryData = true;
             VerifyJsonTripleTrip(ds);
@@ -370,11 +361,11 @@ namespace DicomTypeTranslation.Tests
             };
 
             DicomTypeTranslater.SerializeBinaryData = false;
-            string json = DicomTypeTranslater.SerializeDatasetToJson(ds,_useOwnConverter);
+            var json = DicomTypeTranslater.SerializeDatasetToJson(ds,_useOwnConverter);
 
             Assert.DoesNotThrow(() => JToken.Parse(json));
 
-            DicomDataset recoDs = DicomTypeTranslater.DeserializeJsonToDataset(json,_useOwnConverter);
+            var recoDs = DicomTypeTranslater.DeserializeJsonToDataset(json,_useOwnConverter);
 
             Assert.AreEqual(ds.Count(), recoDs.Count());
             AssertBlacklistedNulls(recoDs);
@@ -382,12 +373,12 @@ namespace DicomTypeTranslation.Tests
 
         private static void AssertBlacklistedNulls(DicomDataset ds)
         {
-            foreach (DicomItem item in ds.Where(x =>
+            foreach (var item in ds.Where(x =>
                 DicomTypeTranslater.DicomVrBlacklist.Contains(x.ValueRepresentation)
                 || x.ValueRepresentation == DicomVR.SQ))
             {
                 if (item.ValueRepresentation == DicomVR.SQ)
-                    foreach (DicomDataset subDataset in (DicomSequence)item)
+                    foreach (var subDataset in (DicomSequence)item)
                         AssertBlacklistedNulls(subDataset);
                 else
                     Assert.Zero(((DicomElement)item).Buffer.Size, $"Expected 0 for {item.Tag.DictionaryEntry.Keyword}");

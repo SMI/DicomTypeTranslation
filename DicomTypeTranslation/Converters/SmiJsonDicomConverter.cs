@@ -45,7 +45,7 @@ namespace DicomTypeTranslation.Converters
 
             writer.WriteStartObject();
 
-            foreach (DicomItem item in dataset)
+            foreach (var item in dataset)
             {
                 // Group length (gggg,0000) attributes shall not be included in a DICOM JSON Model object.
                 if (((uint)item.Tag & 0xffff) == 0)
@@ -73,11 +73,11 @@ namespace DicomTypeTranslation.Converters
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
-                DicomTag tag = ParseTag((string)reader.Value);
+                var tag = ParseTag((string)reader.Value);
 
                 reader.Read();
 
-                DicomItem item = ReadJsonDicomItem(tag, reader, serializer);
+                var item = ReadJsonDicomItem(tag, reader, serializer);
 
                 dataset.Add(item);
 
@@ -85,7 +85,7 @@ namespace DicomTypeTranslation.Converters
             }
 
             // Ensure all private tags have a reference to their Private Creator tag
-            foreach (DicomItem item in dataset)
+            foreach (var item in dataset)
             {
                 if (item.Tag.IsPrivate && ((item.Tag.Element & 0xff00) != 0))
                 {
@@ -230,7 +230,7 @@ namespace DicomTypeTranslation.Converters
 
             writer.WritePropertyName(VALUE_PROPERTY_NAME);
 
-            string val = elem.Get<string>().TrimEnd('\0');
+            var val = elem.Get<string>().TrimEnd('\0');
             writer.WriteValue(val);
         }
 
@@ -242,7 +242,7 @@ namespace DicomTypeTranslation.Converters
             writer.WritePropertyName(VALUE_PROPERTY_NAME);
             writer.WriteStartArray();
 
-            foreach (T val in elem.Get<T[]>())
+            foreach (var val in elem.Get<T[]>())
                 writer.WriteValue(val);
 
             writer.WriteEndArray();
@@ -257,7 +257,7 @@ namespace DicomTypeTranslation.Converters
 
             var sb = new StringBuilder();
 
-            foreach (DicomTag val in elem.Get<DicomTag[]>())
+            foreach (var val in elem.Get<DicomTag[]>())
                 sb.Append(((uint)val).ToString("X8"));
 
             if (sb.Length % 8 != 0)
@@ -273,7 +273,7 @@ namespace DicomTypeTranslation.Converters
             writer.WritePropertyName(VALUE_PROPERTY_NAME);
             writer.WriteStartArray();
 
-            foreach (DicomDataset child in seq.Items)
+            foreach (var child in seq.Items)
                 WriteJson(writer, child, serializer);
 
             writer.WriteEndArray();
@@ -308,8 +308,8 @@ namespace DicomTypeTranslation.Converters
 
         private static DicomTag ParseTag(string tagStr)
         {
-            ushort group = Convert.ToUInt16(tagStr.Substring(0, 4), 16);
-            ushort element = Convert.ToUInt16(tagStr.Substring(4), 16);
+            var group = Convert.ToUInt16(tagStr.Substring(0, 4), 16);
+            var element = Convert.ToUInt16(tagStr.Substring(4), 16);
             var tag = new DicomTag(group, element);
             return tag;
         }

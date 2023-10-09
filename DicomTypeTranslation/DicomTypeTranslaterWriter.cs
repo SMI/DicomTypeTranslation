@@ -124,11 +124,11 @@ namespace DicomTypeTranslation
 
             var subDatasets = new List<DicomDataset>();
 
-            foreach (Dictionary<DicomTag, object> sequenceDict in sequenceList)
+            foreach (var sequenceDict in sequenceList)
             {
                 var subDataset = new DicomDataset();
 
-                foreach (KeyValuePair<DicomTag, object> kvp in sequenceDict)
+                foreach (var kvp in sequenceDict)
                     SetDicomTag(subDataset, kvp.Key, kvp.Value);
 
                 subDatasets.Add(subDataset);
@@ -148,20 +148,20 @@ namespace DicomTypeTranslation
         {
             var dataset = new DicomDataset();
 
-            foreach (BsonElement element in document)
+            foreach (var element in document)
             {
                 if (_ignoredBsonKeys.Contains(element.Name))
                     continue;
 
                 if (element.Name.Contains("PrivateCreator"))
                 {
-                    DicomTag creatorTag = DicomTag.Parse(element.Name);
+                    var creatorTag = DicomTag.Parse(element.Name);
                     dataset.Add(new DicomLongString(new DicomTag(creatorTag.Group, creatorTag.Element), element.Value["val"].AsString));
                     continue;
                 }
 
-                DicomTag tag = TryParseTag(dataset, element);
-                DicomVR vr = TryParseVr(element.Value);
+                var tag = TryParseTag(dataset, element);
+                var vr = TryParseVr(element.Value);
                 if (vr == null)
                     dataset.Add(CreateDicomItem(tag, element.Value));
                 else
@@ -173,18 +173,18 @@ namespace DicomTypeTranslation
 
         private static DicomTag TryParseTag(DicomDataset dataset, BsonElement element)
         {
-            string tagString = element.Name;
+            var tagString = element.Name;
 
             try
             {
-                DicomTag tag = tagString.StartsWith("(")
+                var tag = tagString.StartsWith("(")
                     ? DicomTag.Parse(tagString)
                     : DicomDictionary.Default[tagString];
 
                 if (!tag.IsPrivate)
                     return tag;
 
-                string creatorName = _privateCreatorRegex.Match(element.Name).Groups[1].Value;
+                var creatorName = _privateCreatorRegex.Match(element.Name).Groups[1].Value;
                 tag = dataset.GetPrivateTag(new DicomTag(tag.Group, tag.Element, DicomDictionary.Default.GetPrivateCreator(creatorName)));
 
                 return tag;
@@ -263,10 +263,10 @@ namespace DicomTypeTranslation
                 return new DicomAttributeTag(tag);
 
             var parsed = new List<DicomTag>();
-            foreach (string subTagStr in bsonValue.AsString.Split('\\'))
+            foreach (var subTagStr in bsonValue.AsString.Split('\\'))
             {
-                ushort group = Convert.ToUInt16(subTagStr.Substring(0, 4), 16);
-                ushort element = Convert.ToUInt16(subTagStr.Substring(4), 16);
+                var group = Convert.ToUInt16(subTagStr.Substring(0, 4), 16);
+                var element = Convert.ToUInt16(subTagStr.Substring(4), 16);
                 parsed.Add(new DicomTag(group, element));
             }
             return new DicomAttributeTag(tag, parsed.ToArray());
@@ -282,7 +282,7 @@ namespace DicomTypeTranslation
             if (bsonValue == BsonNull.Value)
                 return new T[0];
 
-            BsonArray bsonArray = bsonValue.AsBsonArray;
+            var bsonArray = bsonValue.AsBsonArray;
 
             Array typedArray = new T[bsonArray.Count];
             var mappedBsonArray = (object[])BsonTypeMapper.MapToDotNetValue(bsonArray, _bsonTypeMapperOptions);

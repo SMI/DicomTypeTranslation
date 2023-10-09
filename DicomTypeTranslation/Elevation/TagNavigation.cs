@@ -62,7 +62,7 @@ namespace DicomTypeTranslation.Elevation
             var toReturn = getCSharpValue.Select(s => new SequenceElement(_tag, s, location)).ToArray();
 
             //tell the SequenceElement about all the other elements (including itself) which appear side by side as array siblings in the sequence
-            foreach (SequenceElement element in toReturn)
+            foreach (var element in toReturn)
                 element.ArraySiblings.AddRange(toReturn);
 
             return toReturn;

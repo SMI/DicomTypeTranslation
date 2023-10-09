@@ -104,7 +104,7 @@ namespace DicomTypeTranslation
         public static DatabaseTypeRequest GetNaturalTypeForVr(DicomVR[] valueRepresentations, DicomVM valueMultiplicity)
         {
             //maximum lengths are defined by http://dicom.nema.org/dicom/2013/output/chtml/part05/sect_6.2.html  in bytes... lets err on the side of caution and say it is not unicode so 1 byte = 1 character
-            List<DatabaseTypeRequest> vrs = valueRepresentations
+            var vrs = valueRepresentations
                 .Select(dicomVr => GetNaturalTypeForVr(dicomVr, valueMultiplicity))
                 .ToList();
 
@@ -115,9 +115,9 @@ namespace DicomTypeTranslation
         {
             var toReturn = vrs.First();
 
-            foreach (DatabaseTypeRequest newType in vrs)
+            foreach (var newType in vrs)
             {
-                Type t = toReturn.CSharpType;
+                var t = toReturn.CSharpType;
 
                 if (toReturn.CSharpType != newType.CSharpType)
                     if (

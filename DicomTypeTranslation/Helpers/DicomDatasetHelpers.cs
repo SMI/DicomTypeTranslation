@@ -156,7 +156,7 @@ namespace DicomTypeTranslation.Helpers
             if (a.Count() != b.Count())
                 differences.Add("A and B did not contain the same number of elements");
 
-            foreach (DicomItem item in a)
+            foreach (var item in a)
             {
                 if (!b.Contains(item.Tag))
                 {
@@ -166,14 +166,14 @@ namespace DicomTypeTranslation.Helpers
 
                 if (item.ValueRepresentation.IsString)
                 {
-                    string before = a.GetString(item.Tag);
-                    string after = b.GetString(item.Tag);
+                    var before = a.GetString(item.Tag);
+                    var after = b.GetString(item.Tag);
 
                     if (string.Equals(before, after)) continue;
 
                     if (ignoreTrailingNull && Math.Abs(before.Length - after.Length) == 1)
                     {
-                        string longest = before.Length > after.Length ? before : after;
+                        var longest = before.Length > after.Length ? before : after;
 
                         // Check for a single trailing NUL character (int value == 0)
                         if (longest[longest.Length - 1] == 0)
@@ -185,8 +185,8 @@ namespace DicomTypeTranslation.Helpers
                 }
                 else if (item.ValueRepresentation == DicomVR.SQ)
                 {
-                    DicomSequence seqA = a.GetSequence(item.Tag);
-                    DicomSequence seqB = b.GetSequence(item.Tag);
+                    var seqA = a.GetSequence(item.Tag);
+                    var seqB = b.GetSequence(item.Tag);
 
                     if (seqA.Count() != seqB.Count())
                     {
@@ -200,8 +200,8 @@ namespace DicomTypeTranslation.Helpers
                 }
                 else
                 {
-                    object[] valA = a.GetValues<object>(item.Tag);
-                    object[] valB = b.GetValues<object>(item.Tag);
+                    var valA = a.GetValues<object>(item.Tag);
+                    var valB = b.GetValues<object>(item.Tag);
 
                     if (!(valA.Any() || valB.Any()))
                         continue;
@@ -210,7 +210,7 @@ namespace DicomTypeTranslation.Helpers
                         differences.Add(string.Format("Tag {0} {1} {2} had {3} values in A and {4} values in B",
                             item.Tag, item.ValueRepresentation, item.Tag.DictionaryEntry.Keyword, valA.Length, valB.Length));
 
-                    List<object> diffs = valA.Except(valB).ToList();
+                    var diffs = valA.Except(valB).ToList();
 
                     if (!diffs.Any())
                         continue;
