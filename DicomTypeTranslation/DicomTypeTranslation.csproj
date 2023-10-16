@@ -32,7 +32,7 @@
   <ItemGroup>
     <PackageReference Include="fo-dicom" Version="5.1.1" />
     <PackageReference Include="HIC.FAnsiSql" Version="3.1.1" />
-    <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.22.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NLog" Version="5.2.4" />
     <PackageReference Include="YamlDotNet" Version="13.7.1" />
