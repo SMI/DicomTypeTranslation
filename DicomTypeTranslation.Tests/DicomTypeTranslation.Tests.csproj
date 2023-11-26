@@ -6,6 +6,7 @@
     <Product>DicomTypeTranslation.Tests</Product>
     <Copyright>Copyright ©  2018</Copyright>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DebugType>none</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="TextDetectionTets\**" />
