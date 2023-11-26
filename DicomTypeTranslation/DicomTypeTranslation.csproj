@@ -19,7 +19,7 @@
     <Description>Extension library for FoDicom supporting flexible relational database schemas for storing large Dicom imaging datasets.  Also supports persisting Dicom tag data to MongoDb</Description>
     </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType></DebugType>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
@@ -34,7 +34,7 @@
     <PackageReference Include="HIC.FAnsiSql" Version="3.1.1" />
     <PackageReference Include="MongoDB.Driver" Version="2.22.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="NLog" Version="5.2.5" />
+    <PackageReference Include="NLog" Version="5.2.6" />
     <PackageReference Include="YamlDotNet" Version="13.7.1" />
   </ItemGroup>
 </Project>
