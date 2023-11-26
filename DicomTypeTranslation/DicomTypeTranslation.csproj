@@ -19,7 +19,7 @@
     <Description>Extension library for FoDicom supporting flexible relational database schemas for storing large Dicom imaging datasets.  Also supports persisting Dicom tag data to MongoDb</Description>
     </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType></DebugType>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
