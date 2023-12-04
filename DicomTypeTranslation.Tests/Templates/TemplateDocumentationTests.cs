@@ -1,51 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
+﻿using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using DicomTypeTranslation.TableCreation;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
-namespace DicomTypeTranslation.Tests.Templates
+namespace DicomTypeTranslation.Tests.Templates;
+
+class TemplateDocumentationTests
 {
-    class TemplateDocumentationTests
+    [Test]
+    public void Test_TemplateDocumentation_Generate()
     {
-        [Test]
-        public void Test_TemplateDocumentation_Generate()
+        var files = Directory.EnumerateFiles(Path.Combine(TestContext.CurrentContext.TestDirectory, "Templates"), "*.it");
+
+        var sb = new StringBuilder();
+
+        foreach (var file in files)
         {
-            var files = Directory.EnumerateFiles(Path.Combine(TestContext.CurrentContext.TestDirectory, "Templates"), "*.it");
+            var collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(file));
 
-            var sb = new StringBuilder();
 
-            foreach (var file in files)
+            sb.AppendLine($"## {Path.GetFileNameWithoutExtension(file)}");
+            sb.AppendLine();
+
+            foreach (var table in collection.Tables)
             {
-                var collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(file));
-
-
-                sb.AppendLine($"## {Path.GetFileNameWithoutExtension(file)}");
+                sb.AppendLine($"### {table.TableName}");
                 sb.AppendLine();
+                sb.AppendLine("| Field | Description |");
+                sb.AppendLine("| ------------- | ------------- |");
 
-                foreach (var table in collection.Tables)
+                foreach (var col in table.Columns)
                 {
-                    sb.AppendLine($"### {table.TableName}");
-                    sb.AppendLine();
-                    sb.AppendLine("| Field | Description |");
-                    sb.AppendLine("| ------------- | ------------- |");
-
-                    foreach (var col in table.Columns)
-                    {
-                        sb.AppendLine($"| {col.ColumnName} |  |");
-                    }
-
-                    sb.AppendLine();
+                    sb.AppendLine($"| {col.ColumnName} |  |");
                 }
-            }
 
-            TestContext.WriteLine("Suggested Documentation:");
-            TestContext.Write(sb.ToString());
+                sb.AppendLine();
+            }
         }
+
+        TestContext.WriteLine("Suggested Documentation:");
+        TestContext.Write(sb.ToString());
     }
 }

@@ -10,227 +10,233 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using TypeGuesser;
 
-namespace DicomTypeTranslation.Tests
+namespace DicomTypeTranslation.Tests;
+
+class TemplateTests:DatabaseTests
 {
-    class TemplateTests:DatabaseTests
+    [OneTimeSetUp]
+    public void DisableDicomValidation()
     {
-        [OneTimeSetUp]
-        public void DisableDicomValidation()
+        DicomValidationBuilderExtension.SkipValidation(null);
+    }
+
+    [Test]
+    public void Template_ExampleYaml()
+    {
+        var collection = new ImageTableTemplateCollection();
+        var table = new ImageTableTemplate();
+
+        var colTemplate = new ImageColumnTemplate
         {
-            DicomValidationBuilderExtension.SkipValidation(null);
-        }
+            ColumnName = "mycol",
+            AllowNulls = true,
+            Type = new DatabaseTypeRequest(typeof(string),100)
+        };
 
-        [Test]
-        public void Template_ExampleYaml()
+        table.Columns = new[] {colTemplate};
+        collection.Tables.Add(table);
+
+        TestContext.Write(collection.Serialize());
+    }
+
+    [TestCase("CT", FAnsi.DatabaseType.MicrosoftSQLServer)]
+    [TestCase("CT", FAnsi.DatabaseType.MySql)]
+    [TestCase("CT", FAnsi.DatabaseType.Oracle)]
+    [TestCase("MR", FAnsi.DatabaseType.MicrosoftSQLServer)]
+    [TestCase("MR", FAnsi.DatabaseType.MySql)]
+    [TestCase("MR", FAnsi.DatabaseType.Oracle)]
+    [TestCase("PT", FAnsi.DatabaseType.MicrosoftSQLServer)]
+    [TestCase("PT", FAnsi.DatabaseType.MySql)]
+    [TestCase("PT", FAnsi.DatabaseType.Oracle)]
+    [TestCase("NM", FAnsi.DatabaseType.MicrosoftSQLServer)]
+    [TestCase("NM", FAnsi.DatabaseType.MySql)]
+    [TestCase("NM", FAnsi.DatabaseType.Oracle)]
+    [TestCase("OTHER",FAnsi.DatabaseType.MicrosoftSQLServer)]
+    [TestCase("OTHER",FAnsi.DatabaseType.MySql)]
+    [TestCase("OTHER",FAnsi.DatabaseType.Oracle)]
+    [TestCase("DX",FAnsi.DatabaseType.MicrosoftSQLServer)]
+    [TestCase("DX",FAnsi.DatabaseType.MySql)]
+    [TestCase("DX",FAnsi.DatabaseType.Oracle)]
+    [TestCase("SR",FAnsi.DatabaseType.MicrosoftSQLServer)]
+    [TestCase("SR",FAnsi.DatabaseType.MySql)]
+    [TestCase("SR",FAnsi.DatabaseType.Oracle)]
+    [TestCase("ECG",FAnsi.DatabaseType.MicrosoftSQLServer)]
+    [TestCase("ECG",FAnsi.DatabaseType.MySql)]
+    [TestCase("ECG",FAnsi.DatabaseType.Oracle)]
+    [TestCase("XA", FAnsi.DatabaseType.MicrosoftSQLServer)]
+    [TestCase("XA", FAnsi.DatabaseType.MySql)]
+    [TestCase("XA", FAnsi.DatabaseType.Oracle)]
+    [TestCase("US", FAnsi.DatabaseType.MicrosoftSQLServer)]
+    [TestCase("US", FAnsi.DatabaseType.MySql)]
+    [TestCase("US", FAnsi.DatabaseType.Oracle)]
+    public void TestTemplate(string template, FAnsi.DatabaseType dbType)
+    {
+        var templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.it");
+
+        var collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(templateFile));
+
+        foreach (var tableTemplate in collection.Tables)
+            Validate(tableTemplate,templateFile);
+
+        var db = GetTestDatabase(dbType);
+
+        var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
+
+        foreach(var table in collection.Tables)
         {
-            var collection = new ImageTableTemplateCollection();
-            var table = new ImageTableTemplate();
-            
-            var colTemplate = new ImageColumnTemplate();
-            colTemplate.ColumnName = "mycol";
-            colTemplate.AllowNulls = true;
-            colTemplate.Type = new DatabaseTypeRequest(typeof(string),100);
-
-            table.Columns = new[] {colTemplate};
-            collection.Tables.Add(table);
-
-            TestContext.Write(collection.Serialize());
-        }
-
-        [TestCase("CT", FAnsi.DatabaseType.MicrosoftSQLServer)]
-        [TestCase("CT", FAnsi.DatabaseType.MySql)]
-        [TestCase("CT", FAnsi.DatabaseType.Oracle)]
-        [TestCase("MR", FAnsi.DatabaseType.MicrosoftSQLServer)]
-        [TestCase("MR", FAnsi.DatabaseType.MySql)]
-        [TestCase("MR", FAnsi.DatabaseType.Oracle)]
-        [TestCase("PT", FAnsi.DatabaseType.MicrosoftSQLServer)]
-        [TestCase("PT", FAnsi.DatabaseType.MySql)]
-        [TestCase("PT", FAnsi.DatabaseType.Oracle)]
-        [TestCase("NM", FAnsi.DatabaseType.MicrosoftSQLServer)]
-        [TestCase("NM", FAnsi.DatabaseType.MySql)]
-        [TestCase("NM", FAnsi.DatabaseType.Oracle)]
-        [TestCase("OTHER",FAnsi.DatabaseType.MicrosoftSQLServer)]
-        [TestCase("OTHER",FAnsi.DatabaseType.MySql)]
-        [TestCase("OTHER",FAnsi.DatabaseType.Oracle)]
-        [TestCase("DX",FAnsi.DatabaseType.MicrosoftSQLServer)]
-        [TestCase("DX",FAnsi.DatabaseType.MySql)]
-        [TestCase("DX",FAnsi.DatabaseType.Oracle)]
-        [TestCase("SR",FAnsi.DatabaseType.MicrosoftSQLServer)]
-        [TestCase("SR",FAnsi.DatabaseType.MySql)]
-        [TestCase("SR",FAnsi.DatabaseType.Oracle)]
-        [TestCase("ECG",FAnsi.DatabaseType.MicrosoftSQLServer)]
-        [TestCase("ECG",FAnsi.DatabaseType.MySql)]
-        [TestCase("ECG",FAnsi.DatabaseType.Oracle)]
-        [TestCase("XA", FAnsi.DatabaseType.MicrosoftSQLServer)]
-        [TestCase("XA", FAnsi.DatabaseType.MySql)]
-        [TestCase("XA", FAnsi.DatabaseType.Oracle)]
-        [TestCase("US", FAnsi.DatabaseType.MicrosoftSQLServer)]
-        [TestCase("US", FAnsi.DatabaseType.MySql)]
-        [TestCase("US", FAnsi.DatabaseType.Oracle)]
-        public void TestTemplate(string template, FAnsi.DatabaseType dbType)
-        {
-            var templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.it");
-
-            var collection = ImageTableTemplateCollection.LoadFrom(File.ReadAllText(templateFile));
-
-            foreach (var tableTemplate in collection.Tables) 
-                Validate(tableTemplate,templateFile);
-            
-            var db = GetTestDatabase(dbType);
-            
-            var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
-
-            foreach(var table in collection.Tables)
+            if(string.Equals(table.TableName, "ImageTable",StringComparison.CurrentCultureIgnoreCase))
             {
-                if(string.Equals(table.TableName, "ImageTable",StringComparison.CurrentCultureIgnoreCase))
-                {
-                    EnforceExpectedImageColumns(template,table);
-                }
+                EnforceExpectedImageColumns(template,table);
+            }
 
-                var tbl = db.ExpectTable(table.TableName);
-                creator.CreateTable(tbl,table);
+            var tbl = db.ExpectTable(table.TableName);
+            creator.CreateTable(tbl,table);
 
-                Assert.IsTrue(tbl.Exists());
+            Assert.That(tbl.Exists(), Is.True);
+        }
+    }
+
+    private void EnforceExpectedImageColumns(string template, ImageTableTemplate table)
+    {
+        foreach(var req in new[] { "PatientID","DicomFileSize","StudyInstanceUID"})
+        {
+            if (!table.Columns.Any(c => c.ColumnName.Equals(req)))
+            {
+                Assert.Fail($"Template {Path.GetFileName(template)} is missing expected field {req} in section {table.TableName}");
             }
         }
 
-        private void EnforceExpectedImageColumns(string template, ImageTableTemplate table)
+    }
+
+    private void Validate(ImageTableTemplate tableTemplate, string templateFile)
+    {
+        var errors = new List<Exception>();
+
+        foreach (var col in tableTemplate.Columns)
         {
-            foreach(var req in new[] { "PatientID","DicomFileSize","StudyInstanceUID"})
+            try
             {
-                if (!table.Columns.Any(c => c.ColumnName.Equals(req)))
+                Assert.That(col.ColumnName, Has.Length.LessThanOrEqualTo(64), $"Column name '{col.ColumnName}' is too long");
+
+                var rSeq = new Regex(@"_([A-Za-z]+)$");
+                var seqMatch = rSeq.Match(col.ColumnName);
+
+                if (seqMatch.Success)
                 {
-                    Assert.Fail($"Template {Path.GetFileName(template)} is missing expected field {req} in section {table.TableName}");
-                }
-            }
-            
-        }
+                    var leafTag = seqMatch.Groups[1].Value;
 
-        private void Validate(ImageTableTemplate tableTemplate, string templateFile)
-        {
-            var errors = new List<Exception>();
+                    var tag = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == leafTag) ?? throw new NotSupportedException($"Leaf tag {leafTag} of sequence column {col.ColumnName} was not a valid dicom tag name");
+                    var type = DicomTypeTranslater.GetNaturalTypeForVr(tag.ValueRepresentations, tag.ValueMultiplicity);
 
-            foreach (var col in tableTemplate.Columns)
-            {
-                try
-                {
-                    Assert.LessOrEqual(col.ColumnName.Length,64, $"Column name '{col.ColumnName}' is too long");
-
-                    var rSeq = new Regex(@"_([A-Za-z]+)$");
-                    var seqMatch = rSeq.Match(col.ColumnName);
-
-                    if (seqMatch.Success)
+                    Assert.Multiple(() =>
                     {
-                        var leafTag = seqMatch.Groups[1].Value;
+                        Assert.That(col.Type.CSharpType, Is.EqualTo(type.CSharpType), $"Listed Type for column {col.ColumnName} did not match expected Type");
 
-                        var tag = DicomDictionary.Default.FirstOrDefault(t => t.Keyword == leafTag);
-
-                        if (tag == null)
-                            throw new NotSupportedException($"Leaf tag {leafTag} of sequence column {col.ColumnName} was not a valid dicom tag name");
-
-                        var type = DicomTypeTranslater.GetNaturalTypeForVr(tag.ValueRepresentations, tag.ValueMultiplicity);
-
-                        Assert.AreEqual(type.CSharpType , col.Type.CSharpType,$"Listed Type for column {col.ColumnName} did not match expected Type");
-                        
                         // The declared widths must be sufficient to hold the basic leaf node
-                        if(type.Width == int.MaxValue)
-                            Assert.GreaterOrEqual(col.Type.Width ??0,100,$"Listed Width for column {col.ColumnName} did not match expected minimum Width");
-                        else
-                            Assert.GreaterOrEqual(col.Type.Width ??0,type.Width ??0 ,$"Listed Width for column {col.ColumnName} did not match expected minimum Width");
-                        
-                        Assert.AreEqual(type.Size , col.Type.Size,$"Listed Size for column {col.ColumnName} ({DescribeSize(col.Type.Size)}) did not match expected Size ({DescribeSize(type.Size)})");
-                    
-                    }
-                }
-                catch (Exception e)
-                {
-                    errors.Add(e);
+                        Assert.That(col.Type.Width ?? 0,
+                            type.Width == int.MaxValue
+                                ? Is.GreaterThanOrEqualTo(100)
+                                : Is.GreaterThanOrEqualTo(type.Width ?? 0),
+                            $"Listed Width for column {col.ColumnName} did not match expected minimum Width");
+
+                        Assert.That(col.Type.Size, Is.EqualTo(type.Size), $"Listed Size for column {col.ColumnName} ({DescribeSize(col.Type.Size)}) did not match expected Size ({DescribeSize(type.Size)})");
+                    });
+
                 }
             }
-
-            if(errors.Any())
-                throw new AggregateException($"Errors in file '{templateFile}'",errors.ToArray());
+            catch (Exception e)
+            {
+                errors.Add(e);
+            }
         }
 
-        private string DescribeSize(DecimalSize typeSize)
+        if(errors.Any())
+            throw new AggregateException($"Errors in file '{templateFile}'",errors.ToArray());
+    }
+
+    private string DescribeSize(DecimalSize typeSize)
+    {
+        return
+            $"NumbersBeforeDecimalPlace:{typeSize.NumbersBeforeDecimalPlace} NumbersAfterDecimalPlace:{typeSize.NumbersAfterDecimalPlace}";
+    }
+
+    [TestCase("SmiTagElevation")]
+    public void TestElevationTemplate(string template)
+    {
+        var templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.xml");
+
+        var elevation = new TagElevationRequestCollection(File.ReadAllText(templateFile));
+
+        //at least one request
+        Assert.That(elevation.Requests, Is.Not.Empty);
+
+    }
+
+    /// <summary>
+    /// Tests the systems ability to serialize and deserialize <see cref="ImageTableTemplateCollection"/> which has only
+    /// columns with DicomTags in them
+    /// </summary>
+    [Test]
+    public void Test_Serializing_DicomTagsOnly()
+    {
+        var collection = new ImageTableTemplateCollection();
+
+        var table = new ImageTableTemplate
         {
-            return
-                $"NumbersBeforeDecimalPlace:{typeSize.NumbersBeforeDecimalPlace} NumbersAfterDecimalPlace:{typeSize.NumbersAfterDecimalPlace}";
-        }
-
-        [TestCase("SmiTagElevation")]
-        public void TestElevationTemplate(string template)
-        {
-            var templateFile = Path.Combine(TestContext.CurrentContext.TestDirectory,"Templates", $"{template}.xml");
-            
-            var elevation = new TagElevationRequestCollection(File.ReadAllText(templateFile));
-            
-            //at least one request
-            Assert.GreaterOrEqual(elevation.Requests.Count,1);
-
-        }
-
-        /// <summary>
-        /// Tests the systems ability to serialize and deserialize <see cref="ImageTableTemplateCollection"/> which has only
-        /// columns with DicomTags in them
-        /// </summary>
-        [Test]
-        public void Test_Serializing_DicomTagsOnly()
-        {
-            var collection = new ImageTableTemplateCollection();
-
-            var table = new ImageTableTemplate();
-            table.TableName = "Fish";
-            
-            
-            table.Columns = new[]
+            TableName = "Fish",
+            Columns = new[]
             {
                 new ImageColumnTemplate(DicomTag.SOPInstanceUID){IsPrimaryKey = true },
                 new ImageColumnTemplate(DicomTag.CurrentPatientLocation)
-            };
+            }
+        };
 
-            collection.Tables.Add(table);
 
-            var yaml = collection.Serialize();
+        collection.Tables.Add(table);
 
-            var collection2 = ImageTableTemplateCollection.LoadFrom(yaml);
+        var yaml = collection.Serialize();
 
-            Assert.AreEqual(collection.Tables[0].TableName, collection2.Tables[0].TableName);
+        var collection2 = ImageTableTemplateCollection.LoadFrom(yaml);
 
-            Assert.AreEqual(collection.Tables[0].Columns[0].ColumnName,   collection2.Tables[0].Columns[0].ColumnName );
-            Assert.AreEqual(collection.Tables[0].Columns[0].Type, collection2.Tables[0].Columns[0].Type);
-            Assert.AreEqual(collection.Tables[0].Columns[0].IsPrimaryKey, collection2.Tables[0].Columns[0].IsPrimaryKey);
-
-            Assert.AreEqual(collection.Tables[0].Columns[1].ColumnName,   collection2.Tables[0].Columns[1].ColumnName);
-            Assert.AreEqual(collection.Tables[0].Columns[1].Type, collection2.Tables[0].Columns[1].Type);
-            Assert.AreEqual(collection.Tables[0].Columns[1].IsPrimaryKey, collection2.Tables[0].Columns[1].IsPrimaryKey);
-
-            //doesn't actually have to exist
-            var db = new DiscoveredServer("localhost","nobody",FAnsi.DatabaseType.MySql,"captain","morgans").ExpectDatabase("neverland");
-
-            var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
-                       
-
-            var sql1 = creator.GetCreateTableSql(db,collection.Tables[0].TableName, collection.Tables[0],null);
-            var sql2 = creator.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0], null);
-
-            Assert.AreEqual(sql1,sql2);
-        }
-        
-        /// <summary>
-        /// Tests the systems ability to serialize and deserialize <see cref="ImageTableTemplateCollection"/> when there
-        /// is a mixture of DicomTag and normal columns
-        /// </summary>
-        [Test]
-        public void Test_Serializing_DicomTagsAndArbitraryColumns()
+        Assert.Multiple(() =>
         {
-            var collection = new ImageTableTemplateCollection();
+            Assert.That(collection2.Tables[0].TableName, Is.EqualTo(collection.Tables[0].TableName));
 
-            var table = new ImageTableTemplate();
-            table.TableName = "Fish";
+            Assert.That(collection2.Tables[0].Columns[0].ColumnName, Is.EqualTo(collection.Tables[0].Columns[0].ColumnName));
+            Assert.That(collection2.Tables[0].Columns[0].Type, Is.EqualTo(collection.Tables[0].Columns[0].Type));
+            Assert.That(collection2.Tables[0].Columns[0].IsPrimaryKey, Is.EqualTo(collection.Tables[0].Columns[0].IsPrimaryKey));
 
+            Assert.That(collection2.Tables[0].Columns[1].ColumnName, Is.EqualTo(collection.Tables[0].Columns[1].ColumnName));
+            Assert.That(collection2.Tables[0].Columns[1].Type, Is.EqualTo(collection.Tables[0].Columns[1].Type));
+            Assert.That(collection2.Tables[0].Columns[1].IsPrimaryKey, Is.EqualTo(collection.Tables[0].Columns[1].IsPrimaryKey));
+        });
+
+        //doesn't actually have to exist
+        var db = new DiscoveredServer("localhost","nobody",FAnsi.DatabaseType.MySql,"captain","morgans").ExpectDatabase("neverland");
+
+        var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
+
+
+        var sql1 = creator.GetCreateTableSql(db,collection.Tables[0].TableName, collection.Tables[0],null);
+        var sql2 = creator.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0], null);
+
+        Assert.That(sql2, Is.EqualTo(sql1));
+    }
+
+    /// <summary>
+    /// Tests the systems ability to serialize and deserialize <see cref="ImageTableTemplateCollection"/> when there
+    /// is a mixture of DicomTag and normal columns
+    /// </summary>
+    [Test]
+    public void Test_Serializing_DicomTagsAndArbitraryColumns()
+    {
+        var collection = new ImageTableTemplateCollection();
+
+        var table = new ImageTableTemplate
+        {
+            TableName = "Fish",
             //table has 3 columns, one is a DicomTag (SOPInstanceUID) while the other 2 are arbitrary
-            table.Columns = new[]
+            Columns = new[]
             {
                 new ImageColumnTemplate(DicomTag.SOPInstanceUID){IsPrimaryKey = true },
                 new ImageColumnTemplate(DicomTag.SeriesInstanceUID),
@@ -243,44 +249,46 @@ namespace DicomTypeTranslation.Tests
                 new ImageColumnTemplate(){
                     ColumnName = "DataQualityEngineScore",
                     Type = new DatabaseTypeRequest(typeof(decimal),null,new DecimalSize(10,5)),
-                    AllowNulls = false} 
-            };
-    
+                    AllowNulls = false}
+            }
+        };
 
-            collection.Tables.Add(table);
 
-            var yaml = collection.Serialize();
+        collection.Tables.Add(table);
 
-            Console.WriteLine("Yaml is:");
-            Console.Write(yaml);
+        var yaml = collection.Serialize();
 
-            var collection2 = ImageTableTemplateCollection.LoadFrom(yaml);
+        Console.WriteLine("Yaml is:");
+        Console.Write(yaml);
 
-            Assert.AreEqual(collection.Tables[0].TableName, collection2.Tables[0].TableName);
+        var collection2 = ImageTableTemplateCollection.LoadFrom(yaml);
 
-            Assert.AreEqual(collection.Tables[0].Columns[0].ColumnName,     collection2.Tables[0].Columns[0].ColumnName);
-            Assert.AreEqual(collection.Tables[0].Columns[0].Type,           collection2.Tables[0].Columns[0].Type);
-            Assert.AreEqual(collection.Tables[0].Columns[0].IsPrimaryKey,   collection2.Tables[0].Columns[0].IsPrimaryKey);
+        Assert.Multiple(() =>
+        {
+            Assert.That(collection2.Tables[0].TableName, Is.EqualTo(collection.Tables[0].TableName));
 
-            Assert.AreEqual(collection.Tables[0].Columns[4].ColumnName,     collection2.Tables[0].Columns[4].ColumnName);
-            Assert.AreEqual(collection.Tables[0].Columns[4].Type,           collection2.Tables[0].Columns[4].Type);
-            Assert.AreEqual(collection.Tables[0].Columns[4].IsPrimaryKey,   collection2.Tables[0].Columns[4].IsPrimaryKey);
-            
-            Assert.AreEqual(collection.Tables[0].Columns[5].ColumnName,     collection2.Tables[0].Columns[5].ColumnName);
-            Assert.AreEqual(collection.Tables[0].Columns[5].Type,           collection2.Tables[0].Columns[5].Type);
-            Assert.AreEqual(collection.Tables[0].Columns[5].IsPrimaryKey,   collection2.Tables[0].Columns[5].IsPrimaryKey);
+            Assert.That(collection2.Tables[0].Columns[0].ColumnName, Is.EqualTo(collection.Tables[0].Columns[0].ColumnName));
+            Assert.That(collection2.Tables[0].Columns[0].Type, Is.EqualTo(collection.Tables[0].Columns[0].Type));
+            Assert.That(collection2.Tables[0].Columns[0].IsPrimaryKey, Is.EqualTo(collection.Tables[0].Columns[0].IsPrimaryKey));
 
-            //doesn't actually have to exist
-            var db = new DiscoveredServer("localhost", "nobody", FAnsi.DatabaseType.MySql, "captain", "morgans").ExpectDatabase("neverland");
+            Assert.That(collection2.Tables[0].Columns[4].ColumnName, Is.EqualTo(collection.Tables[0].Columns[4].ColumnName));
+            Assert.That(collection2.Tables[0].Columns[4].Type, Is.EqualTo(collection.Tables[0].Columns[4].Type));
+            Assert.That(collection2.Tables[0].Columns[4].IsPrimaryKey, Is.EqualTo(collection.Tables[0].Columns[4].IsPrimaryKey));
 
-            var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
+            Assert.That(collection2.Tables[0].Columns[5].ColumnName, Is.EqualTo(collection.Tables[0].Columns[5].ColumnName));
+            Assert.That(collection2.Tables[0].Columns[5].Type, Is.EqualTo(collection.Tables[0].Columns[5].Type));
+            Assert.That(collection2.Tables[0].Columns[5].IsPrimaryKey, Is.EqualTo(collection.Tables[0].Columns[5].IsPrimaryKey));
+        });
 
-            var sql1 = creator.GetCreateTableSql(db, collection.Tables[0].TableName, collection.Tables[0], null);
-            var sql2 = creator.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0], null);
+        //doesn't actually have to exist
+        var db = new DiscoveredServer("localhost", "nobody", FAnsi.DatabaseType.MySql, "captain", "morgans").ExpectDatabase("neverland");
 
-            Assert.AreEqual(sql1, sql2);
-        }
+        var creator = new ImagingTableCreation(db.Server.GetQuerySyntaxHelper());
 
+        var sql1 = creator.GetCreateTableSql(db, collection.Tables[0].TableName, collection.Tables[0], null);
+        var sql2 = creator.GetCreateTableSql(db, collection2.Tables[0].TableName, collection.Tables[0], null);
+
+        Assert.That(sql2, Is.EqualTo(sql1));
     }
-}
 
+}
