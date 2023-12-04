@@ -1,14 +1,14 @@
 ﻿using DicomTypeTranslation.Elevation.Serialization;
 using NUnit.Framework;
 
-namespace DicomTypeTranslation.Tests.ElevationTests
+namespace DicomTypeTranslation.Tests.ElevationTests;
+
+public class TagElevatorSerializationTests
 {
-    public class TagElevatorSerializationTests
+    [Test]
+    public void Deserialize_SingleRequest()
     {
-        [Test]
-        public void Deserialize_SingleRequest()
-        {
-            var xml = @"<!DOCTYPE TagElevationRequestCollection
+        var xml = @"<!DOCTYPE TagElevationRequestCollection
 [
   <!ELEMENT TagElevationRequestCollection (TagElevationRequest*)>
   <!ELEMENT TagElevationRequest (ColumnName,ElevationPathway,Conditional?)>
@@ -31,20 +31,23 @@ namespace DicomTypeTranslation.Tests.ElevationTests
 </TagElevationRequestCollection>";
 
 
-            var collection = new TagElevationRequestCollection(xml);
-             
-            Assert.AreEqual(1,collection.Requests.Count);
-            
-            Assert.AreEqual("ContentSequence->TextValue", collection.Requests[0].ElevationPathway);
-            Assert.AreEqual("ContentSequenceDescriptions", collection.Requests[0].ColumnName);
-            Assert.AreEqual(".->ConceptNameCodeSequence->CodeMeaning", collection.Requests[0].ConditionalPathway);
-            Assert.AreEqual("Tr.*[e-a]{2}tment", collection.Requests[0].ConditionalRegex);
-        }
+        var collection = new TagElevationRequestCollection(xml);
 
-        [Test]
-        public void Deserialize_TwoRequest_OneWithConditional()
+        Assert.That(collection.Requests, Has.Count.EqualTo(1));
+
+        Assert.Multiple(() =>
         {
-            var xml = @"<!DOCTYPE TagElevationRequestCollection
+            Assert.That(collection.Requests[0].ElevationPathway, Is.EqualTo("ContentSequence->TextValue"));
+            Assert.That(collection.Requests[0].ColumnName, Is.EqualTo("ContentSequenceDescriptions"));
+            Assert.That(collection.Requests[0].ConditionalPathway, Is.EqualTo(".->ConceptNameCodeSequence->CodeMeaning"));
+            Assert.That(collection.Requests[0].ConditionalRegex, Is.EqualTo("Tr.*[e-a]{2}tment"));
+        });
+    }
+
+    [Test]
+    public void Deserialize_TwoRequest_OneWithConditional()
+    {
+        var xml = @"<!DOCTYPE TagElevationRequestCollection
 [
   <!ELEMENT TagElevationRequestCollection (TagElevationRequest*)>
   <!ELEMENT TagElevationRequest (ColumnName,ElevationPathway,Conditional?)>
@@ -69,20 +72,22 @@ namespace DicomTypeTranslation.Tests.ElevationTests
     <ElevationPathway>ContentSequence->TextString</ElevationPathway>
   </TagElevationRequest>
 </TagElevationRequestCollection>";
-            
-            var collection = new TagElevationRequestCollection(xml);
 
-            Assert.AreEqual(2, collection.Requests.Count);
+        var collection = new TagElevationRequestCollection(xml);
 
-            Assert.AreEqual("ContentSequenceDescriptions", collection.Requests[0].ColumnName);
-            Assert.AreEqual("ContentSequence->TextValue", collection.Requests[0].ElevationPathway);
-            Assert.AreEqual(".->ConceptNameCodeSequence->CodeMeaning", collection.Requests[0].ConditionalPathway);
-            Assert.AreEqual("Tr.*[e-a]{2}tment", collection.Requests[0].ConditionalRegex);
+        Assert.That(collection.Requests, Has.Count.EqualTo(2));
 
-            Assert.AreEqual("ContentSequenceFreeText", collection.Requests[1].ColumnName);
-            Assert.AreEqual("ContentSequence->TextString", collection.Requests[1].ElevationPathway);
-            Assert.AreEqual(null, collection.Requests[1].ConditionalPathway);
-            Assert.AreEqual(null, collection.Requests[1].ConditionalRegex);
-        }
+        Assert.Multiple(() =>
+        {
+            Assert.That(collection.Requests[0].ColumnName, Is.EqualTo("ContentSequenceDescriptions"));
+            Assert.That(collection.Requests[0].ElevationPathway, Is.EqualTo("ContentSequence->TextValue"));
+            Assert.That(collection.Requests[0].ConditionalPathway, Is.EqualTo(".->ConceptNameCodeSequence->CodeMeaning"));
+            Assert.That(collection.Requests[0].ConditionalRegex, Is.EqualTo("Tr.*[e-a]{2}tment"));
+
+            Assert.That(collection.Requests[1].ColumnName, Is.EqualTo("ContentSequenceFreeText"));
+            Assert.That(collection.Requests[1].ElevationPathway, Is.EqualTo("ContentSequence->TextString"));
+            Assert.That(collection.Requests[1].ConditionalPathway, Is.EqualTo(null));
+            Assert.That(collection.Requests[1].ConditionalRegex, Is.EqualTo(null));
+        });
     }
 }
