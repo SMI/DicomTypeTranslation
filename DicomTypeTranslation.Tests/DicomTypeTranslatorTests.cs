@@ -284,7 +284,7 @@ public class DicomTypeTranslatorTests
         var tag = DicomTag.NumericValue;
         var ds = new DicomDataset
         {
-            new DicomDecimalString(tag, new[] { "3.40282347e+038", "3.0e+038" }),
+            new DicomDecimalString(tag, new[] { "3.40282347e+038", "3.0e+038" })
         };
 
         // Act

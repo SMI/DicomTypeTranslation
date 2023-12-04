@@ -1,13 +1,12 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using FellowOakDicom;
 using DicomTypeTranslation.Elevation;
 using DicomTypeTranslation.Elevation.Exceptions;
 using DicomTypeTranslation.Helpers;
 using FAnsi.Discovery;
+using FellowOakDicom;
 using NUnit.Framework;
 
 namespace DicomTypeTranslation.Tests.ElevationTests;
@@ -216,7 +215,7 @@ public class TagElevatorTests
                 {
                     // Text multiplicity
                     //root->PseudoColorPaletteInstanceReferenceSequence->TextString
-                    new DicomShortString(DicomTag.TextString, "abcd", "efgh"),
+                    new DicomShortString(DicomTag.TextString, "abcd", "efgh")
                 })
         };
 
@@ -264,13 +263,13 @@ public class TagElevatorTests
                 {
                     // Text multiplicity
                     //root->PseudoColorPaletteInstanceReferenceSequence->TextString
-                    new DicomShortString(DicomTag.TextString, "abcd", "efgh"),
+                    new DicomShortString(DicomTag.TextString, "abcd", "efgh")
                 },
                 new DicomDataset()
                 {
                     // Text multiplicity
                     //root->PseudoColorPaletteInstanceReferenceSequence->TextString
-                    new DicomShortString(DicomTag.TextString, "hij", "klm"),
+                    new DicomShortString(DicomTag.TextString, "hij", "klm")
                 })
         };
 
@@ -295,7 +294,7 @@ public class TagElevatorTests
                 {
                     // No multiplicity!
                     //root->PseudoColorPaletteInstanceReferenceSequence->TextString
-                    new DicomShortString(DicomTag.TextString, "abcd"),
+                    new DicomShortString(DicomTag.TextString, "abcd")
                 })
         };
 
@@ -325,13 +324,13 @@ public class TagElevatorTests
                 {
                     // Text multiplicity
                     //root->PseudoColorPaletteInstanceReferenceSequence->TextString
-                    new DicomShortString(DicomTag.TextString, "abcd", "efgh"),
+                    new DicomShortString(DicomTag.TextString, "abcd", "efgh")
                 },
                 new DicomDataset()
                 {
                     // Text multiplicity
                     //root->PseudoColorPaletteInstanceReferenceSequence->TextString
-                    new DicomShortString(DicomTag.TextString, "hij", "klm"),
+                    new DicomShortString(DicomTag.TextString, "hij", "klm")
                 })
         };
 
@@ -361,13 +360,13 @@ public class TagElevatorTests
                 {
                     // Text multiplicity
                     //root->PseudoColorPaletteInstanceReferenceSequence->CodeValue
-                    new DicomShortString(DicomTag.CodeValue, "CODE_01"),
+                    new DicomShortString(DicomTag.CodeValue, "CODE_01")
                 },
                 new DicomDataset()
                 {
                     // Text multiplicity
                     //root->PseudoColorPaletteInstanceReferenceSequence->CodeMeaning
-                    new DicomShortString(DicomTag.CodeMeaning , "Description"),
+                    new DicomShortString(DicomTag.CodeMeaning , "Description")
                 })
         };
 
@@ -749,7 +748,7 @@ public class TagElevatorTests
 
                     //root->PseudoColorPaletteInstanceReferenceSequence->PatientID
                     new DicomDataset { new DicomShortText(DicomTag.PatientID, "1.2")}
-                }),
+                })
         };
 
         var elevator = new TagElevator(pathway, conditional, conditionalMatch);

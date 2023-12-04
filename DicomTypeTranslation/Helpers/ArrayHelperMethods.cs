@@ -123,7 +123,8 @@ public static class ArrayHelperMethods
             return AsciiArt(a);
 
         var sb = new StringBuilder();
-        sb.AppendJoin('\\', a as IEnumerable<object>);
+        // ReSharper disable once SuspiciousTypeConversion.Global - odd conversion but needed to get the right StringBuilder Append overload
+        sb.AppendJoin('\\', (IEnumerable<object>)a);
         return sb.ToString();
     }
 }

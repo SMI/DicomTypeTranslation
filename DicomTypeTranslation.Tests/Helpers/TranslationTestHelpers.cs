@@ -62,7 +62,7 @@ public static class TranslationTestHelpers
             new DicomUniversalResource(DicomTag.URNCodeValue, "https://example.com?q=1"),
             new DicomUnsignedShort(DicomTag.SelectorUSValue, 0, 1, ushort.MaxValue),
             new DicomUnlimitedText(DicomTag.SelectorUTValue, "unlimited!"),
-            new DicomUnsignedVeryLong(DicomTag.SelectorUVValue,new UInt64[]{1}),
+            new DicomUnsignedVeryLong(DicomTag.SelectorUVValue,new UInt64[]{1})
         };
 
         if (singleVr != null)

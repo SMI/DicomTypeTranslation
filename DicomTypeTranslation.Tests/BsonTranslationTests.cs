@@ -43,7 +43,7 @@ public class DicomToBsonTranslationTests
     [Test]
     public void DicomToBson_TranslateNormalDataset_DoesNotThrow()
     {
-        Assert.DoesNotThrow(() => DicomTypeTranslaterReader.BuildBsonDocument(TranslationTestHelpers.BuildVrDataset()));
+        Assert.DoesNotThrow(static () => DicomTypeTranslaterReader.BuildBsonDocument(TranslationTestHelpers.BuildVrDataset()));
     }
 
     [Test]
@@ -116,12 +116,12 @@ public class DicomToBsonTranslationTests
                 new DicomDataset
                 {
                     new DicomCodeString(new DicomTag(1953, 16), "ELSCINT1"),
-                    new DicomUnsignedShort(new DicomTag(1953, 4176, "ELSCINT1"), 123),
+                    new DicomUnsignedShort(new DicomTag(1953, 4176, "ELSCINT1"), 123)
                 },
                 new DicomDataset
                 {
                     new DicomCodeString(new DicomTag(1953, 16), "ELSCINT2"),
-                    new DicomUnsignedShort(new DicomTag(1953, 4176, "ELSCINT2"), 456),
+                    new DicomUnsignedShort(new DicomTag(1953, 4176, "ELSCINT2"), 456)
                 }
             },
             { DicomVR.US, DicomTag.GrayLookupTableDataRETIRED, ushort.MinValue, ushort.MaxValue },
@@ -508,7 +508,7 @@ public class BsonRoundTripTranslationTests
             new DicomSignedLong(DicomTag.SelectorSLValue, 0, int.MinValue, int.MaxValue),
             new DicomSignedShort(DicomTag.SelectorSSValue, 0, short.MinValue, short.MaxValue),
             new DicomUnsignedLong(DicomTag.SelectorULValue, 0, 1, uint.MaxValue),
-            new DicomUnsignedShort(DicomTag.SelectorUSValue, 0, 1, ushort.MaxValue),
+            new DicomUnsignedShort(DicomTag.SelectorUSValue, 0, 1, ushort.MaxValue)
         };
 
         VerifyBsonTripleTrip(ds);

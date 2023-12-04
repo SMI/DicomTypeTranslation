@@ -46,12 +46,11 @@ public static class DicomTypeTranslater
     /// <returns>Json serialized string</returns>
     public static string SerializeDatasetToJson(DicomDataset dataset, bool useOwn=false)
     {
-        if (dataset == null)
-            throw new ArgumentNullException(nameof(dataset));
+        ArgumentNullException.ThrowIfNull(dataset);
 
         if (useOwn)
             return JsonConvert.SerializeObject(dataset, Formatting.None, new SmiJsonDicomConverter());
-        return FellowOakDicom.Serialization.DicomJson.ConvertDicomToJson(dataset,false,false,NumberSerializationMode.PreferablyAsNumber);
+        return DicomJson.ConvertDicomToJson(dataset,false,false,NumberSerializationMode.PreferablyAsNumber);
     }
 
     /// <summary>

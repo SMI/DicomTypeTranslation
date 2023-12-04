@@ -204,14 +204,14 @@ public class TagElevator
 
     private string StripAndApplyOperators(string navigationToken, out bool stop)
     {
-        if (navigationToken.EndsWith("+"))
+        if (navigationToken.EndsWith("+", StringComparison.Ordinal))
         {
             ConcatenateMatches = true;
             stop = false;
             return navigationToken.TrimEnd('+');
         }
 
-        if (navigationToken.EndsWith("&"))
+        if (navigationToken.EndsWith("&", StringComparison.Ordinal))
         {
             ConcatenateMultiplicity = true;
             stop = false;

@@ -8,7 +8,7 @@ public class TagElevatorSerializationTests
     [Test]
     public void Deserialize_SingleRequest()
     {
-        var xml = @"<!DOCTYPE TagElevationRequestCollection
+        const string xml = @"<!DOCTYPE TagElevationRequestCollection
 [
   <!ELEMENT TagElevationRequestCollection (TagElevationRequest*)>
   <!ELEMENT TagElevationRequest (ColumnName,ElevationPathway,Conditional?)>
@@ -47,7 +47,7 @@ public class TagElevatorSerializationTests
     [Test]
     public void Deserialize_TwoRequest_OneWithConditional()
     {
-        var xml = @"<!DOCTYPE TagElevationRequestCollection
+        const string xml = @"<!DOCTYPE TagElevationRequestCollection
 [
   <!ELEMENT TagElevationRequestCollection (TagElevationRequest*)>
   <!ELEMENT TagElevationRequest (ColumnName,ElevationPathway,Conditional?)>

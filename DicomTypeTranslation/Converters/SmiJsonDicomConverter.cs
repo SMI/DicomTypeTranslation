@@ -364,7 +364,7 @@ public class SmiJsonDicomConverter : JsonConverter
             "SQ" => ReadJsonSequence(reader, serializer),
             // OtherX elements
             "OB" or "OD" or "OF" or "OL" or "OW" or "OV" or "UN" => ReadJsonOX(reader),
-            _ => throw new ArgumentException($"No case implemented to read object data for VR {vr} from JSON"),
+            _ => throw new ArgumentException($"No case implemented to read object data for VR {vr} from JSON")
         };
         if (reader.TokenType != JsonToken.EndObject)
             throw new JsonReaderException("Malformed DICOM json");

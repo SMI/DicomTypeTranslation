@@ -56,7 +56,7 @@ public class DatabaseTests
         {
             var type = element.Element("DatabaseType").Value;
 
-            if (!DatabaseType.TryParse(type, out DatabaseType databaseType))
+            if (!Enum.TryParse(type, out DatabaseType databaseType))
                 throw new Exception($"Could not parse DatabaseType {type}");
 
             var constr = element.Element("ConnectionString").Value;

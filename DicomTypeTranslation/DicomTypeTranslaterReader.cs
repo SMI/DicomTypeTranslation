@@ -9,7 +9,7 @@ using MongoDB.Bson;
 namespace DicomTypeTranslation;
 
 /// <summary>
-/// Helper class for rapidly reading <see cref="DicomTag"/> values from <see cref="DicomDataset"/> in basic C# Types (string, int, double etc).  Also supports
+/// Helper class for rapidly reading <see cref="DicomTag"/> values from <see cref="DicomDataset"/> in basic C# Types (string, int, double etc.).  Also supports
 /// Bson types (for MongoDb).
 /// </summary>
 public static class DicomTypeTranslaterReader
@@ -231,7 +231,7 @@ public static class DicomTypeTranslaterReader
 
         foreach (var sequenceElement in ds.GetSequence(tag))
         {
-            var enumerator = sequenceElement.GetEnumerator();
+            using var enumerator = sequenceElement.GetEnumerator();
 
             var current = new Dictionary<DicomTag, object>();
             toReturn.Add(current);

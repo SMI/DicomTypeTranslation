@@ -172,7 +172,7 @@ public static class DicomTypeTranslaterWriter
 
         try
         {
-            var tag = tagString.StartsWith("(")
+            var tag = tagString.StartsWith("(", StringComparison.Ordinal)
                 ? DicomTag.Parse(tagString)
                 : DicomDictionary.Default[tagString];
 

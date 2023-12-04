@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 
-namespace Rdmp.Dicom.Tests;
+namespace DicomTypeTranslation.Tests;
 
 /// <summary>
 /// Tests to confirm that the dependencies in csproj files (NuGet packages) match those in the .nuspec files and that packages.md
