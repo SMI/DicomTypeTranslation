@@ -18,7 +18,7 @@ jobs:
       run: sudo apt-get install -y libeatmydata1
     - uses: actions/checkout@v4
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 6.0.x
     - name: Install MS SQL Server and Postgresql, start existing MySQL
