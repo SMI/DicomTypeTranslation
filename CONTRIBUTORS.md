@@ -12,3 +12,4 @@
 - [Thomas Nind](https://github.com/tznind)
 - [Leandro Tramma](https://github.com/Tallmaris)
 - [James A Sutherland](https://github.com/jas88)
+- [James Friel](https://github.com/JFriel)
