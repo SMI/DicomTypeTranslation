@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [4.1.0] - 2024-03-12
+
+### Changed
+
+- Bump Hic.FansiSql from 3.0.1 to 3.2.1
+- Migrate from net6 to net8
+
 ## [4.0.3] - 2023-02-07
 
 ### Changed
@@ -252,7 +259,8 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/SMI/DicomTypeTranslation/compare/4.0.3...develop
+[Unreleased]: https://github.com/SMI/DicomTypeTranslation/compare/4.1.0...develop
+[4.1.0]: https://github.com/SMI/DicomTypeTranslation/compare/4.0.3..4.1.0
 [4.0.3]: https://github.com/SMI/DicomTypeTranslation/compare/4.0.2..4.0.3
 [4.0.2]: https://github.com/SMI/DicomTypeTranslation/compare/4.0.1..4.0.2
 [4.0.1]: https://github.com/SMI/DicomTypeTranslation/compare/4.0.0..4.0.1
