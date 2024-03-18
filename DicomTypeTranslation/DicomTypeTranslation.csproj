@@ -31,7 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="fo-dicom" Version="5.1.2" />
-    <PackageReference Include="HIC.FAnsiSql" Version="3.2.1" />
+    <PackageReference Include="HIC.FAnsiSql" Version="3.2.2" />
     <PackageReference Include="MongoDB.Driver" Version="2.24.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NLog" Version="5.2.8" />
