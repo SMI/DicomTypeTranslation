@@ -194,7 +194,7 @@ public static class TranslationTestHelpers
     {
         var target = new DicomDataset
         {
-            new DicomPersonName(DicomTag.PatientName, new[] {"Anna^Pelle", null, "Olle^Jöns^Pyjamas"}),
+            new DicomPersonName(DicomTag.PatientName, "Olle^Jöns^Pyjamas"),
             {DicomTag.SOPClassUID, DicomUID.RTPlanStorage},
             {DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateDerivedFromUUID()},
             {DicomTag.SeriesInstanceUID, Array.Empty<DicomUID>()},
