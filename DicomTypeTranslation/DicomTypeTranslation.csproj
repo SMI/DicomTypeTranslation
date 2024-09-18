@@ -34,7 +34,7 @@
     <PackageReference Include="HIC.FAnsiSql" Version="3.2.6" />
     <PackageReference Include="MongoDB.Driver" Version="2.28.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="NLog" Version="5.3.3" />
+    <PackageReference Include="NLog" Version="5.3.4" />
     <PackageReference Include="YamlDotNet" Version="16.1.2" />
   </ItemGroup>
 </Project>
