@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [4.1.4] - 2024-10-24
+
+- Bump HIC.FAnsiSql from 3.2.6 to 3.2.7
+- Bump MongoDB.Driver from 2.28.0 to 3.0.0
+- Bump NLog from 5.3.2 to 5.3.4
+- Bump YamlDotNet from 16.0.0 to 16.1.3
+
 ## [4.1.3] - 2024-08-06
 
 - Bump HIC.FAnsiSql from 3.2.5 to 3.2.6
@@ -286,7 +293,8 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/SMI/DicomTypeTranslation/compare/v4.1.3...main
+[Unreleased]: https://github.com/SMI/DicomTypeTranslation/compare/v4.1.4...main
+[4.1.4]: https://github.com/SMI/DicomTypeTranslation/compare/v4.1.3..v4.1.4
 [4.1.3]: https://github.com/SMI/DicomTypeTranslation/compare/v4.1.2..v4.1.3
 [4.1.2]: https://github.com/SMI/DicomTypeTranslation/compare/v4.1.1..v4.1.2
 [4.1.1]: https://github.com/SMI/DicomTypeTranslation/compare/v4.1.0..v4.1.1
