@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using FellowOakDicom;
 using MongoDB.Bson;
 
@@ -332,9 +333,10 @@ public static class DicomTypeTranslaterReader
         else if (!DicomTypeTranslater.SerializeBinaryData && DicomTypeTranslater.DicomVrBlacklist.Contains(item.ValueRepresentation))
             retVal = BsonNull.Value;
 
-        else if (element is DicomStringElement)
+        else if (element is DicomStringElement se)
         {
-            if (element is not DicomMultiStringElement && element.Length == 0)
+            se.TargetEncoding = Encoding.UTF8;
+            if (se is not DicomMultiStringElement && se.Length == 0)
                 retVal = BsonNull.Value;
             else
                 retVal = (BsonString)dataset.GetString(element.Tag);
