@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [4.1.5] - 2024-10-28
+
+- Bump fo-dicom from 5.1.3 to 5.1.4
+
 ## [4.1.4] - 2024-10-24
 
 - Bump HIC.FAnsiSql from 3.2.6 to 3.2.7
@@ -293,7 +297,8 @@ Initial commit of code from old SMIPlugin repo
 - Rake build scripts for CI
 
 
-[Unreleased]: https://github.com/SMI/DicomTypeTranslation/compare/v4.1.4...main
+[Unreleased]: https://github.com/SMI/DicomTypeTranslation/compare/v4.1.5...main
+[4.1.5]: https://github.com/SMI/DicomTypeTranslation/compare/v4.1.4..v4.1.5
 [4.1.4]: https://github.com/SMI/DicomTypeTranslation/compare/v4.1.3..v4.1.4
 [4.1.3]: https://github.com/SMI/DicomTypeTranslation/compare/v4.1.2..v4.1.3
 [4.1.2]: https://github.com/SMI/DicomTypeTranslation/compare/v4.1.1..v4.1.2
