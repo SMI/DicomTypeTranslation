@@ -30,7 +30,7 @@
     <None Include="Elevation\TagElevation.cd" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="fo-dicom" Version="5.2.0" />
+    <PackageReference Include="fo-dicom" Version="5.2.1" />
     <PackageReference Include="HIC.FAnsiSql" Version="3.2.7" />
     <PackageReference Include="MongoDB.Driver" Version="3.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
