@@ -23,8 +23,11 @@ jobs:
         dotnet-version: 8.0.x
     - name: Install MS SQL Server and Postgresql, start existing MySQL
       run: |
-        sudo wget -qO/etc/apt/trusted.gpg.d/microsoft.asc https://packages.microsoft.com/keys/microsoft.asc
-        sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list)"
+        curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+        curl https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
+        curl -fsSL https://packages.microsoft.com/config/ubuntu/22.04/mssql-server-preview.list | sudo tee /etc/apt/sources.list.d/mssql-server-preview.list
+        sudo apt-get update
+        ACCEPT_EULA=y sudo apt-get install -qqy mssql-tools mssql-server --no-install-recommends
         sed -i -e 's/Pwd=;/Pwd=root;AllowPublicKeyRetrieval=True;/' DicomTypeTranslation.Tests/TestDatabases.xml
         sudo apt-get install -y --no-install-recommends postgresql mssql-tools mssql-server
         sudo -E /opt/mssql/bin/mssql-conf -n setup accept-eula
