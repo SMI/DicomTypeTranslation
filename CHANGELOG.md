@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+- Add a DICOM template for the Mammography (MG) modality
+
 ## [4.1.5] - 2024-10-28
 
 - Bump fo-dicom from 5.1.3 to 5.1.4

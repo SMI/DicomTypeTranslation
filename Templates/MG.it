@@ -1,0 +1,185 @@
+Tables:
+- TableName: StudyTable
+  Columns:
+  - ColumnName: AccessionNumber
+    AllowNulls: true
+  - ColumnName: StudyDescription
+    AllowNulls: true
+  - ColumnName: PatientID
+  - ColumnName: PatientBirthDate
+    AllowNulls: true
+  - ColumnName: PatientSex
+    AllowNulls: true
+  - ColumnName: StudyInstanceUID
+    IsPrimaryKey: true
+  - ColumnName: PatientAge
+    AllowNulls: true
+  - ColumnName: ModalitiesInStudy
+    AllowNulls: true
+  - ColumnName: NumberOfStudyRelatedInstances
+    AllowNulls: true
+  - ColumnName: StudyDate
+    AllowNulls: true
+  - ColumnName: StudyTime
+    AllowNulls: true
+- TableName: SeriesTable
+  Columns:
+  - ColumnName: SeriesDate
+    AllowNulls: true
+  - ColumnName: SeriesTime
+    AllowNulls: true
+  - ColumnName: Modality
+  - ColumnName: InstitutionName
+    AllowNulls: true
+  - ColumnName: ProcedureCodeSequence_CodeValue
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 16
+  - ColumnName: SeriesDescription
+    AllowNulls: true
+  - ColumnName: BodyPartExamined
+    AllowNulls: true
+  - ColumnName: ProtocolName
+    AllowNulls: true
+  - ColumnName: StudyInstanceUID
+  - ColumnName: SeriesInstanceUID
+    IsPrimaryKey: true
+  - ColumnName: DeviceSerialNumber
+    AllowNulls: true
+  - ColumnName: Manufacturer
+    AllowNulls: true
+  - ColumnName: ManufacturerModelName
+    AllowNulls: true
+  - ColumnName: SoftwareVersions
+    AllowNulls: true
+  - ColumnName: SeriesNumber
+    AllowNulls: true
+  - ColumnName: PerformedProcedureStepDescription
+    AllowNulls: true
+  - ColumnName: PerformedProtocolCodeSequence_CodeValue
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 16
+- TableName: ImageTable
+  Columns:
+  - ColumnName: ImageType
+    AllowNulls: true
+  - ColumnName: SOPInstanceUID
+    IsPrimaryKey: true
+  - ColumnName: StudyDate
+    AllowNulls: true
+  - ColumnName: PatientID
+  - ColumnName: StudyInstanceUID
+  - ColumnName: SeriesInstanceUID
+  - ColumnName: RelativeFileArchiveURI
+  - ColumnName: DicomFileSize
+    Type:
+      CSharpType: System.Int64
+    AllowNulls: true
+  - ColumnName: DetectorType
+    AllowNulls: true
+  - ColumnName: DetectorID
+    AllowNulls: true
+  - ColumnName: DateOfLastDetectorCalibration
+    AllowNulls: true
+  - ColumnName: TimeOfLastDetectorCalibration
+    AllowNulls: true
+  - ColumnName: DetectorElementSpacing
+    AllowNulls: true
+  - ColumnName: LossyImageCompression
+    AllowNulls: true
+  - ColumnName: KVP
+    AllowNulls: true
+  - ColumnName: DistanceSourceToDetector
+    AllowNulls: true
+  - ColumnName: DistanceSourceToPatient
+    AllowNulls: true
+  - ColumnName: EstimatedRadiographicMagnificationFactor
+    AllowNulls: true
+  - ColumnName: FieldOfViewShape
+    AllowNulls: true
+  - ColumnName: FilterType
+    AllowNulls: true
+  - ColumnName: Grid
+    AllowNulls: true
+  - ColumnName: FocalSpots
+    AllowNulls: true
+  - ColumnName: AnodeTargetMaterial
+    AllowNulls: true
+  - ColumnName: BodyPartThickness
+    AllowNulls: true
+  - ColumnName: CompressionForce
+    AllowNulls: true
+  - ColumnName: PaddleDescription
+    AllowNulls: true
+  - ColumnName: DetectorTemperature
+    AllowNulls: true
+  - ColumnName: DetectorBinning
+    AllowNulls: true
+  - ColumnName: FieldOfViewOrigin
+    AllowNulls: true
+  - ColumnName: FieldOfViewRotation
+    AllowNulls: true
+  - ColumnName: FieldOfViewHorizontalFlip
+    AllowNulls: true
+  - ColumnName: FilterMaterial
+    AllowNulls: true
+  - ColumnName: FilterThinknessMinimum
+    AllowNulls: true
+    Type:
+      CSharpType: System.Double
+      Size:
+        IsEmpty: true
+      Width: 16
+  - ColumnName: FilterThicknessMaximum
+    AllowNulls: true
+  - ColumnName: ExposureControlMode
+    AllowNulls: true
+  - ColumnName: ExposureControlModeDescription
+    AllowNulls: true
+  - ColumnName: ExposureTimeinMs
+    Type:
+        CSharpType: System.Int64
+    AllowNulls: true
+  - ColumnName: XRayTubeCurrentInMs
+    Type:
+        CSharpType: System.Int64
+    AllowNulls: true
+  - ColumnName: ExposureInMAs
+    AllowNulls: true
+    Type:
+      CSharpType: System.Double
+      Size:
+        IsEmpty: true
+      Width: 16
+  - ColumnName: XRayReceptorType
+    AllowNulls: true
+  - ColumnName: FieldOfViewDimensionsInFloat
+    AllowNulls: true
+  - ColumnName: PrimaryPositionerScanArc
+    AllowNulls: true
+  - ColumnName: PrimaryPositionerIncrement
+    AllowNulls: true
+  - ColumnName: PhotometricInterpretation
+    AllowNulls: true
+  - ColumnName: PatientOrientation
+    AllowNulls: true
+  - ColumnName: BurnedInAnnotation
+    AllowNulls: true
+  - ColumnName: BreastImplantPresent
+    AllowNulls: true
+  - ColumnName: QualityControlImage
+    AllowNulls: true
+  - ColumnName: ViewCodeSequence_CodeValue
+    AllowNulls: true
+    Type:
+      CSharpType: System.String
+      Size:
+        IsEmpty: true
+      Width: 16
